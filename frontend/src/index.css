@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+*{
+    box-sizing: border-box;
+}
+
+.website_features_div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+    height: 10vh;
+    width: 100%;
+    margin-top: 3vw;
+    position: fixed;
+    top:10;
+    left: 0;
+    z-index: 50;
+}
+
+.footer_frame_{
+    height: 60vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

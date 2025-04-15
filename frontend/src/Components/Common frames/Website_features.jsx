@@ -1,0 +1,89 @@
+import React, { useState } from 'react'
+import "./Website_features.css"
+
+const Website_features = () => {
+  const [search_list_frame_bool, setsearch_list_frame_bool] = useState(false)
+
+  const search_frame_display = () => {
+    console.log(search_list_frame_bool);
+
+    setsearch_list_frame_bool(!search_list_frame_bool)
+  }
+
+
+  return (
+    <header className="bg-white h-[100%] w-[100%]" >
+      {/* Top Promo Banner */}
+      {/* <div className="bg-blue-500 text-white text-center py-2 text-sm font-semibold">
+            Get Up To 50% OFF New Season Styles, Limited Time Only
+          </div> */}
+
+      {/* Main Header */}
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+        {/* Logo */}
+        <div className="flex items-center justify-center space-x-2">
+          <img
+            src="/path/to/logo.png"
+            alt="ultriti logo"
+            className="h-8"
+          />
+          <span className="font-bold text-[20px]">ULTRITI</span>
+        </div>
+
+        {/* Search Bar */}
+        <div className="flex-grow h-[7vh] mx-4 relative ">
+          <div className="search_div h-5vh w-full flex flex-row  top-0 ">
+            <input
+              type="text"
+              placeholder="Search Product Here..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
+              onClick={() => { search_frame_display() }}
+            />
+            <button className="absolute right-0 top-0 bg-blue-500 text-white px-4 py-2 rounded-r-lg">
+              Search
+            </button>
+          </div>
+
+
+          {search_list_frame_bool ? (
+            <>
+              <div className="display_serached_values  bg-amber-600 w-100">
+              </div>
+            </>
+          ) : (
+            <></>
+          )
+          }
+
+
+        </div>
+
+        {/* Navigation Icons */}
+        <div className="flex space-x-6">
+          <div className="flex flex-col items-center">
+            <span className="text-gray-600 text-xs">Store Locator</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-gray-600 text-xs">Track Order</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-gray-600 text-xs">My Account</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4h16v16H4z" />
+            </svg>
+            <span className="text-gray-600 text-xs">Cart (0)</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Promo Banner */}
+      {/* <div className="bg-blue-400 h-[2.5vw] felx items-center justify-center text-white text-center py-2 text-sm font-semibold">
+        Get 50% Off On First Order
+      </div> */}
+    </header >
+  );
+};
+
+export default Website_features
