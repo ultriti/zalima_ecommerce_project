@@ -2,58 +2,68 @@ import React, { useEffect, useState } from 'react'
 import "./AllProduct.css"
 import Navbar_frame from '../Common frames/Navbar_frame'
 import Website_features from '../Common frames/Website_features'
+// import items_ from "./products.json"
 
 function AllProduct() {
 
+  // const items = items_;
   const items = [
     {
       name: "yashash",
       image: "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
       price: "₹ 1000",
-      catagory: "cloth"
+      catagory: "cloth",
+      _id:1234
     },
     {
       name: "ravi",
       image: "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
       price: "₹ 2000",
-      catagory: "electronics"
+      catagory: "electronics",
+      _id:2345
     },
     {
       name: "pop",
       image: "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
       price: "₹ 3000",
-      catagory: "women"
+      catagory: "women",
+      _id:3456
 
     },
     {
       name: "ravi",
       image: "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
       price: "₹ 2000",
-      catagory: "kitchen"
+      catagory: "kitchen",
+      _id:4567
     },
     {
       name: "person 2",
       image: "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
       price: "₹ 1000",
-      catagory: "cloth"
+      catagory: "cloth",
+      _id:5678
     },
     {
       name: "pop",
       image: "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
-      catagory: "deals"
+      catagory: "deals",
+      _id:6789
 
     },
     {
       name: "ravi",
       image: "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
       price: "₹ 2000",
-      catagory: "demo"
+      catagory: "demo",
+      _id:7890
     },
     {
       name: "pop",
       image: "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
       price: "₹ 3000",
-      catagory: "furnitures"
+      catagory: "furnitures",
+      _id:3423
 
     },
 
@@ -143,10 +153,11 @@ function AllProduct() {
                 filteredItems.map((item, index) => (
 
                 
-                  <div className="productTemplate_frame flex flex-cols bg-blue-200 items-center justify-center " key={index}>
-                    {item.name}
-                    {item.catagory}
-                  </div>
+                  <a href={`/product/productsTemp/${items._id}`}>
+                    <div className="productTemplate_frame flex flex-cols bg-blue-200 items-center justify-center " key={index}>
+                  {item.name}
+                  {item.catagory}
+                </div></a>
                   
                    
                   

@@ -1,0 +1,57 @@
+[
+    {
+        "name": "yashash",
+        "image": "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
+        "price": "₹ 1000",
+        "category": "cloth",
+        "_id": 1234
+    },
+    {
+        "name": "ravi",
+        "image": "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
+        "price": "₹ 2000",
+        "category": "electronics",
+        "_id": 2345
+    },
+    {
+        "name": "pop",
+        "image": "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
+        "price": "₹ 3000",
+        "category": "women",
+        "_id": 3456
+    },
+    {
+        "name": "ravi",
+        "image": "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
+        "price": "₹ 2000",
+        "category": "kitchen",
+        "_id": 4567
+    },
+    {
+        "name": "person 2",
+        "image": "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
+        "price": "₹ 1000",
+        "category": "cloth",
+        "_id": 5678
+    },
+    {
+        "name": "pop",
+        "image": "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
+        "category": "deals",
+        "_id": 6789
+    },
+    {
+        "name": "ravi",
+        "image": "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
+        "price": "₹ 2000",
+        "category": "demo",
+        "_id": 7890
+    },
+    {
+        "name": "pop",
+        "image": "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
+        "price": "₹ 3000",
+        "category": "furnitures",
+        "_id": 3423
+    }
+]

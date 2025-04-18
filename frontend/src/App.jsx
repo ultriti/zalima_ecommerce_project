@@ -6,6 +6,7 @@ import Signup_page from './Components/Auth pages/Signup_page'
 import Home_page from './Components/Home page/Home_page'
 import PageNotFound from './Components/Common frames/PageNotFound'
 import AllProduct from './Components/Product_pages/AllProduct'
+import ProductTemplate from './Components/Product_pages/ProductTemplate'
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           {/*-----------> user routes */}
           <Route path="/" element={<Home_page />} />
           <Route path="/product/allProducts" element={<AllProduct />} />
+          <Route path="/product/productsTemp" element={<ProductTemplate />} />
 
           {/* ------------- auth routes  */}
           <Route path="/register" element={<Signup_page />} />
