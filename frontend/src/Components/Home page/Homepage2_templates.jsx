@@ -40,6 +40,14 @@ const Homepage2_templates = (props) => {
                     onSlideChange={() => console.log('slide change')}
                     loop={true}
                     className='swiper_  '
+                    breakpoints={{
+                        0: {
+                          slidesPerView: 1, // For all widths >= 0px
+                        },
+                        700: {
+                          slidesPerView: 5, // For widths >= 700px
+                        }
+                      }}
 
                 >
 {

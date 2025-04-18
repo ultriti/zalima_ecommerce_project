@@ -13,26 +13,17 @@ const Website_features = () => {
 
   return (
     <header className="bg-white h-[100%] w-[100%]" >
-      {/* Top Promo Banner */}
-      {/* <div className="bg-blue-500 text-white text-center py-2 text-sm font-semibold">
-            Get Up To 50% OFF New Season Styles, Limited Time Only
-          </div> */}
-
+   
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div className="container mx-auto px-4 py-3 flex flex-col justify-between items-center md:flex-row">
         {/* Logo */}
-        <div className="flex items-center justify-center space-x-2">
-          <img
-            src="/path/to/logo.png"
-            alt="ultriti logo"
-            className="h-8"
-          />
-          <span className="font-bold text-[20px]">ULTRITI</span>
-        </div>
+        {/* <div className="flex items-center justify-center space-x-2">
+          
+        </div> */}
 
         {/* Search Bar */}
         <div className="flex-grow h-[7vh] mx-4 relative ">
-          <div className="search_div h-5vh w-full flex flex-row  top-0 ">
+          <div className="search_div h-5vh w-[80vw] flex flex-row  top-0 md:w-[100%]">
             <input
               type="text"
               placeholder="Search Product Here..."

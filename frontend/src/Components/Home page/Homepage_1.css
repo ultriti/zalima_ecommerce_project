@@ -4,7 +4,7 @@
 }
 .swiper_{
     width: 100%;
-    height: 95%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -31,4 +31,11 @@
     align-items: center;
 
     
+}
+
+@media (max-width: 768px) {
+    .home_page_1_frame {
+        width: 100%;
+        height: 50vh;
+    }
 }

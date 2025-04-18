@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer_frame = () => {
   return (
-    <footer className="bg-white h-[100vh] w-[100%] text-black py-8 ">
+    <footer className="bg-white h-[100vh] w-[100%] text-black py-18 px-10 md:py-8 ms:px-2">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 shadow-[ 0 0 10px grey]">
         {/* Contact Section */}
         <div>

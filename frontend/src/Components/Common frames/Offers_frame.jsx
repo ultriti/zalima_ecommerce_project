@@ -33,12 +33,12 @@ function Offers_frame() {
 
 
     return (
-        <div className="flex justify-evenly h-[70%] w-[90%] items-center py-6 bg-gray-200 rounded-[10px] shadow-md">
+        <div className="flex justify-evenly h-[100%] w-[100%] items-center py-6 bg-gray-200 rounded-[10px] shadow-md overflow-x-auto md:h-[100%]">
             {services.map((service, index) => (
-                <div key={index} className="flex flex-col items-center border-r-2 mx-1 px-4">
-                    <div className="text-3xl ">{service.icon}</div>
-                    <p className="font-bold text-sm">{service.title}</p>
-                    <p className="text-xs text-gray-500">{service.description}</p>
+                <div key={index} className="flex flex-col items-center justify-center border-r-2 mx-1 px-4 ">
+                    <div className="text-3xl md:text-3xl">{service.icon}</div>
+                    <p className="font-bold text-[2vw] md:text-[1vw]">{service.title}</p>
+                    <p className="text-[2vw] text-gray-500 md:text-xs">{service.description}</p>
                 </div>
             ))}
         </div>
