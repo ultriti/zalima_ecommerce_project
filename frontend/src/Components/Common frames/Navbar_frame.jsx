@@ -5,8 +5,8 @@ const Navbar_frame = () => {
 
 
   return (
-    <div className='navbar_frame min-h-[5vw] w-full flex flex-col px-[2vw] py-1 z-50 items-center bg-blue-500 justify-center md:flex-row md:justify-between md:items-center md:py-0 md:h-4'>
-      <div className='navbar_frame_left flex items-center justify-center'>
+    <div className='navbar_frame min-h-[4vw] w-full flex flex-col px-[2vw] py-1 z-50 items-center bg-blue-500 justify-center md:flex-row md:justify-between md:items-center md:py-0 md:y-0 md:h-4 '>
+      <div className='navbar_frame_left flex items-center justify-center '>
         <img
           src="/path/to/logo.png"
           alt="ultriti logo"

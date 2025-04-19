@@ -2,77 +2,17 @@ import React, { useEffect, useState } from 'react'
 import "./AllProduct.css"
 import Navbar_frame from '../Common frames/Navbar_frame'
 import Website_features from '../Common frames/Website_features'
-// import items_ from "./products.json"
+import items_ from "./products.json"
+import Footer_frame from '../Common frames/Footer_frame'
 
 function AllProduct() {
+  const [items, setitems] = useState(items_)
 
-  // const items = items_;
-  const items = [
-    {
-      name: "yashash",
-      image: "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
-      price: "₹ 1000",
-      catagory: "cloth",
-      _id:1234
-    },
-    {
-      name: "ravi",
-      image: "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
-      price: "₹ 2000",
-      catagory: "electronics",
-      _id:2345
-    },
-    {
-      name: "pop",
-      image: "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
-      price: "₹ 3000",
-      catagory: "women",
-      _id:3456
-
-    },
-    {
-      name: "ravi",
-      image: "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
-      price: "₹ 2000",
-      catagory: "kitchen",
-      _id:4567
-    },
-    {
-      name: "person 2",
-      image: "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
-      price: "₹ 1000",
-      catagory: "cloth",
-      _id:5678
-    },
-    {
-      name: "pop",
-      image: "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
-      catagory: "deals",
-      _id:6789
-
-    },
-    {
-      name: "ravi",
-      image: "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
-      price: "₹ 2000",
-      catagory: "demo",
-      _id:7890
-    },
-    {
-      name: "pop",
-      image: "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
-      price: "₹ 3000",
-      catagory: "furnitures",
-      _id:3423
-
-    },
-
-  ]
   // ----------- states
 
   const [selectedFilters, setselectedFilter] = useState([])
   const [filteredItems, setfilteredItems] = useState(items)
-  let filters = ['price', 'style', "color", "size", "below 150$", "cloth", "electronics", "men", "women"]
+  let filters = ["below 150$", "cloth", "electronics", "men", "women"]
 
 
   const handleFilterBtnclick = (selectedcatagory) => {
@@ -91,10 +31,9 @@ function AllProduct() {
   const filteredItems_ = () => {
     if (selectedFilters.length > 0) {
       let tempItems = selectedFilters.map((catagory) => {
-        let temp = items.filter((item) => item.catagory === catagory);
+        let temp = items.filter((item) => item.category === catagory);
         return temp;
       });
-      console.log('----------->', tempItems);
 
       setfilteredItems(tempItems.flat());
     } else {
@@ -136,10 +75,6 @@ function AllProduct() {
                 <span className={`min-w-10 rounded-[20px] text-[2vw] font-[600] border-1 border-gray-400  py-1 px-7 ${selectedFilters?.includes(filters_) ? "bg-blue-300" : "bg-white"} md:text-[1.1vw]`} onClick={() => { handleFilterBtnclick(filters_) }} key={index}>
                   {filters_}
                 </span>
-
-
-
-
               ))
             }
 
@@ -149,26 +84,23 @@ function AllProduct() {
 
           <div className="peoducts_display_frame min-h-[100vh] w-[100%]  flex flex-col flex-wrap gap-2 py-3 px-2 md:flex-row md:w-[100%] ma:px-0">
             {
-              filteredItems.length >0 ?(
+              filteredItems.length > 0 ? (
                 filteredItems.map((item, index) => (
+                  // console.log('id',item._id),
+                  
+                  <a href={`/product/productsTemp/${item._id}`}  key={index}>
+                    <div className="productTemplate_frame flex flex-col gap-2 bg-blue-200 items-center justify-center ">
+                      <p>{item.name}</p>
+                      <p>{item.category}</p>
+                    </div></a>
 
-                
-                  <a href={`/product/productsTemp/${items._id}`}>
-                    <div className="productTemplate_frame flex flex-cols bg-blue-200 items-center justify-center " key={index}>
-                  {item.name}
-                  {item.catagory}
-                </div></a>
-                  
-                   
-                  
-  
                 ))
-              ):(
+              ) : (
                 <>
-                <h1>no products found</h1>
+                  <h1>no products found</h1>
                 </>
               )
-            
+
             }
           </div>
 
@@ -177,6 +109,11 @@ function AllProduct() {
 
 
 
+        </div>
+
+        {/* footer frame */}
+        <div className="footer_frame_">
+          <Footer_frame/>
         </div>
 
 

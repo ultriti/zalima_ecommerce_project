@@ -1,21 +1,33 @@
-// import React from 'react'
-
-// const ProductTemplate = () => {
-//   return (
-//     <div clnassName='prodct_template_frame'>
-
-//     </div>
-//   )
-// }
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart, Share, Twitter, ChevronLeft, ChevronRight } from "lucide-react";
 import laptop1 from '../../../public/images/facebook_icon.svg'
 import laptop2 from '../../../public/images/facebook_icon.svg'
 import laptop3 from '../../../public/images/facebook_icon.svg'
 import laptop4 from '../../../public/images/facebook_icon.svg'
 
+import {useParams} from "react-router-dom"
+import items from "./products.json"
+import Navbar_frame from "../Common frames/Navbar_frame";
+import Website_features from "../Common frames/Website_features";
+import Footer_frame from "../Common frames/Footer_frame";
+
+
 const ProductTemplate = (props) => {
+  const [data, setdata] = useState([...items])
+  const [items_value, setitems_value] = useState([])
+  const {id} = useParams()
+
+  // if(items.includes(id) == id){
+  //   setitems_value(items)
+  //   console.log("----------------->>>>>>>",items);
+  // }
+useEffect(() => {
+  console.log('id:',id);
+  const result = data.find(item => item._id === Number(id));
+  setitems_value(result);
+}, [data,id]);
+
+
   // State for quantity
   const [quantity, setQuantity] = useState(1);
 
@@ -103,14 +115,25 @@ const ProductTemplate = (props) => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="product_template_frame flex flex-col min-h-[100vh] w-[100%]">
+    {/* navbar frame */}
+    <div className="Navbar_frame">
+      <Navbar_frame/>
+    </div>
+    {/* website features fraem */}
+    <div className="website_features_div">
+      <Website_features/>
+    </div>
+    
+    <div className="bg-gray-50 min-h-screen mt-[37vw] py-[10vw] md:py-[17px] md:mt-[130px]">
+      
       {/* Navigation */}
       <div className="bg-gray-100 p-2 px-4 text-sm flex items-center border-b border-gray-200">
         <span className="text-gray-600 hover:text-blue-600 cursor-pointer">Home</span>
         <span className="mx-2 text-gray-300">|</span>
         <span className="text-gray-600 hover:text-blue-600 cursor-pointer">Kitchen Appliances</span>
         <span className="mx-2 text-gray-300">|</span>
-        <span className="text-gray-600">{props.name}</span>
+        <span className="text-gray-600">{items_value.name}</span>
       </div>
 
       {/* Product Container */}
@@ -129,7 +152,7 @@ const ProductTemplate = (props) => {
                   >
                     <img
                       src={img}
-                      alt={`MacBook Pro View ${index + 1}`}
+                      alt={`${items_value.name} View ${index + 1}`}
                       className="max-w-full max-h-full object-contain"
                     />
                   </div>
@@ -172,7 +195,7 @@ const ProductTemplate = (props) => {
 
           {/* Product Details Column */}
           <div className="md:w-1/2 p-6">
-            <h1 className="text-2xl font-bold mb-2">MacBook Pro Laptop M2 Pro chip with 10-core CPU</h1>
+            <h1 className="text-2xl font-bold mb-2">{items_value.name}</h1>
 
             {/* Rating Stars */}
             <div className="flex mb-4">
@@ -182,17 +205,15 @@ const ProductTemplate = (props) => {
 
             {/* Product Details */}
             <div className="mb-4 text-gray-600 text-sm">
-              <span className="font-medium">Brand:</span> Samsung |
-              <span className="font-medium"> Reference:</span> MAC85SKD95 |
+              <span className="font-medium">Brand:</span> {items_value.brand} |
+              <span className="font-medium"> Reference:</span> {items_value._id} |
               <span className="font-medium"> Condition:</span> Refurbished
             </div>
 
             {/* Product Description */}
             <div className="mb-6">
               <p className="text-gray-700 leading-relaxed">
-                The unibody model debuted in October 2008 in 13- and 15-inch variants, with a 17-inch
-                variant added in January 2009. Called the "unibody" model because its case was machined
-                from a single piece of aluminum
+                {items_value.desc}
               </p>
             </div>
 
@@ -238,7 +259,7 @@ const ProductTemplate = (props) => {
             {/* Price and Shipping */}
             <div className="mb-6">
               <h2 className="text-3xl font-semibold text-blue-600 mb-1">
-                ${pricingMap[selectedStorage].toFixed(2)}
+              ₹{items_value.price}
               </h2>
               <p className="text-gray-500 text-sm">Free Shipping (Est. Delivery Time 2-3 Days)</p>
             </div>
@@ -321,6 +342,13 @@ const ProductTemplate = (props) => {
           </div>
         </div>
       </div>
+    </div>
+
+    {/* footer frame */}
+    <div className="footer_frame_">
+      <Footer_frame/>
+    </div>
+
     </div>
   );
 }

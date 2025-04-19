@@ -16,7 +16,7 @@ const App = () => {
           {/*-----------> user routes */}
           <Route path="/" element={<Home_page />} />
           <Route path="/product/allProducts" element={<AllProduct />} />
-          <Route path="/product/productsTemp" element={<ProductTemplate />} />
+          <Route path="/product/productsTemp/:id" element={<ProductTemplate />} />
 
           {/* ------------- auth routes  */}
           <Route path="/register" element={<Signup_page />} />
@@ -25,7 +25,6 @@ const App = () => {
           <Route path='*' element={<PageNotFound/>}/>
         </Routes>
       </Router>
-
     </>
   )
 }

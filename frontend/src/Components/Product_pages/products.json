@@ -2,8 +2,10 @@
     {
         "name": "yashash",
         "image": "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
-        "price": "₹ 1000",
+        "price": " 1000",
         "category": "cloth",
+        "desc": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut culpa magnam dolor aliquam, ullam rerum ea, iure sed ipsa repellendus tenetur minus dolorum modi. Atque dignissimos est repellendus libero iste.",
+        "brand": "Brand A",
         "_id": 1234
     },
     {
@@ -11,6 +13,8 @@
         "image": "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
         "price": "₹ 2000",
         "category": "electronics",
+        "desc": "High-quality electronic item with advanced features.",
+        "brand": "Brand B",
         "_id": 2345
     },
     {
@@ -18,6 +22,8 @@
         "image": "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
         "price": "₹ 3000",
         "category": "women",
+        "desc": "Elegant and stylish product for women.",
+        "brand": "Brand C",
         "_id": 3456
     },
     {
@@ -25,6 +31,8 @@
         "image": "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
         "price": "₹ 2000",
         "category": "kitchen",
+        "desc": "Premium kitchen product for modern households.",
+        "brand": "Brand D",
         "_id": 4567
     },
     {
@@ -32,12 +40,16 @@
         "image": "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
         "price": "₹ 1000",
         "category": "cloth",
+        "desc": "Comfortable and trendy clothing.",
+        "brand": "Brand E",
         "_id": 5678
     },
     {
         "name": "pop",
         "image": "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
         "category": "deals",
+        "desc": "Exciting deals and offers.",
+        "brand": "Brand F",
         "_id": 6789
     },
     {
@@ -45,6 +57,8 @@
         "image": "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
         "price": "₹ 2000",
         "category": "demo",
+        "desc": "Demo product showcasing features.",
+        "brand": "Brand G",
         "_id": 7890
     },
     {
@@ -52,6 +66,8 @@
         "image": "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
         "price": "₹ 3000",
         "category": "furnitures",
+        "desc": "Durable and elegant furniture item.",
+        "brand": "Brand H",
         "_id": 3423
     }
 ]
