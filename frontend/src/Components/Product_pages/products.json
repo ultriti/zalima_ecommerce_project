@@ -1,12 +1,13 @@
 [
     {
-        "name": "yashash",
+        "name": "yashash sdsscsdf cdscsfsc sdfscesc sdfsefcdsc e",
         "image": "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
-        "price": " 1000",
+        "price": "1000",
         "category": "cloth",
         "desc": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut culpa magnam dolor aliquam, ullam rerum ea, iure sed ipsa repellendus tenetur minus dolorum modi. Atque dignissimos est repellendus libero iste.",
         "brand": "Brand A",
-        "_id": 1234
+        "_id": 1234,
+        "offer": 15
     },
     {
         "name": "ravi",
@@ -15,7 +16,8 @@
         "category": "electronics",
         "desc": "High-quality electronic item with advanced features.",
         "brand": "Brand B",
-        "_id": 2345
+        "_id": 2345,
+        "offer": 0
     },
     {
         "name": "pop",
@@ -24,7 +26,8 @@
         "category": "women",
         "desc": "Elegant and stylish product for women.",
         "brand": "Brand C",
-        "_id": 3456
+        "_id": 3456,
+        "offer": 25
     },
     {
         "name": "ravi",
@@ -33,7 +36,8 @@
         "category": "kitchen",
         "desc": "Premium kitchen product for modern households.",
         "brand": "Brand D",
-        "_id": 4567
+        "_id": 4567,
+        "offer": 10
     },
     {
         "name": "person 2",
@@ -42,7 +46,8 @@
         "category": "cloth",
         "desc": "Comfortable and trendy clothing.",
         "brand": "Brand E",
-        "_id": 5678
+        "_id": 5678,
+        "offer": 50
     },
     {
         "name": "pop",
@@ -50,7 +55,8 @@
         "category": "deals",
         "desc": "Exciting deals and offers.",
         "brand": "Brand F",
-        "_id": 6789
+        "_id": 6789,
+        "offer": 30
     },
     {
         "name": "ravi",
@@ -59,7 +65,8 @@
         "category": "demo",
         "desc": "Demo product showcasing features.",
         "brand": "Brand G",
-        "_id": 7890
+        "_id": 7890,
+        "offer": 5
     },
     {
         "name": "pop",
@@ -68,6 +75,7 @@
         "category": "furnitures",
         "desc": "Durable and elegant furniture item.",
         "brand": "Brand H",
-        "_id": 3423
+        "_id": 3423,
+        "offer": 0
     }
 ]

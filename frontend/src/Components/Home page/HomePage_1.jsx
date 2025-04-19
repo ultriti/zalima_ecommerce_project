@@ -27,22 +27,22 @@ const HomePage_1 = (props) => {
     }
 
     const products = [
-  {
-    name: "Yashash",
-    price: "₹ 1000",
-    rating: 5,
-    reviews: 19,
-    features: [
-      "10g of Lactose Free Whey Protein",
-      "5g of Healthy Fats",
-      "1g of Carb",
-      "Sweetened by Monk Fruit",
-      "No Cane Sugar, Sugar Alcohols, or Sugar Substitutes",
-      "200mg of caffeine - all day energy without the crash",
-    ],
-    shipping: "Shipping will be calculated at checkout",
-  },
-];
+        {
+            name: "Yashash",
+            price: "₹ 1000",
+            rating: 5,
+            reviews: 19,
+            features: [
+                "10g of Lactose Free Whey Protein",
+                "5g of Healthy Fats",
+                "1g of Carb",
+                "Sweetened by Monk Fruit",
+                "No Cane Sugar, Sugar Alcohols, or Sugar Substitutes",
+                "200mg of caffeine - all day energy without the crash",
+            ],
+            shipping: "Shipping will be calculated at checkout",
+        },
+    ];
 
     const items = [{
         name: "yashash",
@@ -75,36 +75,49 @@ const HomePage_1 = (props) => {
                 pagination={{ clickable: true }}
                 scrollbar={{ draggable: true }}
                 onSwiper={(swiper) => { gsap.to(swiper, { scale: 1.2 }) }}
-                onSlideChange={() => console.log('slide change')}
+                // onSlideChange={() => console.log('slide change')}
                 loop={true}
                 className='swiper_ rounded-[2vw] overflow-hidden '
 
             >
                 {
                     items.map((item, index) => (
-                        <SwiperSlide className={`swiper_slider_cln   flex flex-col justify-center items-center bg-cover ounded-[2vw] overflow-hidden`} key={index} onMouseEnter={() => { handleMouseEnter(`product_hp1_overlay_${index}`) }} onMouseLeave={() => { handleMouseleave(`product_hp1_overlay_${index}`) }}>
+                        <SwiperSlide className={`swiper_slider_cln flex flex-col justify-center items-center bg-cover ounded-[2vw] overflow-hidden`} key={index} onMouseEnter={() => { handleMouseEnter(`product_hp1_overlay_${index}`) }} onMouseLeave={() => { handleMouseleave(`product_hp1_overlay_${index}`) }}>
                             <div className="home_p_products_card_ rounded-[20px] overflow-hidden" >
                                 <img src={item.image} alt="" className='w-full h-full bg-cover ' />
 
                                 {/* overlay frame */}
-                                <div className={`product_hp1_overlay_div product_hp1_overlay_${index}`} >
-                                    <div className="product_hp1_overlay_div_text text-amber-50 flex flex-col items-center justify-end">
+                                <div className={`product_hp1_overlay_div product_hp1_overlay_${index} h-full w-full bg-red-400`} >
+                                    <div className="product_hp1_overlay_div_text h-full w-full text-amber-50 flex flex-col items-center justify-end">
                                         {/* overlay div  */}
-                                        <h2 className="text-2xl font-bold text-amber-50 mb-2">{item.name}</h2>
-                                        <div className="flex items-center mb-4">
-                                            <span className="text-yellow-500 text-lg">★★★★★</span>
-                                            <span className="ml-2 text-gray-600">{item.reviews}</span>
+                                        <div className="flex flex-col h-full w-full items-center justify-center md:flex-row">
+                                            {/* Product Image Section */}
+                                            <div className="md:w-1/2 flex items-center justify-center p-4 rounded-lg">
+                                                <img
+                                                    src="https://via.placeholder.com/400"
+                                                    alt="Product Image"
+                                                    className="w-full h-auto object-cover rounded-md"
+                                                />
+                                            </div>
+
+                                            {/* Product Details Section */}
+                                            <div className="md:w-1/2 p-4">
+                                                <h2 className="text-2xl font-bold text-gray-800">Product Name</h2>
+                                                <p className="text-xl font-semibold text-blue-600 my-2">₹ 2000</p>
+                                                <p className="text-gray-600">
+                                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+                                                    necessitatibus.
+                                                </p>
+
+                                               
+
+                                                <div className="mt-4 flex space-x-2">
+                                                    <button className="bg-blue-600 text-white px-4 py-2 rounded">
+                                                        Add to Cart
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <ul className="list-disc list-inside mb-4">
-                                            <li>10g of Lactose Free Whey Protein</li>
-                                            <li>5g of Healthy Fats</li>
-                                            <li>1g of Carb</li>
-                                            <li>Sweetened by Monk Fruit</li>
-                                            <li>No Cane Sugar, Sugar Alcohols, or Sugar Substitutes</li>
-                                            <li>200mg of caffeine - all day energy without the crash</li>
-                                        </ul>
-                                        <div className="text-2xl font-bold mb-2">{item.price}</div>
-                                        <div className="text-gray-600">Shipping will be calculated at checkout</div>
                                     </div>
                                 </div>
 
@@ -112,6 +125,7 @@ const HomePage_1 = (props) => {
 
 
                         </SwiperSlide>
+
                     ))
 
                 }
