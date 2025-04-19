@@ -102,9 +102,9 @@ const HomePage_1 = (props) => {
 
                                             {/* Product Details Section */}
                                             <div className="md:w-1/2 p-4">
-                                                <h2 className="text-2xl font-bold text-gray-800">Product Name</h2>
-                                                <p className="text-xl font-semibold text-blue-600 my-2">₹ 2000</p>
-                                                <p className="text-gray-600">
+                                                <h2 className="text-2xl font-bold text-white">Product Name</h2>
+                                                <p className="text-xl font-semibold text-gray-200 my-2">₹ 2000</p>
+                                                <p className="text-gray-200">
                                                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
                                                     necessitatibus.
                                                 </p>

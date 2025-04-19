@@ -1,0 +1,8 @@
+.user_display_info_frame{
+    height: 15vw;
+    width: 100%;
+    background-color: greenyellow;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

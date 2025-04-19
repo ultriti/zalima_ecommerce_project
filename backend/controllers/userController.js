@@ -236,12 +236,13 @@ const authUser = asyncHandler(async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    res.json({
+    res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
       token: token,
+      message:"Logged in successfully"
     });
   } else {
     res.status(401);
@@ -261,7 +262,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    res.status(400);
+    res.status(400).json({message:"user already exists"});
     throw new Error('User already exists');
   }
   const role = (secret && secret === process.env.SUPER_ADMIN_SECRET) ? 'superAdmin' : 'user';
@@ -285,6 +286,7 @@ const registerUser = asyncHandler(async (req, res) => {
       email: user.email,
       role: user.role,
       token: token_gen,
+      message:"logged in successfully"
     });
   } else {
     res.status(400);
