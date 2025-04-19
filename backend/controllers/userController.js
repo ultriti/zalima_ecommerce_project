@@ -1,12 +1,12 @@
 const asyncHandler = require('express-async-handler');
-const User = require('../models/userModel.js');
-const generateToken = require('../utils/generateToken.js');
+const User = require('../models/userModel');
+const generateToken = require('../utils/generateToken');
 const bcrypt = require('bcryptjs');
-const Order = require('../models/orderModel.js');
-const Product = require('../models/productModel.js');
+const Order = require('../models/orderModel');
+const Product = require('../models/productModel');
 const facebookAuthService = require('../config/facebookAuth.config.js');
 require('dotenv').config();
-const { oauth2client } = require('../googleAuth.config.js');
+const { oauth2client } = require('../config/googleAuth.config');
 const axios = require('axios')
 
 const cloudinary = require('cloudinary').v2;
@@ -72,7 +72,7 @@ const uploadProfileImage = asyncHandler(async (req, res) => {
 
 // module.exports.uploadProfileImage = uploadProfileImage;
 const crypto = require("crypto");
-const sendEmail = require("../utils/sendEmail.js");
+const sendEmail = require("../utils/sendEmail");
 const sendOtpEmail=require('../utils/sendOtpEmail.js');
 // ---------- Forgot Password ----------
 const forgotUserPassword = asyncHandler(async (req, res) => {
