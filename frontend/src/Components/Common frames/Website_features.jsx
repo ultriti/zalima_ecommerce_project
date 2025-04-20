@@ -1,19 +1,28 @@
 import React, { useState } from 'react'
 import "./Website_features.css"
+import { useNavigate } from 'react-router-dom';
+import items from "../Product_pages/products.json"
 
 const Website_features = () => {
+  const nav = useNavigate()
+  const [value, setvalue] = useState('');
   const [search_list_frame_bool, setsearch_list_frame_bool] = useState(false)
 
   const search_frame_display = () => {
-    console.log(search_list_frame_bool);
 
+    nav("/product/allProducts")
     setsearch_list_frame_bool(!search_list_frame_bool)
+  }
+  const onSearch = (vlaue) => {
+
+    setvalue(vlaue);
+    console.log('search', value);
   }
 
 
   return (
     <header className="bg-white h-[100%] w-[100%]" >
-   
+
       {/* Main Header */}
       <div className="container mx-auto px-4 py-3 flex flex-col justify-between items-center md:flex-row">
         {/* Logo */}
@@ -29,6 +38,7 @@ const Website_features = () => {
               placeholder="Search Product Here..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               onClick={() => { search_frame_display() }}
+              value={value} onChange={(e) => (setvalue(e.target.value))}
             />
             <button className="absolute right-0 top-0 bg-blue-500 text-white px-4 py-2 rounded-r-lg">
               Search
@@ -38,7 +48,37 @@ const Website_features = () => {
 
           {search_list_frame_bool ? (
             <>
-              <div className="display_serached_values  bg-amber-600 w-100">
+              <div className="display_serached_values w-[100%] bg-amber-600 px-5 py-2">
+                {/* {
+                  items.filter(items => {
+                    const search_ = value.toLowerCase();
+                    const itemName = items.name.toLowerCase();
+                    return search_ && itemName.startsWith(search_)
+                  }).map((item, index) => {
+                    return (
+                      <a href={`/product/productsTemp/${item._id}`}>
+                        <div className="dropdown_item min-h-[3vh] w-[100%] flex items-end " key={index} onClick={() => { onSearch(item.name) }}>
+                        {item.name}
+                      </div>
+                      </a>
+                    )
+                  })
+                } */}
+                {
+                  items.filter(item => {
+                    const search_ = value.toLowerCase();
+                    const itemName = item.name.toLowerCase();
+                    return search_ && itemName.includes(search_); // Change "startsWith" to "includes"
+                  }).map((item, index) => {
+                    return (
+                      <a href={`/product/productsTemp/${item._id}`} key={index}>
+                        <div className="dropdown_item min-h-[3vh] w-[100%] flex items-end" onClick={() => { onSearch(item.name) }}>
+                          {item.name}
+                        </div>
+                      </a>
+                    )
+                  })
+                }
               </div>
             </>
           ) : (

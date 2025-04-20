@@ -45,18 +45,19 @@ const HomePage_1 = (props) => {
     ];
 
     const items = [{
-        name: "yashash",
-        image: "https://th.bing.com/th/id/OIP.smNlaoecWLhAIOOHMxFxcQHaEK?rs=1&pid=ImgDetMain",
-        price: "₹ 1000"
+        name: "blue T-shirt ",
+        image: "https://th.bing.com/th/id/OIP.5Fose9g5iUFPLbwVPalD3wHaEJ?rs=1&pid=ImgDetMain",
+        price: "₹ 1000",
+        desc:""
     },
     {
-        name: "ravi",
-        image: "https://th.bing.com/th/id/OIP.jtS23CrdNk0SdkIahKlOqwHaEo?rs=1&pid=ImgDetMain",
-        price: "₹ 2000"
+        name: "weddings special dress",
+        image: "https://th.bing.com/th/id/OIP.KJxwImPedoIF1PoXvqx-cwHaFj?w=216&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        price: "₹ 3000"
     },
     {
-        name: "pop",
-        image: "https://th.bing.com/th/id/OIP.pTA1vpUuuMqsK9QP261euAHaEK?rs=1&pid=ImgDetMain",
+        name: "mens formal suit",
+        image: "https://th.bing.com/th/id/OIP.NDRyQoc5tsUZvjS8KaylfAHaEK?w=208&h=117&c=7&r=0&o=5&dpr=1.3&pid=1.7",
         price: "₹ 3000"
 
     },
@@ -84,7 +85,7 @@ const HomePage_1 = (props) => {
                     items.map((item, index) => (
                         <SwiperSlide className={`swiper_slider_cln flex flex-col justify-center items-center bg-cover ounded-[2vw] overflow-hidden`} key={index} onMouseEnter={() => { handleMouseEnter(`product_hp1_overlay_${index}`) }} onMouseLeave={() => { handleMouseleave(`product_hp1_overlay_${index}`) }}>
                             <div className="home_p_products_card_ rounded-[20px] overflow-hidden" >
-                                <img src={item.image} alt="" className='w-full h-full bg-cover ' />
+                                <img src={item.image} alt="" className='w-full h-full object-cover rounded-md' />
 
                                 {/* overlay frame */}
                                 <div className={`product_hp1_overlay_div product_hp1_overlay_${index} h-full w-full bg-red-400`} >
@@ -102,8 +103,8 @@ const HomePage_1 = (props) => {
 
                                             {/* Product Details Section */}
                                             <div className="md:w-1/2 p-4">
-                                                <h2 className="text-2xl font-bold text-white">Product Name</h2>
-                                                <p className="text-xl font-semibold text-gray-200 my-2">₹ 2000</p>
+                                                <h2 className="text-2xl font-bold text-white">{item.name}</h2>
+                                                <p className="text-xl font-semibold text-gray-200 my-2">{item.price}</p>
                                                 <p className="text-gray-200">
                                                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
                                                     necessitatibus.

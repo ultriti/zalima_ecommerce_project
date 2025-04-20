@@ -12,7 +12,7 @@ import 'swiper/css/scrollbar';
 import ProductCard from '../Product_pages/ProductCard';
 import items_ from "../Product_pages/products.json"
 
-const Homepage2_templates = () => {
+const Homepage2_templates = (props) => {
     const [items, setitems] = useState([...items_])
 
     return (
@@ -35,20 +35,25 @@ const Homepage2_templates = () => {
                 }}
 
             >
+         
                 {
-                    items.map((item, index) => (
-                        <SwiperSlide className='swiper_slider_cln' key={index}>
-                            <a href={`/product/productsTemp/${item._id}`} className='relative h-full w-full'>
-
-                                <div className="home_p_products_card_ bg-red-400 rounded-[20px]">
-                                    <ProductCard name={item.name} product_img={item.image} price={item.price} offer={item.offer} />
-                                </div>
-                            </a>
-
-                        </SwiperSlide>
-                    ))
-
-                }
+                    items
+                        .filter((item) => item.category === `${props.category}`) // Filter items by category "men"
+                        .map((filteredItem, index) => (
+                            <SwiperSlide className='swiper_slider_cln' key={index}>
+                                <a href={`/product/productsTemp/${filteredItem._id}`} className='relative h-full w-full'>
+                                    <div className="home_p_products_card_ bg-red-400 rounded-[20px]">
+                                        <ProductCard
+                                            name={filteredItem.name}
+                                            product_img={filteredItem.image}
+                                            price={filteredItem.price}
+                                            offer={filteredItem.offer}
+                                        />
+                                    </div>
+                                </a>
+                            </SwiperSlide>
+                        ))
+                    }
 
             </Swiper>
 

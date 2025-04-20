@@ -13,7 +13,7 @@ function AllProduct() {
 
   const [selectedFilters, setselectedFilter] = useState([])
   const [filteredItems, setfilteredItems] = useState(items)
-  let filters = ["below 150$", "cloth", "electronics", "men", "women"]
+  let filters = ["girl", "boy", "Wedding", "men", "women"]
 
 
   const handleFilterBtnclick = (selectedcatagory) => {

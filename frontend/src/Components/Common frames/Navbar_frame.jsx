@@ -20,7 +20,7 @@ const Navbar_frame = () => {
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img src="/path/to/logo.png" className="h-8" alt="Ultriti Logo" />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Ultriti</span>
+          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Trendify</span>
         </a>
 
         {/* Toggle Button */}
