@@ -11,7 +11,7 @@ const User_info_display = () => {
 
   const get_user_details = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/users/profile`, {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URI}/api/users/profile`, {
         withCredentials: true,
       });
       if (res.status === 200) {

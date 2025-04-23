@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import "../Common routes/Navbar_frame.css";
 import user_profile_pic from '../../../public/images/profile_pic.svg';
+import logo from "../../../public/images/logo.svg"
 
 
 const Navbar_frame = () => {
@@ -19,7 +20,7 @@ const Navbar_frame = () => {
     <nav className="bg-white border-gray-200 dark:bg-blue-500">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-          <img src="/path/to/logo.png" className="h-8" alt="Ultriti Logo" />
+          <img src={logo} className="h-8" alt="trendify Logo" />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Trendify</span>
         </a>
 

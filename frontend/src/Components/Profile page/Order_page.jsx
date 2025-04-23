@@ -78,7 +78,7 @@ const Order_page = () => {
 
                     <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
                       <p>Ordered on: {new Date(order.createdAt).toLocaleDateString()}</p>
-                      <p>Total: ₹{order.totalPrice.toFixed(2)}</p>
+                      <p>Total: {order.totalPrice.toFixed(2)}</p>
                       <p>
                         Payment:{' '}
                         {order.isPaid
@@ -109,7 +109,7 @@ const Order_page = () => {
                               </span>
                             </div>
                             <span className="font-medium text-gray-700 dark:text-gray-300">
-                              ₹{item.price}
+                              {item.price}
                             </span>
                           </li>
                         ))}

@@ -27,7 +27,6 @@ const Website_features = () => {
       <div className="container mx-auto px-4 py-3 flex flex-col justify-between items-center md:flex-row">
         {/* Logo */}
         {/* <div className="flex items-center justify-center space-x-2">
-          
         </div> */}
 
         {/* Search Bar */}
@@ -49,21 +48,7 @@ const Website_features = () => {
           {search_list_frame_bool ? (
             <>
               <div className="display_serached_values w-[100%] bg-amber-600 px-5 py-2">
-                {/* {
-                  items.filter(items => {
-                    const search_ = value.toLowerCase();
-                    const itemName = items.name.toLowerCase();
-                    return search_ && itemName.startsWith(search_)
-                  }).map((item, index) => {
-                    return (
-                      <a href={`/product/productsTemp/${item._id}`}>
-                        <div className="dropdown_item min-h-[3vh] w-[100%] flex items-end " key={index} onClick={() => { onSearch(item.name) }}>
-                        {item.name}
-                      </div>
-                      </a>
-                    )
-                  })
-                } */}
+
                 {
                   items.filter(item => {
                     const search_ = value.toLowerCase();
@@ -95,10 +80,10 @@ const Website_features = () => {
             <span className="text-gray-600 text-xs">Store Locator</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-gray-600 text-xs">Track Order</span>
+            <a href="/user/orders"><span className="text-gray-600 text-xs">Track Order</span></a>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-gray-600 text-xs">My Account</span>
+            <a href="/user/profile"><span className="text-gray-600 text-xs">My Account</span></a>
           </div>
           <div className="flex flex-col items-center">
             <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

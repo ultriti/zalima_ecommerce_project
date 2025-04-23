@@ -32,8 +32,8 @@ const ProductCard = (props) => {
         </div>
         {/* Pricing */}
         <div className="flex items-center mt-1">
-          <span className="text-[1.5vw] font-bold text-green-600">{props.price}</span>
-          <span className="text-gray-500 line-through ml-2">{props.price}</span>
+          <span className="text-[1.5vw] font-bold text-green-600">₹{props.price}</span>
+          <span className="text-gray-500 line-through ml-2">₹{props.price}</span>
         </div>
         {/* Stock Status */}
         <div className="mt-1 text-green-600">In Stock 1348 Products</div>

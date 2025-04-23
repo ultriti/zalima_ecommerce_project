@@ -25,7 +25,9 @@ const Login_otp_page = () => {
   const handleVerifyOTP = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/users/otp/verify`, { email, otp });
+      console.log('---> otp verification:',email,otp);
+      
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URI}/api/users/otp/verify`, { email, otp });
       localStorage.setItem('token', response.data.token);
       alert("OTP Verified Successfully");
       navigate('/');

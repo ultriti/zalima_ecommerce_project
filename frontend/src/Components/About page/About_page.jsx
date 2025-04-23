@@ -1,23 +1,70 @@
+import { useGSAP } from "@gsap/react";
 import Navbar_frame from "../Common frames/Navbar_frame";
+import gsap from 'gsap'
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+
+gsap.registerPlugin(ScrollTrigger)
 
 
 const About = () => {
+
+  useGSAP(() => {
+    gsap.from(".AP_title", {
+      duration: 1,
+      opacity: 1,
+      y: 100,
+    })
+    gsap.from(".AP_desc", {
+      duration: 1,
+      opacity: 1,
+      y: 100,
+    })
+    gsap.from(".ap_pg1_frame",{
+      duration: 1,
+      opacity: 1,
+      y: 100,
+    })
+    gsap.from(".ap_pg_1_comp",{
+      duration: 1,
+      opacity: 1,
+      x: -100,
+    })
+    gsap.from(".ap_pg1_comp_img",{
+      duration: 1,
+      opacity: 1,
+      x: 100,
+    })
+    gsap.from(".ap_pg2_frame",{
+      duration: 1,
+      opacity: 1,
+      y:150,
+      scrollTrigger:{
+        trigger: ".pg2_frame",
+        start:"top 100%",
+        end:"1op 0%",
+        scrub:1,
+      }
+    })
+  })
+
+
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen text-gray-800">
+    <div className="bg-gradient-to-b from-blue-50 to-white min-h-[100vh] text-gray-800">
       <div className="Navbar_frame sticky top-0 z-50 bg-white shadow-md">
         <Navbar_frame />
       </div>
 
-      <section className="max-w-7xl mx-auto px-6 py-16">
+      <section className="max-w-7xl mx-auto px-6 py-16 min-h-[100vh]">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-blue-700 mb-4">About Trendify</h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h1 className="AP_title text-4xl font-bold text-blue-700 mb-4">About Trendify</h1>
+          <p className="AP_desc text-lg text-gray-600 max-w-2xl mx-auto">
             Revolutionizing the fashion industry with AI-powered e-commerce experiences.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-          <div className="space-y-6">
+        <div className="ap_pg1_frame grid md:grid-cols-2 gap-10 items-center">
+          <div className="ap_pg_1_comp space-y-6">
             <h2 className="text-2xl font-semibold text-blue-600">Our Mission</h2>
             <p className="text-gray-700 leading-relaxed">
               At <strong>Trendify</strong>, we're redefining how fashion meets technology. Our mission is
@@ -36,13 +83,13 @@ const About = () => {
           <img
             src="../../../public/images/6505894.jpg"
             alt="Trendify Shopping AI"
-            className="rounded-2xl shadow-lg object-cover max-h-[450px] w-full"
+            className="ap_pg1_comp_img rounded-2xl shadow-lg object-cover max-h-[450px] w-full"
           />
         </div>
       </section>
 
-      <section className="bg-blue-100 py-14">
-        <div className="max-w-6xl mx-auto px-6">
+      <section className="pg2_frame min-h-[100vh] overflow-hidden bg-blue-100 py-14">
+        <div className="ap_pg2_frame max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-blue-800 mb-10">What Powers Trendify?</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
             {[

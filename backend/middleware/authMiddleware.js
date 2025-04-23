@@ -6,12 +6,13 @@ const logger = require('../utils/logger');
 // Protect routes
 const protect = asyncHandler(async (req, res, next) => {
   let token;
+  console.log('toen---------------->',req.cookies.token);
 
   // Check for token in headers
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer') || req.cookies.token) {
     try {
       // Get token from header
-      token = req.headers.authorization.split(' ')[1];
+      token =  req.cookies.token || req.headers.authorization.split(' ')[1];
 
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -32,8 +33,9 @@ const protect = asyncHandler(async (req, res, next) => {
       throw new Error('Not authorized, token failed');
     }
   }
-
+  
   if (!token) {
+    
     logger.warn(`Auth failed: No token provided`);
     res.status(401);
     throw new Error('Not authorized, no token');

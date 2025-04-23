@@ -19,23 +19,23 @@ const Login_page = () => {
     const payload = {
       email: email_data,
       password: password_data,
-      role,
+      // role,
     };
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/users/login`, payload, {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URI}/api/users/login`, payload, {
         withCredentials: true,
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         alert('Logged in successfully');
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('role', role);
-        if(role === 'superadmin') {
-          navigate('/admin/dashboard'); // Redirect to admin dashboard if needed
-        }
-        else{navigate('/');}
-        
+        // localStorage.setItem('role', role);
+        // if(role === 'superadmin') {
+        //   navigate('/admin/dashboard'); // Redirect to admin dashboard if needed
+        // }
+        // else{navigate('/');}
+        navigate("/")
       }
     } catch (err) {
       alert("Login failed. Check your credentials.");
@@ -87,7 +87,7 @@ const Login_page = () => {
             <h2 className="text-3xl font-bold text-blue-700 mb-4">Sign In</h2>
 
             {/* Role Dropdown */}
-            <select
+            {/* <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -96,7 +96,7 @@ const Login_page = () => {
               <option value="vendor">Vendor</option>
               <option value="admin">Admin</option>
               <option value="superadmin">Super Admin</option>
-            </select>
+            </select> */}
 
             {/* Email */}
             <input

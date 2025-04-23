@@ -11,7 +11,6 @@ import ForgotPassword from './Components/Auth pages/ForgotPassword'
 import ResetPassword from './Components/Auth pages/ResetPassword'
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import Login_page from './Components/Auth pages/LoginPage'
 import Login_otp_page from './Components/Auth pages/Login_otp_page'
 import Profile_page from './Components/Profile page/Profile_page'
 import ManageProfile from './Components/Profile page/Manage_profile_page'
@@ -20,10 +19,10 @@ import Address_page from './Components/Profile page/Address_page'
 import UserProtectedWrapper from './Components/contexts/User_protected_wrapper'
 import DashboardLayout from './Components/superadmin pages/Dashboard_page'
 import Logout_page from './Components/Auth pages/Logout_page'
+import Login_page from './Components/Auth pages/LoginPage'
 
 
 const App = () => {
-
   const GoogleAuthWrapperRegister = () =>{
     return (
      

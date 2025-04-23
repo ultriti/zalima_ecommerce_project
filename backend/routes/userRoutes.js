@@ -24,7 +24,7 @@ router.put('/upload-profile-image', protect, upload.single('profileImage'), user
 router.post('/register', userController.registerUser);
 router.post('/login', userController.authUser);
 router.post('/logout', userController.logoutUser);
-router.post('/google', userController.googleAuth);
+router.get('/google', userController.googleAuth);
 router.post('/facebook', userController.facebookAuth);
 router.post('/otp/send', userController.sendOTP);
 router.post('/otp/verify', userController.verifyOTP);

@@ -1,12 +1,12 @@
 const asyncHandler = require('express-async-handler');
-const User = require('../models/userModel');
-const generateToken = require('../utils/generateToken');
+const User = require('../models/userModel.js');
+const generateToken = require('../utils/generateToken.js');
 const bcrypt = require('bcryptjs');
-const Order = require('../models/orderModel');
-const Product = require('../models/productModel');
+const Order = require('../models/orderModel.js');
+const Product = require('../models/productModel.js');
 const facebookAuthService = require('../config/facebookAuth.config.js');
 require('dotenv').config();
-const { oauth2client } = require('../config/googleAuth.config');
+const { oauth2client } = require('../config/googleAuth.config.js');
 const axios = require('axios')
 
 const cloudinary = require('cloudinary').v2;
@@ -72,8 +72,9 @@ const uploadProfileImage = asyncHandler(async (req, res) => {
 
 // module.exports.uploadProfileImage = uploadProfileImage;
 const crypto = require("crypto");
-const sendEmail = require("../utils/sendEmail");
+const sendEmail = require("../utils/sendEmail.js");
 const sendOtpEmail=require('../utils/sendOtpEmail.js');
+const { OAuth2Client } = require('google-auth-library');
 // ---------- Forgot Password ----------
 const forgotUserPassword = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
@@ -210,20 +211,22 @@ const resetUserPassword = asyncHandler(async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
-  const { email, password, superAdminToken } = req.body;
+  // const { email, password, superAdminToken } = req.body;
+  const { email, password } = req.body;
 
+  
   const user = await User.findOne({ email });
 
   // Check if user exists and password matches
   if (user && (await user.matchPassword(password))) {
     // Additional security check for super admin login
-    if (user.role === 'superAdmin') {
-      // Verify the super admin token if attempting to log in as super admin
-      if (!superAdminToken || superAdminToken !== process.env.SUPER_ADMIN_SECRET) {
-        res.status(401);
-        throw new Error('Super admin authentication requires additional verification');
-      }
-    }
+    // if (user.role === 'superAdmin') {
+    //   // Verify the super admin token if attempting to log in as super admin
+    //   if (!superAdminToken || superAdminToken !== process.env.SUPER_ADMIN_SECRET) {
+    //     res.status(401);
+    //     throw new Error('Super admin authentication requires additional verification');
+    //   }
+    // }
 
     // Generate JWT token
     const token = generateToken(user._id);
@@ -315,6 +318,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // });
 // GET /api/users/profile
 const getUserProfile = asyncHandler(async (req, res) => {
+  
   const user = await User.findById(req.user._id).populate('wishlist');
 
   if (user) {
@@ -545,12 +549,13 @@ const logoutUser = asyncHandler(async (req, res) => {
 // });
 const googleAuth = asyncHandler(async (req, res) => {
   try {
-    console.log('Google Auth Request:', req.body);
+    console.log('--------------------->>Google Auth Request:', req.body);
     const code = req.method === 'GET' ? req.query.code : req.body.code;
     const redirectUri = req.body.redirectUri || 'http://localhost:5000/social-login-test.html';
     
     console.log(`Received Google auth code via ${req.method}:`, code ? code.substring(0, 10) + '...' : 'none');
     console.log('Using redirect URI:', redirectUri);
+
 
     if (!code) {
       return res.status(400).json({ error: 'No authorization code provided' });
@@ -558,7 +563,6 @@ const googleAuth = asyncHandler(async (req, res) => {
     
     // Update the redirect URI in the oauth2client
     oauth2client.redirectUri = redirectUri;
-    
     try {
       // Exchange auth code for access token
       console.log('Exchanging code for tokens...');

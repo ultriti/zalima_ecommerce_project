@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import facebookicon from "../../../public/images/facebook_icon.svg";
 import googleicon from "../../../public/images/google_icon.svg";
-import { useGoogleLogin } from '@react-oauth/google';
-import { googleAuth } from './app'; // Your API call function
 import Navbar_frame from '../Common frames/Navbar_frame';
+import { googleAuth } from './app';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Register_pages = () => {
   const [emaildata, setemaildata] = useState('');
@@ -18,24 +18,28 @@ const Register_pages = () => {
   const handleGoogleLogin = async (authResult) => {
     try {
       if (authResult.code) {
+        console.log("--------->",authResult.code);
+        
         const res = await googleAuth(authResult.code); // send auth code to backend
         console.log("Google login success:", res.data);
         const { token, user_data} = res.data;
         console.log(user_data);
         // Save token and user info
         localStorage.setItem("token", token);
-        localStorage.setItem("role", user_data.role);
+        // localStorage.setItem("role", user_data.role);
         // localStorage.setItem("user", JSON.stringify(user_data));
         // ✅ Navigate after login
-        if(user_data.role === 'superAdmin') {
-          navigate("/admin/dashboard"); // Redirect to admin dashboard if needed
-        }
-        else{navigate("/");}
+        // if(user_data.role === 'superAdmin') {
+        //   navigate("/admin/dashboard"); // Redirect to admin dashboard if needed
+        // }
+        // else{navigate("/");}
+        navigate("/")
       } else {
         console.warn("No auth code returned by Google");
       }
     } catch (error) {
       console.error("Google login error:", error);
+      console.log("Google login error:", error);
       alert("Google Login failed. Try again.");
     }
   };
@@ -54,7 +58,7 @@ const Register_pages = () => {
       email: emaildata,
       password: password_data,
       name: name_data,
-      secret:secret_data,
+      // secret:secret_data,
     };
 
     try {
@@ -126,13 +130,13 @@ const Register_pages = () => {
               required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <input
+            {/* <input
               type="password"
               placeholder="Super Admin Secret (optional)"
               className="w-full border rounded-md px-3 py-2"
               value={secret_data}
               onChange={(e) => setSecret(e.target.value)}
-            />
+            /> */}
             <button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"

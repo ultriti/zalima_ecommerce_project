@@ -19,7 +19,7 @@ const Address_page = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/users/profile`, {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URI}/api/users/profile`, {
           withCredentials: true,
         });
   
@@ -111,7 +111,7 @@ const Address_page = () => {
   
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/users/profile`,
+        `${import.meta.env.VITE_BASE_URI}/api/users/profile`,
         {
           shippingAddresses: updatedAddresses,
           defaultShippingIndex: currentIndex, // ✅ Mark this one as default
