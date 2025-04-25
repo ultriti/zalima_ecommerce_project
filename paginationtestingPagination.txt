@@ -1,0 +1,209 @@
+after user log in - 
+{
+    "_id": "67f3977e9ca9a66258bebed3",
+    "name": "Test User",
+    "email": "testuser@example.com",
+    "role": "user",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjM5NzdlOWNhOWE2NjI1OGJlYmVkMyIsImlhdCI6MTc0NDAxNzI3OCwiZXhwIjoxNzQ2NjA5Mjc4fQ.l9v3VDN5UcyxJLB7lp6KYczNUctm5VcmGtStqS7MJjQ"
+}
+
+
+after google authentication - 
+{
+    "_id": "67f39a001a88c28820a62850",
+    "name": "Google User",
+    "email": "googleuser@example.com",
+    "role": "user",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjM5YTAwMWE4OGMyODgyMGE2Mjg1MCIsImlhdCI6MTc0NDAxNzkyMCwiZXhwIjoxNzQ2NjA5OTIwfQ.kauhVcV9URFPwziLH8sp0oqTjFBf55inG3JlTZs5w_Y"
+}
+
+after facebook authentication - 
+{
+    "_id": "67f39a981a88c28820a62854",
+    "name": "Facebook User",
+    "email": "fbuser@example.com",
+    "role": "user",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjM5YTk4MWE4OGMyODgyMGE2Mjg1NCIsImlhdCI6MTc0NDAxODA3MiwiZXhwIjoxNzQ2NjEwMDcyfQ.eDymXq7c1TsyNNXOwg-KVOJHSUAzBY-g_NVs3Ebwh2o"
+}
+
+OTP sending -
+{
+    "message": "OTP sent successfully",
+    "otp": 104067
+}
+
+OTP validation -
+{
+    "_id": "67f3977e9ca9a66258bebed3",
+    "name": "Test User",
+    "email": "testuser@example.com",
+    "role": "user",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjM5NzdlOWNhOWE2NjI1OGJlYmVkMyIsImlhdCI6MTc0NDAyMzk4NCwiZXhwIjoxNzQ2NjE1OTg0fQ.PT5OPbpK2sclGiu4lWKfxvcvxfa5cRCf1n7SHXH9_yc"
+}
+
+Logout test -
+{
+    "message": "Logged out successfully"
+}
+
+Add to wishlist - 
+{
+    "message": "Product added to wishlist"
+}
+
+Get wishlist -
+[
+    {
+        "_id": "67ea4c7594445320edf47ded",
+        "user": "67ea4c7594445320edf47de5",
+        "name": "Wireless Charging Pad",
+        "image": "/images/chargingpad.jpg",
+        "brand": "PowerUp",
+        "category": "Electronics",
+        "description": "Fast wireless charging pad compatible with all Qi-enabled devices.",
+        "rating": 4.6,
+        "numReviews": 15,
+        "price": 29.99,
+        "countInStock": 20,
+        "discount": 0,
+        "isOnSale": false,
+        "reviews": [],
+        "__v": 0,
+        "createdAt": "2025-03-31T08:04:05.588Z",
+        "updatedAt": "2025-03-31T08:04:05.588Z"
+    }
+]
+
+Delete product from wishlist -
+{
+    "message": "Product removed from wishlist"
+}
+
+Loggin in as admin - 
+{
+    "_id": "67ea71ad682df932f60009a7",
+    "name": "Test User",
+    "email": "test@example.com",
+    "role": "admin",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWE3MWFkNjgyZGY5MzJmNjAwMDlhNyIsImlhdCI6MTc0NDAyNTk4NywiZXhwIjoxNzQ2NjE3OTg3fQ.QB4iUANiH98usW77QpTrH8uvplIZUhu5j1rQwihONPg"
+}
+
+Getting users by ID - 
+{
+    "image": "/images/defaultUser.png",
+    "_id": "67ea4c7594445320edf47de5",
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "role": "admin",
+    "wishlist": [],
+    "isVerified": false,
+    "__v": 0,
+    "createdAt": "2025-03-31T08:04:05.530Z",
+    "updatedAt": "2025-03-31T08:04:05.530Z"
+}
+
+Update user - 
+{
+    "_id": "67ea4c7594445320edf47de5",
+    "name": "Admin Updated Name",
+    "email": "admin@example.com",
+    "role": "vendor"
+}
+
+Delete user - 
+{
+    "message": "User removed"
+}
+
+Creating super admin - 
+
+{
+  "name": "Super Admin",
+  "email": "superadmin@example.com",
+  "password": "strong_password_here",
+  "secretKey": "your_very_strong_secret_key_here"
+}
+
+{
+    "_id": "67f3bebc405fb51c8ae12ff4",
+    "name": "Super Admin",
+    "email": "superadmin@example.com",
+    "role": "superAdmin",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjNiZWJjNDA1ZmI1MWM4YWUxMmZmNCIsImlhdCI6MTc0NDAyNzMyNSwiZXhwIjoxNzQ2NjE5MzI1fQ.jZ5uDRd7Nq6L7G99inskN5LSrumYx4crzNp0BUUgT8Y"
+}
+
+Making user as admin (super admin only) - 
+{
+    "_id": "67ea4c7594445320edf47de7",
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "role": "admin"
+}
+
+Creating order - 
+{
+    "user": "67f3bebc405fb51c8ae12ff4",
+    "orderItems": [
+        {
+            "name": "Product Name",
+            "qty": 2,
+            "image": "/images/sample.jpg",
+            "price": 89.99,
+            "product": "60d21b4667d0d8992e610c85",
+            "_id": "67f3c2b283fc7081d46357d6"
+        }
+    ],
+    "shippingAddress": {
+        "address1": "123 Test St",
+        "landmark": "Near Park",
+        "city": "Test City",
+        "state": "Test State",
+        "zip": "12345",
+        "country": "Test Country"
+    },
+    "paymentMethod": "PayPal",
+    "taxPrice": 18,
+    "shippingPrice": 10,
+    "totalPrice": 207.98,
+    "isPaid": false,
+    "isDelivered": false,
+    "status": "Processing",
+    "_id": "67f3c2b283fc7081d46357d5",
+    "createdAt": "2025-04-07T12:18:58.859Z",
+    "updatedAt": "2025-04-07T12:18:58.859Z",
+    "__v": 0
+}
+
+Adding order - 
+{
+    "user": "67f3bebc405fb51c8ae12ff4",
+    "orderItems": [
+        {
+            "name": "Test Product",
+            "qty": 2,
+            "image": "/images/sample.jpg",
+            "price": 29.99,
+            "product": "67ea4c7594445320edf47ded",
+            "_id": "67f3dda2c2e08a73e2ebebfe"
+        }
+    ],
+    "shippingAddress": {
+        "address1": "123 Test Street",
+        "city": "Test City",
+        "state": "Test State",
+        "zip": "12345",
+        "country": "Test Country"
+    },
+    "paymentMethod": "PayPal",
+    "taxPrice": 10,
+    "shippingPrice": 5,
+    "totalPrice": 74.98,
+    "isPaid": false,
+    "isDelivered": false,
+    "status": "Processing",
+    "_id": "67f3dda2c2e08a73e2ebebfd",
+    "createdAt": "2025-04-07T14:13:54.993Z",
+    "updatedAt": "2025-04-07T14:13:54.993Z",
+    "__v": 0
+}
+

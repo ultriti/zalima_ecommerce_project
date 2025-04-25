@@ -1,0 +1,306 @@
+.user_profile_frame{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+
+.user_profile_main_div{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    /* gap: 0.2vw; */
+    border-left:1px solid black ;
+    margin-top: 4vw;
+
+}
+
+
+
+/* --------- modifying user details page */
+.modify_user_details_page{
+    height: 73vh;
+    width: 100%;
+    background-color: rgb(250, 251, 234);
+    color :black;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+.modify_user_details_page::-webkit-scrollbar{
+    width: 10px;
+    background-color: rgb(60, 136, 203);
+}
+.modify_user_details_page::-webkit-scrollbar-thumb{
+    width: 20px;
+    background-color: rgb(5, 15, 23);
+}
+
+.modify_user_details_page_cont{
+    min-height: 90vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color:red;
+    padding: 0 3vw;
+}
+
+.modify_user_details_page_cont form{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1vw;
+   
+}
+
+/* user detais */
+.user_name_frame{
+    height: 8vw;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 2vw;
+}
+
+.unf_top{
+    height: 2vw;
+    width: 100%;
+    border-bottom: 1px solid grey;
+}
+.unf_top p{
+    font-size: 1.3vw;
+    color: rgb(118, 118, 118);
+    font-weight: 600;
+    text-transform: capitalize;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.unf_bottom{
+    height: 6vw;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 6vw;
+}
+
+.user_name_input{
+    height: 3vw;
+    width: 25vw;
+    background-color: rgb(182, 179, 179);
+    border-radius: 10px;
+    padding: 0 2vw;
+    font-size: 1.6vw;
+}
+
+
+/* ------- check box frame */
+.user_checkbox_frame{
+    height: 6vw;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    /* padding: 0 10vw; */
+    flex-direction: column;
+    margin-top: 1vw;
+    
+}
+
+
+.ucf_top{
+    height: 2vw;
+    width: 100%;
+    background-color: palegoldenrod;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 1vw;
+    
+    border-bottom: 1px solid grey;
+}
+
+
+.utf_bottom{
+    height: 3vw;
+    width: 100%;
+    background-color: powderblue;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 1vw;
+}
+
+.user_checkbox_frame p{
+    margin-right: 0.4vw;
+    font-size: 1.3vw;
+    color: rgb(118, 118, 118);
+    font-weight: 600;
+    text-transform: capitalize;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.user_checkbox_frame label{
+    height: 2vw;
+    width: 5vw;
+    margin-left: 2vw;
+    margin-right: 1vw;
+    background-color: grey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2vw;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    text-transform: capitalize;
+}
+
+.radio_btn{
+    height: 1.6vw;
+    width: 1.6vw;
+    background-color: rgb(182, 179, 179);
+    border-radius: 5px;
+    margin-right: 2vw;
+}
+
+/* email frame */
+
+.user_prof_email_frame{
+    height: 8vw;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2vw;
+}
+.upe_top{
+    height: 2vw;
+    width: 100%;
+    border-bottom: 1px solid grey;
+    display: flex;
+    align-items: center;
+}
+.upe_top p{
+    font-size: 1.3vw;
+    color: rgb(118, 118, 118);
+    font-weight: 600;
+    text-transform: capitalize;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.upe_bottom{
+    height: 6vw;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.user_prof_email_frame input{
+    height: 3vw;
+    width: 35vw;
+    background-color: rgb(182, 179, 179);
+    border-radius: 10px;
+    padding: 0 2vw;
+    font-size: 1.6vw;
+}
+
+/* user phone num div */
+
+.user_number_frame{
+    height: 8vw;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2vw;
+}
+
+.upp_top{
+    height: 2vw;
+    width: 100%;
+    border-bottom: 1px solid grey;
+    display: flex;
+    align-items: center;
+}
+
+.upp_top p{
+    font-size: 1.3vw;
+    color: rgb(118, 118, 118);
+    font-weight: 600;
+    text-transform: capitalize;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.upp_bottom{
+    height: 4vw;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.upp_bottom input{
+    height: 2.3vw;
+    width: 20vw;
+    background-color: rgb(182, 179, 179);
+    border-radius: 5px;
+    padding: 0 2vw;
+    font-size: 1.6vw;
+}
+
+/* submit frame */
+.submit_frame{
+    height: 5vw;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: right;
+    flex-direction: column;
+    margin-top: 2vw;
+    margin-bottom: 2vw;
+}
+
+.submit_frame input{
+    height: 2vw;
+    width: 10vw;
+    background-color: rgb(60, 136, 203);
+    border-radius: 10px;
+    color: white;
+    font-size: 1.3vw;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: right;
+}
+
+.become-vendor-btn {
+  background-color: #4a6cf7;
+  color: white;
+  margin-bottom: 10px;
+  transition: background-color 0.3s;
+}
+
+.become-vendor-btn:hover {
+  background-color: #3a5ce5;
+}
+
+/* Make sure the logout button is styled properly */
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
