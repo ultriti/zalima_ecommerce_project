@@ -21,7 +21,7 @@ const Home_page_2 = () => {
                 <div className="hp_2_swipper_frame  h-[69vh] my-[3vw] w-full rounded-[2vw] shadow-lg">
                 <div className="bg-gray-200 hp_2_swipper_title h-[6vh] m-1 flex items-center justify-between rounded-[10px] w-[99%] px-5">
                     <p className='text-black-500 font-bold text-[3.5vw] uppercase md:text-[1.5vw]'>mens</p>
-                    <p className="font-bold text-blue-500 pointer "><a href="/product/allProducts">see more</a></p>
+                    <p className="font-bold text-blue-500 pointer "><a href="/products/allProducts">see more</a></p>
                 </div>
                     <Homepage2_templates category={'men'} />
                 </div>

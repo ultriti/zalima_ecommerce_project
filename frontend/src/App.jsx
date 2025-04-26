@@ -65,8 +65,8 @@ const App = () => {
         {/* Basic Routes */}
         <Route path="/" element={<Home_page />} />
         <Route path="/about" element={<About />} />
-        <Route path="/products" element={<AllProduct />} />
-        <Route path="/product/:id" element={<Product_details_template />} />
+        <Route path="/products/allProducts" element={<AllProduct />} />
+        <Route path="/product/productsTemp/:id" element={<Product_details_template />} />
         <Route path="/unauthorized" element={<div className="p-10 text-center"><h1 className="text-2xl">Unauthorized Access</h1><p>You don't have permission to access this page.</p></div>} />
         
         {/* Auth Routes with multiple paths */}

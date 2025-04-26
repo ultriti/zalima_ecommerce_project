@@ -10,7 +10,7 @@ const Website_features = () => {
 
   const search_frame_display = () => {
 
-    nav("/product/allProducts")
+    nav("/products/allProducts")
     setsearch_list_frame_bool(!search_list_frame_bool)
   }
   const onSearch = (vlaue) => {
