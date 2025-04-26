@@ -64,7 +64,7 @@ const App = () => {
       <Routes>
         {/* Basic Routes */}
         <Route path="/" element={<Home_page />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/user/about" element={<About />} />
         <Route path="/products/allProducts" element={<AllProduct />} />
         <Route path="/product/productsTemp/:id" element={<Product_details_template />} />
         <Route path="/unauthorized" element={<div className="p-10 text-center"><h1 className="text-2xl">Unauthorized Access</h1><p>You don't have permission to access this page.</p></div>} />
@@ -101,13 +101,13 @@ const App = () => {
         <Route path="/user/profile" element={<UserProtectedWrapper><Profile_page /></UserProtectedWrapper>} />
         
         <Route path="/manage-profile" element={<UserProtectedWrapper><ManageProfile /></UserProtectedWrapper>} />
-        <Route path="/user/manage-profile" element={<UserProtectedWrapper><ManageProfile /></UserProtectedWrapper>} />
+        <Route path="/user/manage_profile" element={<UserProtectedWrapper><ManageProfile /></UserProtectedWrapper>} />
         
         <Route path="/orders" element={<UserProtectedWrapper><Order_page /></UserProtectedWrapper>} />
         <Route path="/user/orders" element={<UserProtectedWrapper><Order_page /></UserProtectedWrapper>} />
         
         <Route path="/address" element={<UserProtectedWrapper><Address_page /></UserProtectedWrapper>} />
-        <Route path="/user/address" element={<UserProtectedWrapper><Address_page /></UserProtectedWrapper>} />
+        <Route path="/user/address_" element={<UserProtectedWrapper><Address_page /></UserProtectedWrapper>} />
         
         <Route path="/become-vendor" element={<UserProtectedWrapper><VendorRequestForm /></UserProtectedWrapper>} />
         <Route path="/user/become-vendor" element={<UserProtectedWrapper><VendorRequestForm /></UserProtectedWrapper>} />

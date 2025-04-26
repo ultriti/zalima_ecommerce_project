@@ -6,12 +6,16 @@ const logger = require('../utils/logger');
 // Protect routes
 const protect = asyncHandler(async (req, res, next) => {
   let token;
+  let demo = req.cookies.jwt;
+  console.log('token',demo);
+  
+  
 
   // Check for token in headers
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if (req.cookies.token || req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       // Get token from header
-      token = req.headers.authorization.split(' ')[1];
+      token =req.cookies.token || req.headers.authorization.split(' ')[1] ;
 
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);

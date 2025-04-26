@@ -105,11 +105,15 @@ const Login_page = () => {
     };
 
     try {
+      console.log(payload);
+      
       const response = await axios.post(`${import.meta.env.VITE_BASE_URI}/api/users/login`, payload, {
         withCredentials: true,
       });
+      console.log(response.status);
+      
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         alert('Logged in successfully');
         localStorage.setItem('token', response.data.token);
         
