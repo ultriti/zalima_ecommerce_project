@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const User_info_display = () => {
   const [userData, setUserData] = useState({});
@@ -47,7 +48,7 @@ const User_info_display = () => {
     setUploading(true);
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/users/upload-profile-image`,
+        `${import.meta.env.VITE_BASE_URI}/api/users/upload-profile-image`,
         formData,
         {
           headers: {
@@ -63,7 +64,7 @@ const User_info_display = () => {
         setImageFile(null);            // Clear file input
       }
 
-      const updatedRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/users/profile`, {
+      const updatedRes = await axios.get(`${import.meta.env.VITE_BASE_URI}/api/users/profile`, {
         withCredentials: true,
       });
 
@@ -72,10 +73,10 @@ const User_info_display = () => {
         setUserImage(updatedRes.data.image || '');
       }
 
-      alert('Profile image uploaded!');
+      toast.success('Profile image uploaded!');
     } catch (err) {
       console.error('Error uploading profile image:', err);
-      alert('Upload failed.');
+      toast.error('Upload failed.');
     } finally {
       setUploading(false);
     }

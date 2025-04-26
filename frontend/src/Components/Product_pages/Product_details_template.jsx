@@ -10,6 +10,7 @@ import items from "./products.json"
 import Navbar_frame from "../Common frames/Navbar_frame";
 import Website_features from "../Common frames/Website_features";
 import Footer_frame from "../Common frames/Footer_frame";
+import { toast } from 'react-toastify';
 
 
 const Product_details_template = (props) => {
@@ -95,7 +96,7 @@ const Product_details_template = (props) => {
   };
 
   const handleAddToCart = () => {
-    alert(`Added ${quantity} MacBook Pro (${selectedColor}, ${selectedStorage}) to cart!`);
+    toast.success(`Added ${quantity} MacBook Pro (${selectedColor}, ${selectedStorage}) to cart!`);
   };
 
   const handleAddToWishlist = () => {

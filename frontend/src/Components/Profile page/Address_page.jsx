@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import User_side_frame from '../common_comps/User_side_frame';
 import axios from 'axios';
 import Navbar_frame from '../Common frames/Navbar_frame';
+import { toast } from 'react-toastify';
 
 const MAX_ADDRESSES = 5;
 
@@ -102,7 +103,7 @@ const Address_page = () => {
     e.preventDefault();
   
     if (isDuplicate(formData)) {
-      alert('This address already exists!');
+      toast.warning('This address already exists!');
       return;
     }
   
@@ -114,23 +115,23 @@ const Address_page = () => {
         `${import.meta.env.VITE_BASE_URI}/api/users/profile`,
         {
           shippingAddresses: updatedAddresses,
-          defaultShippingIndex: currentIndex, // ✅ Mark this one as default
+          defaultShippingIndex: currentIndex,
         },
         { withCredentials: true }
       );
   
       if (res.status === 200) {
-        alert('Address saved successfully!');
+        toast.success('Address saved successfully!');
         setAddresses(updatedAddresses);
         setUser((prev) => ({
           ...prev,
           shippingAddresses: updatedAddresses,
-          defaultShippingIndex: currentIndex, // ✅ update it locally too
+          defaultShippingIndex: currentIndex,
         }));
       }
     } catch (err) {
       console.error('Error updating address:', err);
-      alert('Failed to save address.');
+      toast.error('Failed to save address.');
     }
   };
   

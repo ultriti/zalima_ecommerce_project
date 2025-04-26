@@ -3,6 +3,7 @@ import axios from 'axios';
 import User_side_frame from '../common_comps/User_side_frame';
 import '../../index.css';
 import Navbar_frame from '../Common frames/Navbar_frame';
+import { toast } from 'react-toastify';
 
 const ManageProfile = () => {
   const [formData, setFormData] = useState({
@@ -58,17 +59,17 @@ const ManageProfile = () => {
       };
 
       const res = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/users/profile`,
+        `${import.meta.env.VITE_BASE_URI}/api/users/profile`,
         updateData,
         { withCredentials: true }
       );
 
       if (res.status === 200) {
-        alert('Profile updated successfully!');
+        toast.success('Profile updated successfully!');
       }
     } catch (err) {
       console.error('Error updating profile:', err);
-      alert('Failed to update profile.');
+      toast.error('Failed to update profile.');
     }
   };
 

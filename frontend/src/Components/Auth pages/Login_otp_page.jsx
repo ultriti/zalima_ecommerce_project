@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../../index.css';
+import { toast } from 'react-toastify';
 const Login_otp_page = () => {
   const [email, setEmail] = useState('');
   const [otpSent, setOtpSent] = useState(false);
@@ -9,14 +10,15 @@ const Login_otp_page = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Replace alert with toast
   const handleSendOTP = async () => {
     setLoading(true);
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URI}/api/users/otp/send`, { email });
-      alert("OTP sent to your email");
+      toast.success("OTP sent to your email");
       setOtpSent(true);
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to send OTP");
+      toast.error(err.response?.data?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }

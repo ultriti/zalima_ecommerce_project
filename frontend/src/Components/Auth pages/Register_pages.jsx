@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import facebookicon from "../../../public/images/facebook_icon.svg";
 import googleicon from "../../../public/images/google_icon.svg";
 import Navbar_frame from '../Common frames/Navbar_frame';
-import { googleAuth } from './app';
-import { useGoogleLogin } from '@react-oauth/google';
+import { googleAuth, initiateGoogleAuth, facebookAuth, initiateFacebookAuth } from './app';
 
 const Register_pages = () => {
   const [emaildata, setemaildata] = useState('');
@@ -13,42 +12,78 @@ const Register_pages = () => {
   const [name_data, setname_data] = useState('');
   const [secret_data, setSecret] = useState('');
   const navigate = useNavigate();
-
-  // ✅ Google Login handler
-  const handleGoogleLogin = async (authResult) => {
-    try {
-      if (authResult.code) {
-        console.log("--------->",authResult.code);
-        
-        const res = await googleAuth(authResult.code); // send auth code to backend
-        console.log("Google login success:", res.data);
-        const { token, user_data} = res.data;
-        console.log(user_data);
-        // Save token and user info
-        localStorage.setItem("token", token);
-        // localStorage.setItem("role", user_data.role);
-        // localStorage.setItem("user", JSON.stringify(user_data));
-        // ✅ Navigate after login
-        // if(user_data.role === 'superAdmin') {
-        //   navigate("/admin/dashboard"); // Redirect to admin dashboard if needed
-        // }
-        // else{navigate("/");}
-        navigate("/")
-      } else {
-        console.warn("No auth code returned by Google");
-      }
-    } catch (error) {
-      console.error("Google login error:", error);
-      console.log("Google login error:", error);
-      alert("Google Login failed. Try again.");
+  const location = useLocation();
+  
+  const redirectUri = 'http://localhost:5173/user/register';
+  
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const error = urlParams.get('error');
+    const state = urlParams.get('state');
+    const storedState = localStorage.getItem('oauth_state');
+    const authProvider = localStorage.getItem('auth_provider'); // Add this line
+    
+    if (error) {
+      console.error(`OAuth error: ${error}`);
+      alert(`Login error: ${error}`);
+      return;
     }
-  };
-
-  const google_login_function = useGoogleLogin({
-    onSuccess: handleGoogleLogin,
-    onError: () => alert("Google login failed"),
-    flow: 'auth-code'
-  });
+    
+    if (state && storedState && state !== storedState) {
+      console.error('OAuth state mismatch');
+      alert('Security validation failed. Please try again.');
+      return;
+    }
+    
+    if (code) {
+      console.log(`Code found in URL: ${code.substring(0, 10)}...`);
+      
+      const processAuth = async () => {
+        try {
+          let res;
+          if (authProvider === 'facebook') {
+            console.log('Processing Facebook authentication...');
+            res = await facebookAuth(code, redirectUri);
+          } else {
+            console.log('Processing Google authentication...');
+            res = await googleAuth(code, redirectUri);
+          }
+          
+          const { token, user_data } = res;
+          
+          localStorage.setItem('token', token);
+          localStorage.setItem('userId', user_data._id);
+          localStorage.setItem('userName', user_data.name);
+          localStorage.setItem('userEmail', user_data.email);
+          localStorage.setItem('userRole', user_data.role || 'user');
+          
+          // Clear OAuth state
+          localStorage.removeItem('oauth_state');
+          
+          alert('Logged in successfully');
+          
+          // Clear the URL parameters
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
+          // In the processAuth function where you handle successful authentication
+          if (user_data.role === 'superadmin') {
+            navigate('/admin/dashboard');
+          } else if (user_data.role === 'vendor') {
+            navigate('/vendor/dashboard');
+          } else {
+            // Redirect to home page instead of profile page
+            navigate('/');
+          }
+        } catch (error) {
+          console.error('Authentication error:', error);
+          alert('Login failed. Try again.');
+        }
+      };
+      
+      processAuth();
+    }
+  }, [location, navigate, redirectUri]);
 
   // ✅ Manual Registration
   const register_data_post_fun = async (e) => {
@@ -68,13 +103,16 @@ const Register_pages = () => {
         { withCredentials: true }
       );
 
+      // Also update the register_data_post_fun function
       if (res.status === 201) {
         alert("User registered successfully");
 
         // Store token and user data
         localStorage.setItem("token", res.data.token);
-        // localStorage.setItem("user", JSON.stringify(res.data.user_data));
-
+        localStorage.setItem("userId", res.data._id || '');
+        localStorage.setItem("userRole", res.data.role || 'user');
+        
+        // Redirect to home page instead of profile page
         navigate("/");
       }
     } catch (err) {
@@ -130,13 +168,6 @@ const Register_pages = () => {
               required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            {/* <input
-              type="password"
-              placeholder="Super Admin Secret (optional)"
-              className="w-full border rounded-md px-3 py-2"
-              value={secret_data}
-              onChange={(e) => setSecret(e.target.value)}
-            /> */}
             <button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
@@ -148,7 +179,7 @@ const Register_pages = () => {
             <div className="flex justify-center gap-4 pt-4">
               <button
                 type="button"
-                onClick={() => google_login_function()}
+                onClick={() => initiateGoogleAuth(redirectUri)}
                 className="p-2 bg-white rounded-full shadow hover:scale-105 transition"
               >
                 <img src={googleicon} alt="Google" className="w-6 h-6" />
@@ -156,6 +187,7 @@ const Register_pages = () => {
 
               <button
                 type="button"
+                onClick={() => initiateFacebookAuth(redirectUri)}
                 className="p-2 bg-white rounded-full shadow hover:scale-105 transition"
               >
                 <img src={facebookicon} alt="Facebook" className="w-6 h-6" />

@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema(
     // Add role field for role-based access
     role: {
       type: String,
-      enum: ['user', 'admin', 'vendor', 'superAdmin'],
+      enum: ['user', 'admin', 'vendor', 'superadmin'],
       default: 'user',
     },
     // Consolidated profile image field
@@ -43,8 +43,15 @@ const userSchema = mongoose.Schema(
     },
     wishlist: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Product',
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+          min: 1
+        }
       }
     ],
     // Add shipping address
@@ -105,6 +112,41 @@ const userSchema = mongoose.Schema(
         device: { type: String },
       }
     ],
+    
+    vendorRequest: {
+      status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
+      },
+      requestDate: {
+        type: Date,
+        default: Date.now
+      },
+      approvalDate: {
+        type: Date
+      },
+      rejectionReason: {
+        type: String
+      },
+      businessInfo: {
+        businessName: {
+          type: String
+        },
+        businessDescription: {
+          type: String
+        },
+        contactPhone: {
+          type: String
+        },
+        businessAddress: {
+          type: String
+        },
+        taxId: {
+          type: String
+        }
+      }
+    },
   },
   {
     timestamps: true,

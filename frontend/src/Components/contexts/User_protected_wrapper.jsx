@@ -1,5 +1,6 @@
 import React,{useEffect,useContext,useState} from 'react'
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 const UserProtectedWrapper = ({children}) => {
@@ -22,7 +23,7 @@ const UserProtectedWrapper = ({children}) => {
           // alert('You can axcess to user page');
         } else {
           setAuth_userBoolen(false);
-          alert('you havent login yet');
+          toast.error('You need to login first');
           navigate('/user/register');
         }
       }, [token]);

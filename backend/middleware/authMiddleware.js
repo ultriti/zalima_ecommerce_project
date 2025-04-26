@@ -6,13 +6,12 @@ const logger = require('../utils/logger');
 // Protect routes
 const protect = asyncHandler(async (req, res, next) => {
   let token;
-  console.log('toen---------------->',req.cookies.token);
 
   // Check for token in headers
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer') || req.cookies.token) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       // Get token from header
-      token =  req.cookies.token || req.headers.authorization.split(' ')[1];
+      token = req.headers.authorization.split(' ')[1];
 
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -33,9 +32,8 @@ const protect = asyncHandler(async (req, res, next) => {
       throw new Error('Not authorized, token failed');
     }
   }
-  
+
   if (!token) {
-    
     logger.warn(`Auth failed: No token provided`);
     res.status(401);
     throw new Error('Not authorized, no token');
@@ -65,16 +63,15 @@ const vendor = (req, res, next) => {
 };
 
 // SuperAdmin middleware
-const superAdmin = (req, res, next) => {
-  if (req.user && req.user.role === 'superAdmin') {  // Changed from 'superadmin' to 'superAdmin'
+const superadmin = (req, res, next) => {
+  if (req.user && req.user.role === 'superadmin') {
     next();
   } else {
-    logger.warn(`SuperAdmin access denied for user: ${req.user ? req.user._id : 'unknown'}`);
+    logger.warn(`Superadmin access denied for user: ${req.user ? req.user._id : 'unknown'}`);
     res.status(403);
-    throw new Error('Not authorized as a super admin');
+    throw new Error('Not authorized as a superadmin');
   }
 };
-
 
 // Verified user middleware
 const verified = (req, res, next) => {
@@ -104,7 +101,6 @@ const authorize = (...roles) => {
       res.status(403);
       throw new Error(`Access denied. Required role: ${roles.join(' or ')}`);
     }
-    
     next();
   };
 };
@@ -121,7 +117,7 @@ const ownerOrAdmin = (getResourceUserId) => {
     }
     
     // Allow admins and super admins
-    if (req.user.role === 'admin' || req.user.role === 'superAdmin') {
+    if (req.user.role === 'admin' || req.user.role === 'superadmin') {  // Changed from 'superAdmin' to 'superadmin'
       return next();
     }
     
@@ -145,7 +141,7 @@ module.exports = {
   authorize, 
   admin, 
   vendor, 
-  superAdmin,
+  superadmin,
   ownerOrAdmin,
   verified
 };

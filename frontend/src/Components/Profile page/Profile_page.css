@@ -282,3 +282,25 @@
     cursor: pointer;
     align-self: right;
 }
+
+.become-vendor-btn {
+  background-color: #4a6cf7;
+  color: white;
+  margin-bottom: 10px;
+  transition: background-color 0.3s;
+}
+
+.become-vendor-btn:hover {
+  background-color: #3a5ce5;
+}
+
+/* Make sure the logout button is styled properly */
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const AdminProtectedWrapper = ({ children }) => {
   const [authAdmin, setAuthAdmin] = useState(false);
@@ -12,7 +13,7 @@ const AdminProtectedWrapper = ({ children }) => {
       setAuthAdmin(true);
     } else {
       setAuthAdmin(false);
-      alert('You must be an admin to access this page');
+      toast.error('You must be an admin to access this page');
       navigate('/admin/dashboard');
     }
   }, [token, role, navigate]);

@@ -1,18 +1,18 @@
 const asyncHandler = require('express-async-handler');
-const User = require('../models/userModel.js');
-const generateToken = require('../utils/generateToken.js');
+const User = require('../models/userModel');
+const generateToken = require('../utils/generateToken');
 const bcrypt = require('bcryptjs');
-const Order = require('../models/orderModel.js');
-const Product = require('../models/productModel.js');
+const Order = require('../models/orderModel');
+const Product = require('../models/productModel');
 const facebookAuthService = require('../config/facebookAuth.config.js');
 require('dotenv').config();
-const { oauth2client } = require('../config/googleAuth.config.js');
-const axios = require('axios')
+const { createOAuth2Client } = require('../config/googleAuth.config');
+
+const axios = require('axios');
 
 const cloudinary = require('cloudinary').v2;
 
-
-// Cloudinary config (you can move this to a separate config file if needed)
+// Cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -38,19 +38,16 @@ const uploadProfileImage = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Delete previous image from Cloudinary if it exists and isn't the default
     if (user.profileImage && user.profileImage.public_id && user.profileImage.public_id !== 'default_profile') {
       await cloudinary.uploader.destroy(user.profileImage.public_id);
     }
 
-    // Upload new image to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'user_profiles',
       width: 150,
       crop: 'scale'
     });
 
-    // Update user profile with new image
     user.profileImage = {
       public_id: result.public_id,
       url: result.secure_url
@@ -69,13 +66,10 @@ const uploadProfileImage = asyncHandler(async (req, res) => {
   }
 });
 
-
-// module.exports.uploadProfileImage = uploadProfileImage;
 const crypto = require("crypto");
-const sendEmail = require("../utils/sendEmail.js");
-const sendOtpEmail=require('../utils/sendOtpEmail.js');
-const { OAuth2Client } = require('google-auth-library');
-// ---------- Forgot Password ----------
+const sendEmail = require("../utils/sendEmail");
+const sendOtpEmail = require('../utils/sendOtpEmail.js');
+
 const forgotUserPassword = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
@@ -87,10 +81,8 @@ const forgotUserPassword = asyncHandler(async (req, res) => {
   const resetToken = user.generateResetPasswordToken();
   await user.save({ validateBeforeSave: false });
 
-  // const resetPasswordUrl = `${req.protocol}://${req.get("host")}/reset-password/${resetToken}`;
   const resetPasswordUrl = `${process.env.FRONTEND_URL}/user/reset-password/${resetToken}`;
 
-  // const message = `You requested a password reset.\n\nClick to reset: ${resetPasswordUrl}\n\nIgnore if not requested.`;
   const message = `
     Hi ${user.name || ''},
 
@@ -126,38 +118,6 @@ const forgotUserPassword = asyncHandler(async (req, res) => {
   }
 });
 
-// ---------- Reset Password ----------
-// const resetUserPassword = asyncHandler(async (req, res) => {
-//   const resetPasswordToken = crypto
-//     .createHash("sha256")
-//     .update(req.params.token)
-//     .digest("hex");
-
-//   const user = await User.findOne({
-//     resetPasswordToken,
-//     resetPasswordExpires: { $gt: Date.now() },
-//   });
-
-//   if (!user) {
-//     res.status(400);
-//     throw new Error("Invalid or expired token");
-//   }
-
-//   const { password, confirmPassword } = req.body;
-
-//   if (password !== confirmPassword) {
-//     res.status(400);
-//     throw new Error("Passwords do not match");
-//   }
-
-//   user.password = await User.hashPassword(password);
-//   user.resetPasswordToken = undefined;
-//   user.resetPasswordExpires = undefined;
-
-//   await user.save();
-
-//   res.status(200).json({ message: "Password reset successfully" });
-// });
 const resetUserPassword = asyncHandler(async (req, res) => {
   try {
     console.log("🔁 Password reset request received");
@@ -189,8 +149,6 @@ const resetUserPassword = asyncHandler(async (req, res) => {
       throw new Error("Passwords do not match");
     }
 
-    // console.log("✅ Passwords match. Hashing now...");
-    // user.password = await User.hashPassword(password);
     user.password = password;
     console.log(user.password);
     user.resetPasswordToken = undefined;
@@ -207,45 +165,34 @@ const resetUserPassword = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Auth user & get token
-// @route   POST /api/users/login
-// @access  Public
 const authUser = asyncHandler(async (req, res) => {
-  // const { email, password, superAdminToken } = req.body;
-  const { email, password } = req.body;
+  const { email, password, superAdminToken } = req.body;
 
-  
   const user = await User.findOne({ email });
 
-  // Check if user exists and password matches
   if (user && (await user.matchPassword(password))) {
-    // Additional security check for super admin login
-    // if (user.role === 'superAdmin') {
-    //   // Verify the super admin token if attempting to log in as super admin
-    //   if (!superAdminToken || superAdminToken !== process.env.SUPER_ADMIN_SECRET) {
-    //     res.status(401);
-    //     throw new Error('Super admin authentication requires additional verification');
-    //   }
-    // }
+    if (user.role === 'superadmin') {
+      if (!superAdminToken || superAdminToken !== process.env.SUPER_ADMIN_SECRET) {
+        res.status(401);
+        throw new Error('Super admin authentication requires additional verification');
+      }
+    }
 
-    // Generate JWT token
     const token = generateToken(user._id);
 
-    // Set JWT as HTTP-Only cookie
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(201).json({
+    res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
       token: token,
-      message:"Logged in successfully"
     });
   } else {
     res.status(401);
@@ -253,26 +200,21 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Register a new user
-// @route   POST /api/users
-// @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-
+  const { name, email, password, secret } = req.body;
   
-  const { name, email, password,secret } = req.body;
-  
-
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    res.status(400).json({message:"user already exists"});
+    res.status(400);
     throw new Error('User already exists');
   }
-  const role = (secret && secret === process.env.SUPER_ADMIN_SECRET) ? 'superAdmin' : 'user';
+  const role = (secret && secret === process.env.SUPER_ADMIN_SECRET) ? 'superadmin' : 'user';
   const user = await User.create({
     name,
     email,
     password,
+    role,
     profileImage: {
       url: '/images/default-user.png',
       public_id: 'default_profile'
@@ -289,7 +231,6 @@ const registerUser = asyncHandler(async (req, res) => {
       email: user.email,
       role: user.role,
       token: token_gen,
-      message:"logged in successfully"
     });
   } else {
     res.status(400);
@@ -297,29 +238,8 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-
-// @desc    Get user profile
-// @route   GET /api/users/profile
-// @access  Private
-// const getUserProfile = asyncHandler(async (req, res) => {
-//   const user = await User.findById(req.user._id);
-
-//   if (user) {
-//     res.json({
-//       _id: user._id,
-//       name: user.name,
-//       email: user.email,
-//       role: user.role,
-//     });
-//   } else {
-//     res.status(404);
-//     throw new Error('User not found');
-//   }
-// });
-// GET /api/users/profile
 const getUserProfile = asyncHandler(async (req, res) => {
-  
-  const user = await User.findById(req.user._id).populate('wishlist');
+  const user = await User.findById(req.user._id).populate('wishlist.product');
 
   if (user) {
     res.json({
@@ -339,58 +259,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
-// const getUserProfile = asyncHandler(async (req, res) => {
-//   const user = await User.findById(req.user._id).populate('wishlist');
 
-//   if (user) {
-//     res.json({
-//       _id: user._id,
-//       name: user.name,
-//       email: user.email,
-//       role: user.role,
-//       phoneNumber: user.phoneNumber,
-//       isVerified: user.isVerified,
-//       wishlist: user.wishlist,
-//       shippingAddress: user.shippingAddress,
-//       googleId: user.googleId,
-//       facebookId: user.facebookId,
-//     });
-//   } else {
-//     res.status(404);
-//     throw new Error('User not found');
-//   }
-// });
-
-
-// @desc    Update user profile
-// @route   PUT /api/users/profile
-// @access  Private
-// const updateUserProfile = asyncHandler(async (req, res) => {
-//   const user = await User.findById(req.user._id);
-
-//   if (user) {
-//     user.name = req.body.name || user.name;
-//     user.email = req.body.email || user.email;
-    
-//     if (req.body.password) {
-//       user.password = req.body.password;
-//     }
-
-//     const updatedUser = await user.save();
-
-//     res.json({
-//       _id: updatedUser._id,
-//       name: updatedUser.name,
-//       email: updatedUser.email,
-//       role: updatedUser.role,
-//       token: generateToken(updatedUser._id),
-//     });
-//   } else {
-//     res.status(404);
-//     throw new Error('User not found');
-//   }
-// });
-// PUT /api/users/profile
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
@@ -399,12 +268,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 
-  // Basic user info update
   user.name = req.body.name || user.name;
   user.email = req.body.email || user.email;
   user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
 
-  // 1. Replace entire address array (sent from React)
   if (Array.isArray(req.body.shippingAddresses)) {
     if (req.body.shippingAddresses.length > 5) {
       res.status(400);
@@ -414,7 +281,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.defaultShippingIndex = req.body.defaultShippingIndex ?? user.shippingAddresses.length - 1;
   }
 
-  // 2. Add single address (only if passed)
   if (req.body.addShippingAddress) {
     const newAddress = req.body.addShippingAddress;
 
@@ -439,13 +305,11 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.defaultShippingIndex = user.shippingAddresses.length - 1;
   }
 
-  // 3. Delete address by index
   if (req.body.deleteAddressIndex !== undefined) {
     const index = req.body.deleteAddressIndex;
     if (index >= 0 && index < user.shippingAddresses.length) {
       user.shippingAddresses.splice(index, 1);
 
-      // Adjust default index
       if (user.defaultShippingIndex === index) {
         user.defaultShippingIndex = 0;
       } else if (user.defaultShippingIndex > index) {
@@ -454,7 +318,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
   }
 
-  // 4. Set new default address index
   if (req.body.defaultShippingIndex !== undefined) {
     if (
       req.body.defaultShippingIndex >= 0 &&
@@ -464,9 +327,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
   }
 
-  // 5. Password update
   if (req.body.password) {
-    user.password = req.body.password; // bcrypt handled via pre-save hook
+    user.password = req.body.password;
   }
 
   const updatedUser = await user.save();
@@ -484,12 +346,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   });
 });
 
-
-// @desc    Logout user / clear cookie
-// @route   POST /api/users/logout
-// @access  Public
 const logoutUser = asyncHandler(async (req, res) => {
-  
   res.cookie('jwt', '', {
     httpOnly: true,
     expires: new Date(0),
@@ -502,69 +359,28 @@ const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 });
 
-// @desc    Auth user with Google
-// @route   POST /api/users/google
-// @access  Public
-// const googleAuth = asyncHandler(async (req, res) => {
-//   const { googleId, email, name } = req.body;
-
-//   if (!googleId || !email) {
-//     res.status(400);
-//     throw new Error('Invalid Google authentication data');
-//   }
-
-//   // Check if user exists
-//   const userExists = await User.findOne({ email });
-
-//   let user;
-//   if (userExists) {
-//     // Update googleId if not already set
-//     if (!userExists.googleId) {
-//       userExists.googleId = googleId;
-//       await userExists.save();
-//     }
-//     user = userExists;
-//   } else {
-//     // Create new user
-//     user = await User.create({
-//       name,
-//       email,
-//       googleId,
-//       password: generateRandomPassword(), // Helper function to generate random password
-//     });
-//   }
-
-//   if (user) {
-//     res.status(200).json({
-//       _id: user._id,
-//       name: user.name,
-//       email: user.email,
-//       role: user.role,
-//       token: generateToken(user._id),
-//     });
-//   } else {
-//     res.status(400);
-//     throw new Error('Invalid user data');
-//   }
-// });
 const googleAuth = asyncHandler(async (req, res) => {
   try {
-    console.log('--------------------->>Google Auth Request:', req.body);
-    const code = req.method === 'GET' ? req.query.code : req.body.code;
-    const redirectUri = req.body.redirectUri || 'http://localhost:5000/social-login-test.html';
+    const code = req.body.code;
+    const redirectUri = req.body.redirectUri?.replace(/\/$/, '');
     
-    console.log(`Received Google auth code via ${req.method}:`, code ? code.substring(0, 10) + '...' : 'none');
-    console.log('Using redirect URI:', redirectUri);
-
-
-    if (!code) {
-      return res.status(400).json({ error: 'No authorization code provided' });
+    console.log('Google Auth - Received code:', code ? 'Yes (length: ' + code.length + ')' : 'No');
+    console.log('Google Auth - Redirect URI:', redirectUri);
+    
+    // Add validation
+    if (!redirectUri || !(
+      redirectUri.match(/^https?:\/\/localhost:5173\/user\/(register|signin)$/) ||
+      redirectUri === 'http://localhost:5000/social-login-test.html'
+    )) {
+      return res.status(400).json({ 
+        error: 'Invalid redirect URI format',
+        expectedFormat: 'http://localhost:5173/user/register, http://localhost:5173/user/signin, or http://localhost:5000/social-login-test.html'
+      });
     }
     
-    // Update the redirect URI in the oauth2client
-    oauth2client.redirectUri = redirectUri;
+    const oauth2client = createOAuth2Client(redirectUri);
+    
     try {
-      // Exchange auth code for access token
       console.log('Exchanging code for tokens...');
       const googleRes = await oauth2client.getToken(code);
       console.log('Token exchange successful');
@@ -572,7 +388,6 @@ const googleAuth = asyncHandler(async (req, res) => {
       oauth2client.setCredentials(googleRes.tokens);
       const accessToken = googleRes.tokens.access_token;
 
-      // Fetch user info from Google
       console.log('Fetching user info from Google...');
       const userRes = await axios.get(
         `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${encodeURIComponent(accessToken)}`
@@ -581,37 +396,35 @@ const googleAuth = asyncHandler(async (req, res) => {
       const { email, name, picture } = userRes.data;
       console.log('Google user data:', email, name);
 
-      // Check if user exists
       let user = await User.findOne({ email });
 
       if (!user) {
-        // Register new user
         console.log('Creating new user...');
+        const randomPassword = crypto.randomBytes(16).toString('hex');
+        const hashedPassword = await bcrypt.hash(randomPassword, 10);
         user = await User.create({
           name,
           email,
           profileImage: {
-            url: picture, // Use the Google profile picture URL
-            public_id: 'google_profile'
+            url: picture,
+            public_id: 'google_profile',
           },
           googleLogin: true,
-          password: crypto.randomBytes(16).toString('hex'), // Random password
-          role: 'user', // default role like registerUser
+          password: hashedPassword,
+          role: 'user',
         });
         console.log('✅ New Google user created.');
       } else {
         console.log('✅ Existing user found, logging in.');
       }
       
-      // Generate token and set cookie (same as registerUser)
       const token = generateToken(user._id);
       
-      // Set JWT as HTTP-Only cookie
       res.cookie('jwt', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        maxAge: 30 * 24 * 60 * 60 * 1000,
       });
       
       res.status(200).json({
@@ -620,33 +433,44 @@ const googleAuth = asyncHandler(async (req, res) => {
         email: user.email,
         role: user.role,
         profileImage: user.profileImage,
-        token: token
+        token: token,
+        user_data: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
       });
     } catch (tokenError) {
       console.error('Token exchange error:', tokenError);
-      return res.status(401).json({ 
+      if (tokenError.response?.data?.error === 'redirect_uri_mismatch') {
+        return res.status(400).json({
+          error: 'Redirect URI mismatch. Please check the authorized redirect URIs in Google Cloud Console.',
+          details: tokenError.message,
+        });
+      }
+      return res.status(401).json({
         error: 'Failed to exchange authorization code for tokens',
-        details: tokenError.message
+        details: tokenError.message,
       });
     }
   } catch (error) {
-    console.error('Google Auth Error:', error);
-    res.status(500).json({ 
+    // More detailed error logging
+    console.error('Google Auth Error Details:', {
+      message: error.message,
+      name: error.name,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    
+    res.status(500).json({
       error: 'Google authentication failed',
-      details: error.message
+      details: error.message,
+      type: error.name
     });
   }
 });
 
-
-
-
-
-// @desc    Auth user with Facebook
-// @route   POST /api/users/facebook
-// @access  Public
-
-// Update your facebookAuth function
 const facebookAuth = asyncHandler(async (req, res) => {
   try {
     console.log('Facebook Auth Request:', req.body);
@@ -656,11 +480,19 @@ const facebookAuth = asyncHandler(async (req, res) => {
       return res.status(400).json({ error: 'No authorization code provided' });
     }
     
-    // Exchange code for access token
+    if (!redirectUri || !(
+      redirectUri.match(/^https?:\/\/localhost:5173\/user\/(register|signin)$/) ||
+      redirectUri === 'http://localhost:5000/social-login-test.html'
+    )) {
+      return res.status(400).json({ 
+        error: 'Invalid redirect URI format',
+        expectedFormat: 'http://localhost:5173/user/register, http://localhost:5173/user/signin, or http://localhost:5000/social-login-test.html'
+      });
+    }
+    
     console.log('Exchanging Facebook code for token...');
     const accessToken = await facebookAuthService.getAccessToken(code, redirectUri);
     
-    // Get user profile
     console.log('Fetching Facebook user profile...');
     const profile = await facebookAuthService.getUserProfile(accessToken);
     
@@ -671,12 +503,13 @@ const facebookAuth = asyncHandler(async (req, res) => {
       return res.status(400).json({ error: 'Email not provided by Facebook' });
     }
     
-    // Check if user exists
     let user = await User.findOne({ email });
     
     if (!user) {
-      // Create new user
       console.log('Creating new user from Facebook data...');
+      const randomPassword = crypto.randomBytes(16).toString('hex');
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+      
       user = await User.create({
         name,
         email,
@@ -686,12 +519,11 @@ const facebookAuth = asyncHandler(async (req, res) => {
         },
         facebookId,
         facebookLogin: true,
-        password: crypto.randomBytes(16).toString('hex'), // Random password
+        password: hashedPassword,
         role: 'user',
       });
       console.log('✅ New Facebook user created.');
     } else {
-      // Update Facebook ID if not already set
       if (!user.facebookId) {
         user.facebookId = facebookId;
         await user.save();
@@ -699,14 +531,13 @@ const facebookAuth = asyncHandler(async (req, res) => {
       console.log('✅ Existing user found, logging in.');
     }
     
-    // Generate token and set cookie
     const token = generateToken(user._id);
     
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     
     res.status(200).json({
@@ -715,7 +546,13 @@ const facebookAuth = asyncHandler(async (req, res) => {
       email: user.email,
       role: user.role,
       profileImage: user.profileImage,
-      token: token
+      token: token,
+      user_data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error('Facebook Auth Error:', error);
@@ -725,45 +562,6 @@ const facebookAuth = asyncHandler(async (req, res) => {
     });
   }
 });
-
-// @desc    Send OTP for verification
-// @route   POST /api/users/otp/send
-// @access  Public
-// const sendOTP = asyncHandler(async (req, res) => {
-//   const { email } = req.body;
-
-//   if (!email) {
-//     res.status(400);
-//     throw new Error('Please provide an email');
-//   }
-
-//   // Check if user exists
-//   const user = await User.findOne({ email });
-  
-//   if (!user) {
-//     res.status(404);
-//     throw new Error('User not found');
-//   }
-
-//   // Generate OTP (in a real app, you would send this via email/SMS)
-//   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  
-//   // Store OTP with expiry (in a real app, you might use Redis or another store)
-//   // For this example, we'll store it on the user document
-//   user.otp = otp;
-//   user.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
-//   await user.save();
-
-//   // In a real app, send the OTP via email or SMS
-//   // For this example, we'll just return it (not secure for production)
-//   res.status(200).json({ 
-//     message: 'OTP sent successfully',
-//     otp: process.env.NODE_ENV === 'development' ? otp : undefined
-//   });
-// });
-// controllers/userController.js or wherever your controller is
-
-
 
 const sendOTP = asyncHandler(async (req, res) => {
   const { email } = req.body;
@@ -797,55 +595,11 @@ const sendOTP = asyncHandler(async (req, res) => {
   }
 });
 
-
-
-// @desc    Verify OTP
-// @route   POST /api/users/otp/verify
-// @access  Public
-// const verifyOTP = asyncHandler(async (req, res) => {
-//   const { email, otp } = req.body;
-
-//   if (!email || !otp) {
-//     res.status(400);
-//     throw new Error('Please provide email and OTP');
-//   }
-
-//   // Find user
-//   const user = await User.findOne({ email });
-  
-//   if (!user) {
-//     res.status(404);
-//     throw new Error('User not found');
-//   }
-
-//   // Check if OTP is valid and not expired
-//   if (user.otp !== otp || !user.otpExpiry || user.otpExpiry < Date.now()) {
-//     res.status(400);
-//     throw new Error('Invalid or expired OTP');
-//   }
-
-//   // Clear OTP
-//   user.otp = undefined;
-//   user.otpExpiry = undefined;
-//   await user.save();
-
-//   // Return user data with token
-//   res.status(200).json({
-//     _id: user._id,
-//     name: user.name,
-//     email: user.email,
-//     role: user.role,
-//     token: generateToken(user._id),
-//   });
-// });
-// controllers/userController.js (or similar)
-
 const verifyOTP = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
 
   console.log(`🔍 Incoming OTP verification request for email: ${email}`);
 
-  // Input validation
   if (!email || !otp) {
     console.log('❌ Missing email or OTP');
     res.status(400);
@@ -880,12 +634,10 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
   console.log('✅ OTP verified successfully. Clearing OTP data and logging in user.');
 
-  // Clear OTP info
   user.otp = undefined;
   user.otpExpiry = undefined;
   await user.save();
 
-  // Respond with user details + JWT
   res.status(200).json({
     _id: user._id,
     name: user.name,
@@ -895,10 +647,6 @@ const verifyOTP = asyncHandler(async (req, res) => {
   });
 });
 
-
-// @desc    Make a user an admin
-// @route   PUT /api/users/makeadmin/:id
-// @access  Private/SuperAdmin
 const makeUserAdmin = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
 
@@ -918,17 +666,11 @@ const makeUserAdmin = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get user orders
-// @route   GET /api/users/orders
-// @access  Private
 const getUserOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id });
   res.json(orders);
 });
 
-// @desc    Add product to wishlist
-// @route   POST /api/users/wishlist
-// @access  Private
 const addToWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.body;
 
@@ -937,7 +679,6 @@ const addToWishlist = asyncHandler(async (req, res) => {
     throw new Error('Please provide a product ID');
   }
 
-  // Check if product exists
   const product = await Product.findById(productId);
   if (!product) {
     res.status(404);
@@ -946,65 +687,64 @@ const addToWishlist = asyncHandler(async (req, res) => {
 
   const user = await User.findById(req.user._id);
 
-  // Check if product is already in wishlist
-  if (user.wishlist.includes(productId)) {
-    res.status(400);
-    throw new Error('Product already in wishlist');
+  const wishlistItem = user.wishlist.find(
+    item => item.product.toString() === productId
+  );
+
+  if (wishlistItem) {
+    wishlistItem.quantity += 1;
+  } else {
+    user.wishlist.push({ product: productId, quantity: 1 });
   }
 
-  // Add to wishlist
-  user.wishlist.push(productId);
   await user.save();
 
   res.status(200).json({ message: 'Product added to wishlist' });
 });
 
-// @desc    Remove product from wishlist
-// @route   DELETE /api/users/wishlist/:id
-// @access  Private
 const removeFromWishlist = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const user = await User.findById(req.user._id);
 
-  // Check if product is in wishlist
-  if (!user.wishlist.includes(productId)) {
+  const wishlistIndex = user.wishlist.findIndex(
+    item => item.product.toString() === productId
+  );
+
+  if (wishlistIndex === -1) {
     res.status(400);
     throw new Error('Product not in wishlist');
   }
 
-  // Remove from wishlist
-  user.wishlist = user.wishlist.filter(id => id.toString() !== productId);
+  user.wishlist.splice(wishlistIndex, 1);
   await user.save();
 
   res.status(200).json({ message: 'Product removed from wishlist' });
 });
 
-// @desc    Get user wishlist
-// @route   GET /api/users/wishlist
-// @access  Private
 const getWishlist = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).populate('wishlist');
+  const user = await User.findById(req.user._id).populate('wishlist.product');
   res.json(user.wishlist);
 });
 
-// @desc    Get all users
-// @route   GET /api/users
-// @access  Private/SuperAdmin
 const getUsers = asyncHandler(async (req, res) => {
-  // This route is already restricted to superAdmin in the routes
-  // But adding an extra check for security
-  if (req.user.role !== 'superAdmin') {
+  // Check authorization
+  if (req.user.role !== 'superadmin' && req.user.role !== 'admin') {
     res.status(403);
-    throw new Error('Not authorized to view all users');
+    throw new Error('Not authorized to view users');
   }
   
-  const users = await User.find({}).select('-password');
+  // Build query based on request parameters
+  const query = {};
+  
+  // Filter by role if specified in query params
+  if (req.query.role) {
+    query.role = req.query.role;
+  }
+  
+  const users = await User.find(query).select('-password');
   res.json(users);
 });
 
-// @desc    Delete user
-// @route   DELETE /api/users/:id
-// @access  Private/Admin or SuperAdmin
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
 
@@ -1013,7 +753,6 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
   
-  // Regular admins cannot delete other admins or superAdmins
   if (req.user.role === 'admin' && (user.role === 'admin' || user.role === 'superAdmin')) {
     res.status(403);
     throw new Error('Regular admins cannot delete admin or superAdmin accounts');
@@ -1023,9 +762,6 @@ const deleteUser = asyncHandler(async (req, res) => {
   res.json({ message: 'User removed' });
 });
 
-// @desc    Get user by ID
-// @route   GET /api/users/:id
-// @access  Private/Admin or SuperAdmin
 const getUserById = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id).select('-password');
 
@@ -1034,7 +770,6 @@ const getUserById = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
   
-  // Regular admins cannot view other admins or superAdmins
   if (req.user.role === 'admin' && (user.role === 'admin' || user.role === 'superAdmin')) {
     res.status(403);
     throw new Error('Regular admins cannot view admin or superAdmin profiles');
@@ -1043,9 +778,6 @@ const getUserById = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
-// @desc    Update user
-// @route   PUT /api/users/:id
-// @access  Private/SuperAdmin
 const updateUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
 
@@ -1054,19 +786,16 @@ const updateUser = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
   
-  // Regular admins cannot update other admins or superAdmins
   if (req.user.role === 'admin' && (user.role === 'admin' || user.role === 'superAdmin')) {
     res.status(403);
     throw new Error('Regular admins cannot update admin or superAdmin accounts');
   }
   
-  // Only superAdmin can update roles
   if (req.body.role && req.user.role !== 'superAdmin') {
     res.status(403);
     throw new Error('Only superAdmin can update user roles');
   }
   
-  // Prevent changing role to superAdmin through this endpoint
   if (req.body.role === 'superAdmin' && user.role !== 'superAdmin') {
     res.status(403);
     throw new Error('Cannot promote users to superAdmin role through this endpoint');
@@ -1075,7 +804,6 @@ const updateUser = asyncHandler(async (req, res) => {
   user.name = req.body.name || user.name;
   user.email = req.body.email || user.email;
   
-  // Only update role if provided and authorized (superAdmin only)
   if (req.body.role && req.user.role === 'superAdmin') {
     user.role = req.body.role;
   }
@@ -1090,8 +818,420 @@ const updateUser = asyncHandler(async (req, res) => {
   });
 });
 
+const decrementWishlistItem = asyncHandler(async (req, res) => {
+  const productId = req.params.id;
+  const user = await User.findById(req.user._id);
 
-module.exports = { 
+  const wishlistItem = user.wishlist.find(
+    item => item.product.toString() === productId
+  );
+
+  if (!wishlistItem) {
+    res.status(400);
+    throw new Error('Product not in wishlist');
+  }
+
+  if (wishlistItem.quantity > 1) {
+    wishlistItem.quantity -= 1;
+  } else {
+    user.wishlist = user.wishlist.filter(
+      item => item.product.toString() !== productId
+    );
+  }
+
+  await user.save();
+
+  res.status(200).json({ message: 'Wishlist item updated' });
+});
+
+
+const adminLogin = asyncHandler(async (req, res) => {
+  const { email, password, role, secretKey } = req.body;
+
+  // Validate input
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Please provide email and password' });
+  }
+
+  // Find user by email
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
+
+  // Check if user has the requested role
+  if (user.role !== role) {
+    return res.status(403).json({ 
+      message: `You don't have ${role} privileges. Your role is ${user.role}.` 
+    });
+  }
+
+  // For superadmin, verify secret key
+  if (role === 'superadmin') {
+    const superAdminSecret = process.env.SUPER_ADMIN_SECRET;
+    
+    if (!secretKey || secretKey !== superAdminSecret) {
+      return res.status(401).json({ message: 'Invalid super admin secret key' });
+    }
+  }
+
+  // Check password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  
+  if (!isPasswordValid) {
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
+
+  // Generate token
+  const token = generateToken(user._id);
+
+  // Set cookie
+  res.cookie('jwt', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  // Send response
+  res.status(200).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    token,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    }
+  });
+});
+
+/**
+ * @desc    Promote user to vendor (superadmin only)
+ * @route   PUT /api/users/:id/promote
+ * @access  Private (Superadmin)
+ */
+const promoteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  // Check if the requesting user is authorized (superadmin)
+  if (req.user.role !== 'superadmin') {
+    res.status(403);
+    throw new Error('Not authorized to promote users');
+  }
+
+  // Verify secret key (you should replace this with your actual secret key)
+  const { secretKey, role, businessInfo } = req.body;
+  const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || 'your-secret-key';
+
+  if (secretKey !== ADMIN_SECRET_KEY) {
+    res.status(401);
+    throw new Error('Invalid secret key');
+  }
+
+  // Check if user is already the requested role
+  if (user.role === role) {
+    res.status(400);
+    throw new Error(`User is already a ${role}`);
+  }
+
+  // If promoting to vendor, handle business info
+  if (role === 'vendor') {
+    // Create default business info if not provided
+    const vendorBusinessInfo = businessInfo || {
+      businessName: user.name + "'s Business",
+      businessDescription: "Default business description",
+      contactPhone: "",
+      businessAddress: "",
+      taxId: ""
+    };
+
+    // Update user with vendor role and business info
+    user.role = 'vendor';
+    user.vendorRequest = {
+      status: 'approved',
+      approvalDate: new Date(),
+      businessInfo: vendorBusinessInfo
+    };
+  } else {
+    user.role = role;
+  }
+
+  const updatedUser = await user.save();
+
+  res.json({
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    role: updatedUser.role,
+    message: `User promoted to ${role} successfully`
+  });
+});
+
+const searchUsers = asyncHandler(async (req, res) => {
+  // Check authorization
+  if (req.user.role !== 'superadmin' && req.user.role !== 'admin') {
+    res.status(403);
+    throw new Error('Not authorized to search users');
+  }
+  
+  const { term, role } = req.query;
+  
+  if (!term) {
+    res.status(400);
+    throw new Error('Search term is required');
+  }
+  
+  // Build the query
+  const query = {};
+  
+  // Add role filter if provided
+  if (role) {
+    query.role = role;
+  }
+  
+  // Search by name, email, or ID
+  query.$or = [
+    { name: { $regex: term, $options: 'i' } },
+    { email: { $regex: term, $options: 'i' } }
+  ];
+  
+  // If the term looks like a MongoDB ObjectId, also search by ID
+  if (term.match(/^[0-9a-fA-F]{24}$/)) {
+    query.$or.push({ _id: term });
+  }
+  
+  const users = await User.find(query).select('-password');
+  res.json(users);
+});
+
+const getVendorRequests = asyncHandler(async (req, res) => {
+  const { status = 'pending' } = req.query;
+  
+  const requests = await User.find({
+    'vendorRequest.status': status
+  }).select('-password');
+  
+  res.json(requests);
+});
+
+const getVendorRequestsCount = asyncHandler(async (req, res) => {
+  const count = await User.countDocuments({
+    'vendorRequest.status': 'pending'
+  });
+  
+  res.json({ count });
+});
+
+const handleVendorRequest = asyncHandler(async (req, res) => {
+  const { action, rejectionReason } = req.body;
+  const userId = req.params.id;
+  
+  const user = await User.findById(userId);
+  
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+  
+  if (!user.vendorRequest || user.vendorRequest.status !== 'pending') {
+    res.status(400);
+    throw new Error('No pending vendor request found');
+  }
+  
+  if (action === 'approve') {
+    user.role = 'vendor';
+    user.vendorRequest.status = 'approved';
+    user.vendorRequest.approvalDate = new Date();
+  } else if (action === 'reject') {
+    user.vendorRequest.status = 'rejected';
+    user.vendorRequest.rejectionReason = rejectionReason || 'No reason provided';
+  } else {
+    res.status(400);
+    throw new Error('Invalid action. Must be either "approve" or "reject"');
+  }
+  
+  await user.save();
+  
+  res.json({
+    message: `Vendor request ${action}d successfully`,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      vendorRequest: user.vendorRequest
+    }
+  });
+});
+
+const getMyVendorRequest = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+  
+  if (!user.vendorRequest) {
+    res.status(404);
+    throw new Error('No vendor request found');
+  }
+  
+  res.json(user.vendorRequest);
+});
+
+const submitVendorRequest = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+  
+  // Check if user already has a pending or approved request
+  if (user.vendorRequest && ['pending', 'approved'].includes(user.vendorRequest.status)) {
+    res.status(400);
+    throw new Error(`You already have a ${user.vendorRequest.status} vendor request`);
+  }
+  
+  // Create or update vendor request
+  user.vendorRequest = {
+    status: 'pending',
+    requestDate: new Date(),
+    businessInfo: {
+      businessName: req.body.businessName,
+      businessDescription: req.body.businessDescription,
+      contactPhone: req.body.contactPhone,
+      businessAddress: req.body.businessAddress,
+      taxId: req.body.taxId
+    }
+  };
+  
+  await user.save();
+  
+  res.status(201).json({
+    message: 'Vendor request submitted successfully',
+    vendorRequest: user.vendorRequest
+  });
+});
+
+/**
+ * @desc    Change user role
+ * @route   PUT /api/users/:id/role
+ * @access  Private (Admin, SuperAdmin)
+ */
+const changeUserRole = asyncHandler(async (req, res) => {
+  const { role, secretKey } = req.body;
+  const userId = req.params.id;
+  
+  // Validate input
+  if (!role) {
+    res.status(400);
+    throw new Error('Role is required');
+  }
+  
+  // Validate role value
+  const validRoles = ['user', 'vendor', 'admin', 'superadmin'];
+  if (!validRoles.includes(role.toLowerCase())) {
+    res.status(400);
+    throw new Error('Invalid role');
+  }
+  
+  // Check if the secret key matches any of the environment variables
+  if (
+    secretKey !== process.env.ADMIN_SECRET_KEY && 
+    secretKey !== process.env.SUPER_ADMIN_SECRET
+  ) {
+    res.status(401);
+    throw new Error('Invalid secret key');
+  }
+  
+  // Additional security: Only superadmin can create other superadmins
+  if (role.toLowerCase() === 'superadmin' && req.user.role.toLowerCase() !== 'superadmin') {
+    res.status(403);
+    throw new Error('Only superadmins can create other superadmins');
+  }
+  
+  // Find the user
+  const user = await User.findById(userId);
+  
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+  
+  // Update the role
+  user.role = role.toLowerCase();
+  
+  // Handle vendorRequest status if needed
+  if (role.toLowerCase() === 'vendor') {
+    // If changing to vendor and user has no vendorRequest, create one
+    if (!user.vendorRequest) {
+      user.vendorRequest = {
+        status: 'approved',
+        approvalDate: new Date(),
+        businessInfo: {
+          businessName: `${user.name}'s Business`,
+          businessDescription: 'Auto-generated for role change',
+          contactPhone: '',
+          businessAddress: '',
+          taxId: ''
+        }
+      };
+    } else {
+      // If user already has a vendorRequest, just update the status
+      user.vendorRequest.status = 'approved';
+    }
+  } else if (user.vendorRequest) {
+    // If changing from vendor to another role and user has a vendorRequest
+    // Instead of setting to 'none', either use a valid enum value or unset the field
+    if (role.toLowerCase() !== 'vendor') {
+      // Option 1: Set to a valid enum value
+      user.vendorRequest.status = 'rejected';
+      
+      // Option 2: If you want to completely remove the vendorRequest field
+      // Uncomment the line below instead of using Option 1
+      // user.vendorRequest = undefined;
+    }
+  }
+  
+  // Save the updated user
+  try {
+    await user.save();
+    
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      message: `User role updated to ${role}`
+    });
+  } catch (error) {
+    res.status(400);
+    throw new Error(`Error updating user: ${error.message}`);
+  }
+});
+
+module.exports = {
+  changeUserRole,
+  getVendorRequestsCount,
+  getVendorRequests,
+  handleVendorRequest,
+  getMyVendorRequest,
+  submitVendorRequest,
+  searchUsers,
+  promoteUser,
+  decrementWishlistItem,
   authUser, 
   registerUser, 
   getUserProfile, 
@@ -1112,5 +1252,6 @@ module.exports = {
   makeUserAdmin,
   uploadProfileImage,
   resetUserPassword,
-  forgotUserPassword
+  forgotUserPassword,
+  adminLogin
 };
