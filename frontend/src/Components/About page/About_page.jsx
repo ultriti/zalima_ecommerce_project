@@ -1,15 +1,62 @@
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar_frame from "../Common frames/Navbar_frame";
-
+import gsap from "gsap";
+import Footer_frame from "../Common frames/Footer_frame";
+gsap.registerPlugin(ScrollTrigger)
 
 const About = () => {
+
+  useGSAP(()=>{
+    gsap.from(".about_p_1",{
+      y:100,
+      duration:1,
+    })
+    gsap.from(".ap_1_text",{
+      x:-100,
+      duration:1,
+    })
+    gsap.from(".about_p_1_img",{
+      x:100,
+      duration:1,
+    })
+
+    gsap.from(".ap_2_cont",{
+      y:100,
+      duration:1,
+      scrollTrigger:{
+        trigger:".ap_2_cont",
+        start: "top 100%",
+        end: "top 0%",
+        scrub:2,
+        markers:true,
+      }
+    })
+  
+    gsap.from(".ap_2_elem_div",{
+      y:100,
+      duration:1.3,
+      scrollTrigger:{
+        trigger:".ap_2_cont",
+        start: "top 100%",
+        end: "top 0%",
+        scrub:2,
+        markers:true,
+      }
+    })
+  
+
+    
+  })
+
   return (
     <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen text-gray-800">
       <div className="Navbar_frame sticky top-0 z-50 bg-white shadow-md">
         <Navbar_frame />
       </div>
 
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="text-center mb-12">
+      <section className="about_p_1 h-[90vh]  max-w-7xl mx-auto px-6 py-16">
+        <div className=" text-center mb-12">
           <h1 className="text-4xl font-bold text-blue-700 mb-4">About Trendify</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Revolutionizing the fashion industry with AI-powered e-commerce experiences.
@@ -17,7 +64,7 @@ const About = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-10 items-center">
-          <div className="space-y-6">
+          <div className="ap_1_text space-y-6">
             <h2 className="text-2xl font-semibold text-blue-600">Our Mission</h2>
             <p className="text-gray-700 leading-relaxed">
               At <strong>Trendify</strong>, we're redefining how fashion meets technology. Our mission is
@@ -36,15 +83,15 @@ const About = () => {
           <img
             src="../../../public/images/6505894.jpg"
             alt="Trendify Shopping AI"
-            className="rounded-2xl shadow-lg object-cover max-h-[450px] w-full"
+            className="about_p_1_img rounded-2xl shadow-lg object-cover max-h-[450px] w-full"
           />
         </div>
       </section>
 
-      <section className="bg-blue-100 py-14">
+      <section className="ap_2_cont bg-blue-100 py-14">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-blue-800 mb-10">What Powers Trendify?</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+          <div className="ap_2_elem_div grid sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
             {[
               { title: 'MERN Stack', desc: 'Built with MongoDB, Express, React, and Node.js for scalable development.' },
               { title: 'AI & ML', desc: 'Integrated TensorFlow.js & Google Vision for smart search & outfit recommendations.' },
@@ -75,6 +122,10 @@ const About = () => {
             <a href='/'>Explore Products</a>
           </button>
         </div>
+        <div className="footer_frame_ mt-10">
+                <Footer_frame />
+            </div>
+
       </section>
     </div>
   );
