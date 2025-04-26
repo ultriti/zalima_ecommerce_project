@@ -3,6 +3,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar_frame from "../Common frames/Navbar_frame";
 import gsap from "gsap";
 import Footer_frame from "../Common frames/Footer_frame";
+
 gsap.registerPlugin(ScrollTrigger)
 
 const About = () => {
@@ -29,7 +30,6 @@ const About = () => {
         start: "top 100%",
         end: "top 0%",
         scrub:2,
-        markers:true,
       }
     })
   
@@ -41,7 +41,6 @@ const About = () => {
         start: "top 100%",
         end: "top 0%",
         scrub:2,
-        markers:true,
       }
     })
   
@@ -54,6 +53,8 @@ const About = () => {
       <div className="Navbar_frame sticky top-0 z-50 bg-white shadow-md">
         <Navbar_frame />
       </div>
+
+    
 
       <section className="about_p_1 h-[90vh]  max-w-7xl mx-auto px-6 py-16">
         <div className=" text-center mb-12">

@@ -29,6 +29,7 @@ import ManageAdmins from './Components/Admin/ManageAdmins';
 import ManageVendors from './Components/Admin/ManageVendors';
 import AdminDashboard from './Components/Admin/AdminDashboard';
 import AdminProfile from './Components/Admin/AdminProfile';
+import Contact_page from './Components/contact_page/Contact_page'
 
 // Role-based route protection
 const RoleProtectedRoute = ({ children, allowedRoles }) => {
@@ -65,6 +66,7 @@ const App = () => {
         {/* Basic Routes */}
         <Route path="/" element={<Home_page />} />
         <Route path="/user/about" element={<About />} />
+        <Route path="/user/contact" element={<Contact_page />} />
         <Route path="/products/allProducts" element={<AllProduct />} />
         <Route path="/product/productsTemp/:id" element={<Product_details_template />} />
         <Route path="/unauthorized" element={<div className="p-10 text-center"><h1 className="text-2xl">Unauthorized Access</h1><p>You don't have permission to access this page.</p></div>} />

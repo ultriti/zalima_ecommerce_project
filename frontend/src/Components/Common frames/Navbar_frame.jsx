@@ -77,7 +77,7 @@ const Navbar_frame = () => {
                 About Us
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 to="/user/register"
                 className={({ isActive }) =>
@@ -86,7 +86,7 @@ const Navbar_frame = () => {
               >
                 Signup
               </NavLink>
-            </li>
+            </li> */}
             <li>
               <NavLink
                 to="/user/profile"

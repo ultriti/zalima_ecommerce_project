@@ -51,9 +51,6 @@ const User_info_display = () => {
         `${import.meta.env.VITE_BASE_URI}/api/users/upload-profile-image`,
         formData,
         {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
           withCredentials: true,
         }
       );
