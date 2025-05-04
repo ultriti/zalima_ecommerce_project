@@ -15,6 +15,8 @@ import items_ from "../Product_pages/products.json"
 const Homepage2_templates = (props) => {
     const [items, setitems] = useState([...items_])
 
+
+
     return (
         <div className='p-[0.5vw] h-[60vh] w-full  rounded-[2vw] overflow-hidden'>
             <Swiper
@@ -41,16 +43,19 @@ const Homepage2_templates = (props) => {
                         .filter((item) => item.category === `${props.category}`) // Filter items by category "men"
                         .map((filteredItem, index) => (
                             <SwiperSlide className='swiper_slider_cln' key={index}>
-                                <a href={`/product/productsTemp/${filteredItem._id}`} className='relative h-full w-full'>
+                                {/* <a href={`/product/productsTemp/${filteredItem._id}`} className='relative h-full w-full'> */}
                                     <div className="home_p_products_card_ bg-red-400 rounded-[20px]">
                                         <ProductCard
+                                            filId = {filteredItem._id}
                                             name={filteredItem.name}
                                             product_img={filteredItem.image}
                                             price={filteredItem.price}
                                             offer={filteredItem.offer}
+                                            item_={filteredItem}
+                                            quantity={filteredItem.countInStock}
                                         />
                                     </div>
-                                </a>
+                                {/* </a> */}
                             </SwiperSlide>
                         ))
                     }

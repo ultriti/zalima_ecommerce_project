@@ -6,6 +6,8 @@ import logo from "../../../public/images/logo.svg"
 
 
 const Navbar_frame = () => {
+  const role = localStorage.getItem('userRole')
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -88,7 +90,9 @@ const Navbar_frame = () => {
               </NavLink>
             </li> */}
             <li>
-              <NavLink
+              {
+            
+                  <NavLink
                 to="/user/profile"
                 className={({ isActive }) =>
                   `${baseLink} ${isActive ? activeLink : inactiveLink}`
@@ -96,6 +100,9 @@ const Navbar_frame = () => {
               >
                 <img src={user_profile_pic} alt="Profile" className="h-6 w-6 rounded-full" />
               </NavLink>
+               
+              }
+              
             </li>
           </ul>
         </div>

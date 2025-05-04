@@ -86,10 +86,10 @@ const Website_features = () => {
             <a href="/user/profile"><span className="text-gray-600 text-xs">My Account</span></a>
           </div>
           <div className="flex flex-col items-center">
-            <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4h16v16H4z" />
-            </svg>
-            <span className="text-gray-600 text-xs">Cart (0)</span>
+            </svg> */}
+            <a href="/user/cart"><span className="text-gray-600 text-xs">Cart (0)</span></a>
           </div>
         </div>
       </div>

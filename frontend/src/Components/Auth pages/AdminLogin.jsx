@@ -52,7 +52,7 @@ const AdminLogin = () => {
         } else if (response.data.user.role === 'admin') {
           navigate('/admin/dashboard');
         } else if (response.data.user.role === 'vendor') {
-          navigate('/vendor/dashboard');
+          navigate(`/vendor/dashboard/${response.data.user._id}`);
         }
       }
     } catch (err) {

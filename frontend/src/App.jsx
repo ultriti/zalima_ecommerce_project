@@ -30,20 +30,22 @@ import ManageVendors from './Components/Admin/ManageVendors';
 import AdminDashboard from './Components/Admin/AdminDashboard';
 import AdminProfile from './Components/Admin/AdminProfile';
 import Contact_page from './Components/contact_page/Contact_page'
+import CartPage from './Components/Product_pages/CartPage'
+import PaymentListPage from './Components/Payment Page/PaymentListPage'
 
 // Role-based route protection
 const RoleProtectedRoute = ({ children, allowedRoles }) => {
   const userRole = localStorage.getItem('userRole');
   const isAuthenticated = !!localStorage.getItem('token');
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/admin/signin" replace />;
   }
-  
+
   if (!allowedRoles.includes(userRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
-  
+
   return children;
 };
 
@@ -54,68 +56,68 @@ const App = () => {
     };
 
     window.addEventListener('error', handleError);
-    
+
     return () => {
       window.removeEventListener('error', handleError);
     };
   }, []);
-  
+
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Routes>
         {/* Basic Routes */}
         <Route path="/" element={<Home_page />} />
         <Route path="/user/about" element={<About />} />
+        <Route path="/user/cart" element={<CartPage />} />
         <Route path="/user/contact" element={<Contact_page />} />
         <Route path="/products/allProducts" element={<AllProduct />} />
         <Route path="/product/productsTemp/:id" element={<Product_details_template />} />
         <Route path="/unauthorized" element={<div className="p-10 text-center"><h1 className="text-2xl">Unauthorized Access</h1><p>You don't have permission to access this page.</p></div>} />
-        
+
         {/* Auth Routes with multiple paths */}
         <Route path="/register" element={<Register_pages />} />
         <Route path="/signup" element={<Register_pages />} />
         <Route path="/user/register" element={<Register_pages />} />
         <Route path="/user/signup" element={<Register_pages />} />
-        
+
         <Route path="/login" element={<Login_page />} />
         <Route path="/signin" element={<Login_page />} />
         <Route path="/user/login" element={<Login_page />} />
         <Route path="/user/signin" element={<Login_page />} />
-        
+
         <Route path="/login-otp" element={<Login_otp_page />} />
         <Route path="/user/login-otp" element={<Login_otp_page />} />
-        
+
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/user/forgot-password" element={<ForgotPassword />} />
-        
+
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/user/reset-password/:token" element={<ResetPassword />} />
-        
-        <Route path="/logout" element={<Logout_page />} />
+
+        {/* <Route path="/logout" element={<Logout_page />} /> */}
         <Route path="/user/logout" element={<Logout_page />} />
-        
+
         {/* Admin Auth */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/signin" element={<AdminLogin />} />
-        
+
         {/* Protected User Routes */}
-        <Route path="/profile" element={<UserProtectedWrapper><Profile_page /></UserProtectedWrapper>} />
         <Route path="/user/profile" element={<UserProtectedWrapper><Profile_page /></UserProtectedWrapper>} />
-        
+
         <Route path="/manage-profile" element={<UserProtectedWrapper><ManageProfile /></UserProtectedWrapper>} />
         <Route path="/user/manage_profile" element={<UserProtectedWrapper><ManageProfile /></UserProtectedWrapper>} />
-        
+
         <Route path="/orders" element={<UserProtectedWrapper><Order_page /></UserProtectedWrapper>} />
         <Route path="/user/orders" element={<UserProtectedWrapper><Order_page /></UserProtectedWrapper>} />
-        
+
         <Route path="/address" element={<UserProtectedWrapper><Address_page /></UserProtectedWrapper>} />
         <Route path="/user/address_" element={<UserProtectedWrapper><Address_page /></UserProtectedWrapper>} />
-        
+
         <Route path="/become-vendor" element={<UserProtectedWrapper><VendorRequestForm /></UserProtectedWrapper>} />
         <Route path="/user/become-vendor" element={<UserProtectedWrapper><VendorRequestForm /></UserProtectedWrapper>} />
-        
+
         {/* Vendor Routes */}
-        <Route path="/vendor/dashboard" element={
+        <Route path="/vendor/dashboard/:id" element={
           <RoleProtectedRoute allowedRoles={['vendor']}>
             <VendorDashboard />
           </RoleProtectedRoute>
@@ -125,7 +127,7 @@ const App = () => {
             <AddProduct />
           </RoleProtectedRoute>
         } />
-        
+
         {/* Admin Routes */}
         <Route path="/admin/dashboard" element={
           <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
@@ -157,15 +159,19 @@ const App = () => {
             <ManageVendorRequests />
           </RoleProtectedRoute>
         } />
-        
+
         {/* Super Admin Routes */}
         <Route path="/superadmin/dashboard" element={<DashboardLayout />} />
-        
+
         {/* Redirects for common paths */}
         <Route path="/user" element={<Navigate to="/user/profile" replace />} />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/vendor" element={<Navigate to="/vendor/dashboard" replace />} />
-        
+
+        {/* user paymet pages */}
+
+        <Route path="/user/payment" element={<PaymentListPage />} />
+
         {/* 404 Route - must be last */}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
