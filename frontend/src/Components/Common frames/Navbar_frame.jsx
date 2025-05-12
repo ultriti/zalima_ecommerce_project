@@ -79,6 +79,16 @@ const Navbar_frame = () => {
                 About Us
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to="/products/allProducts"
+                className={({ isActive }) =>
+                  `${baseLink} ${isActive ? activeLink : inactiveLink}`
+                }
+              >
+                product
+              </NavLink>
+            </li>
             {/* <li>
               <NavLink
                 to="/user/register"

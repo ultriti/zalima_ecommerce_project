@@ -3,10 +3,15 @@ import "./Website_features.css"
 import { useNavigate } from 'react-router-dom';
 import items from "../Product_pages/products.json"
 
+import cartSvg from  "../../../public/images/cart.svg"
+
 const Website_features = () => {
   const nav = useNavigate()
   const [value, setvalue] = useState('');
   const [search_list_frame_bool, setsearch_list_frame_bool] = useState(false)
+
+  let items = JSON.parse(localStorage.getItem("myItems")) || [];
+  const items_length = items.length;
 
   const search_frame_display = () => {
 
@@ -86,10 +91,13 @@ const Website_features = () => {
             <a href="/user/profile"><span className="text-gray-600 text-xs">My Account</span></a>
           </div>
           <div className="flex flex-col items-center">
-            {/* <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4h16v16H4z" />
-            </svg> */}
-            <a href="/user/cart"><span className="text-gray-600 text-xs">Cart (0)</span></a>
+              
+            <a href="/user/cart"><span className="text-gray-600 text-xs flex flex-col items-center justify-center">
+            <div className="svg_img h-[2vw] w-[2vw] p-1">
+                <img src={cartSvg} alt=""  className='h-full w-full object-contain '/>
+              </div>
+              Cart ({items_length})
+              </span></a>
           </div>
         </div>
       </div>
