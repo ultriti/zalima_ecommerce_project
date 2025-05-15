@@ -171,6 +171,23 @@ function AllProduct() {
     setfilteredItems(tempItems);
   };
 
+  // add to cart
+   const add_to_cart_handle = (newItem) => {
+  
+      let items_ = JSON.parse(localStorage.getItem("myItems")) || [];
+      console.log(items_.map(item => item.name));
+      if (items_.map(item => item.name).includes(newItem.name) === true) {
+        alert('item already in cart')
+        return;
+      } else {
+        items_.push(newItem);
+        // Save back to local storage
+        localStorage.setItem("myItems", JSON.stringify(items_));
+        toast.success('added to cart successfully');
+      }
+  
+    }
+
   return (
     <div className='getAllProducts_frame'>
 
@@ -225,11 +242,13 @@ function AllProduct() {
               {
                 filteredItems.length > 0 ? (
                   filteredItems.map((item, index) => (
-                    <a href={`/product/productsTemp/${item._id}`} key={index}>
-                      <div className="productTemplate_frame flex bg-blue-200 items-center justify-center overflow-hidden">
-                        <ProductCard name={item.name} product_img={item.image} price={item.price} offer={item.offer} />
+                    
+                      <div className="productTemplate_frame flex bg-blue-200 items-center justify-center overflow-hidden" key={index}>
+                        <ProductCard item_={item} filId={item._id} name={item.name} product_img={item.image} price={item.price} offer={item.offer} />
                       </div>
-                    </a>
+                    
+
+
                   ))
                 ) : (
                   <h1>No products found</h1>

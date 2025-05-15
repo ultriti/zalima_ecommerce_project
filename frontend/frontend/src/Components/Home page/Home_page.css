@@ -1,0 +1,30 @@
+.home_page_frame{
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.home_page_cont{
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.Home_page_main_frame{
+    min-height: 300vh;
+    width: 100%;
+    flex-direction: column;
+    display: flex;
+    margin-top: 20vh;
+}
+
+@media (max-width:800px) {
+    .Home_page_main_frame{
+        margin-top: 13vh;
+        padding: 0 2vw;
+    }
+}

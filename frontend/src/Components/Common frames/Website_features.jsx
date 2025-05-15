@@ -99,6 +99,12 @@ const Website_features = () => {
               Cart ({items_length})
               </span></a>
           </div>
+          <div className="flex flex-col items-center">
+              
+            <a href="/user/wishlist"><span className="text-gray-600 text-xs flex flex-col items-center justify-center">
+              Wishlist ({items_length})
+              </span></a>
+          </div>
         </div>
       </div>
 

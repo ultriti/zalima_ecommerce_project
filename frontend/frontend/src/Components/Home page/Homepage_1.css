@@ -1,0 +1,41 @@
+.home_page_1_frame{
+    height: 90vh;
+    width: 100%;
+}
+.swiper_{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.home_p_products_card_{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position:relative;
+    cursor: pointer;
+}
+
+.product_hp1_overlay_div{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.679);
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    
+}
+
+@media (max-width: 768px) {
+    .home_page_1_frame {
+        width: 100%;
+        height: 50vh;
+    }
+}

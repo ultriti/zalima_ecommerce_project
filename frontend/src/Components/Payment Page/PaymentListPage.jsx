@@ -7,10 +7,6 @@ const paymentMethods = [
     { id: 2, name: "PhonePay", icon: "🛜" },
     { id: 2, name: "PayPal", icon: "🛜" },
     { id: 3, name: "Pay in 3 with PayPal", icon: "📱" },
-    { id: 4, name: "Pay Later with Klarna", icon: "⏳" },
-    { id: 5, name: "Pay in 3 with Klarna", icon: "🔄" },
-    { id: 6, name: "Clearpay", icon: "🏦" },
-    { id: 6, name: "other Upi", icon: "📱" },
 ];
 
 const PaymentListPage = () => {
