@@ -31,8 +31,8 @@ import AdminDashboard from './Components/Admin/AdminDashboard';
 import AdminProfile from './Components/Admin/AdminProfile';
 import Contact_page from './Components/contact_page/Contact_page'
 import CartPage from './Components/Product_pages/CartPage'
-import PaymentListPage from './Components/Payment Page/PaymentListPage'
 import PayPalPayment from './Components/Payment Page/Paypal_page'
+import PurchaseCoformation from './Components/Product_pages/PurchaseCoformation'
 // import StripePayment from './Components/Payment Page/card_payments_page'
 
 // Role-based route protection
@@ -173,8 +173,7 @@ const App = () => {
         {/* user paymet pages */}
 
         <Route path="/user/paypal" element={<PayPalPayment />} />
-        {/* <Route path="/user/card" element={<StripePayment />} /> */}
-        {/* <Route path="/user/payment" element={<PaymentListPage />} /> */}
+        <Route path="/user/payment_conform" element={<PurchaseCoformation />} />
 
         {/* 404 Route - must be last */}
         <Route path="*" element={<PageNotFound />} />

@@ -108,6 +108,21 @@ app.use('/api/payment', paymentRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
+app.post('/webhook/paypal', async (req, res) => {
+    const event = req.body;
+
+    if (event.event_type === "PAYMENT.CAPTURE.COMPLETED") {
+        const orderId = event.resource.id;
+        console.log("Payment successful for order:", orderId);
+
+        // Update order status in your database
+        await updateOrderStatus(orderId, "COMPLETED");
+    }
+
+    res.status(200).json({msg:"payment succefull"});
+});
+
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

@@ -90,8 +90,8 @@ const CartPage = () => {
                         <span>Subtotal</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                     </div>
-                    <button onClick={() => nav(`/user/paypal?amount=${subtotal.toFixed(2)}`)} className="bg-orange-500 text-white w-full py-2 mt-4">
-                        CHECKOUT
+                    <button onClick={() => nav(`/user/payment_conform?amount=${subtotal.toFixed(2)}`)} className="bg-orange-500 text-white w-full py-2 mt-4">
+                       select your address
                     </button>
                 </div>
             </div>
