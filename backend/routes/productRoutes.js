@@ -6,7 +6,6 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
-  getProductsByCategory,
   searchProducts,
   createProductReview,
 } = require('../controllers/productController');
@@ -30,9 +29,8 @@ const validateReview = [
   check('comment').trim().notEmpty().withMessage('Comment is required'),
 ];
 
-router.route('/category/:category').get(getProductsByCategory);
-router.route('/:id/reviews').post(protect, restrictToUser, validateReview, createProductReview);
 router.route('/search').get(validateSearch, searchProducts);
+router.route('/:id/reviews').post(protect, restrictToUser, validateReview, createProductReview);
 
 router
   .route('/')

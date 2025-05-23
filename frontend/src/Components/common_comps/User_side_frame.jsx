@@ -5,11 +5,13 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 
 const User_side_frame = () => {
+  const role = localStorage.getItem('userRole')
+  const userId = localStorage.getItem('userId')
   const location = useLocation();
 
   useGSAP(() => {
 
-    if(location.pathname == "/user/profile"){
+    if (location.pathname == "/user/profile") {
       gsap.from('.user-navigate-link', {
         opacity: 0,
         y: 20,
@@ -18,7 +20,7 @@ const User_side_frame = () => {
         ease: 'power2.out',
       });
     }
-    
+
 
   }, [location.pathname]);
 
@@ -34,6 +36,39 @@ const User_side_frame = () => {
   return (
     <div className="h-[calc(100vh-64px)] w-full md:w-64 bg-[#1d4194] text-white p-4 shadow-lg rounded-none md:rounded-r-xl fixed top-[64px] left-0 z-10">
       <ul className="space-y-2 mt-6">
+        {
+          role == 'admin' ? (
+            <li key={index}>
+              <Link to={"/admin/dashboard"}>
+                <div
+                  className={`user-navigate-link flex items-center gap-2 px-4 py-3 rounded-md transition-colors duration-200
+                    ${isActive ? 'bg-[#132b63]' : 'hover:bg-[#132b63]'} 
+              
+                    `}
+                >
+                  {/* {link.icon && (
+                    <img src={link.icon} alt="icon" className="w-5 h-5" />
+                  )} */}
+                  admin
+                </div>
+              </Link>
+            </li>
+          ):(<></>)
+        }
+        {
+          role == 'vendor' ? (
+            <li>
+              <Link to={`/vendor/dashboard/${userId}`}>
+                <div
+                  className={`user-navigate-link flex items-center gap-2 px-4 py-3 rounded-md transition-colors duration-200`}
+                >
+                  admin
+                </div>
+              </Link>
+            </li>
+          ):(<></>)
+        }
+
         {links.map((link, index) => {
           const isActive = location.pathname === link.to;
           return (

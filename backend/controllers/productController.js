@@ -1,12 +1,27 @@
 const asyncHandler = require('express-async-handler');
 const Product = require('../models/productModel');
 
-// @desc    Fetch all products
-// @route   GET /api/products
+// @desc    Fetch all products with optional filters
+// @route   GET /api/products?category=<category>&featured=<true/false>&limit=<number>
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({});
-  res.json(products);
+  const { category, featured, limit } = req.query;
+  const query = {};
+
+  if (category) {
+    query.category = category;
+  }
+  if (featured === 'true') {
+    query.featured = true;
+  }
+
+  let productsQuery = Product.find(query);
+  if (limit) {
+    productsQuery = productsQuery.limit(parseInt(limit));
+  }
+
+  const products = await productsQuery;
+  res.json(products); // Return products array, even if empty
 });
 
 // @desc    Fetch single product
@@ -39,6 +54,7 @@ const createProduct = asyncHandler(async (req, res) => {
     countInStock,
     numReviews: 0,
     description,
+    featured: false, // Default to false
   });
 
   const createdProduct = await product.save();
@@ -49,7 +65,7 @@ const createProduct = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock } = req.body;
+  const { name, price, description, image, brand, category, countInStock, featured } = req.body;
 
   const product = await Product.findById(req.params.id);
 
@@ -61,6 +77,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.brand = brand || product.brand;
     product.category = category || product.category;
     product.countInStock = countInStock || product.countInStock;
+    product.featured = typeof featured === 'boolean' ? featured : product.featured;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
@@ -99,20 +116,6 @@ const searchProducts = asyncHandler(async (req, res) => {
     : {};
 
   const products = await Product.find({ ...keyword });
-  res.json(products);
-});
-
-// @desc    Get products by category
-// @route   GET /api/products/category/:category
-// @access  Public
-const getProductsByCategory = asyncHandler(async (req, res) => {
-  const products = await Product.find({ category: req.params.category });
-  
-  if (products.length === 0) {
-    res.status(404);
-    throw new Error('No products found in this category');
-  }
-  
   res.json(products);
 });
 
@@ -156,14 +159,12 @@ const createProductReview = asyncHandler(async (req, res) => {
   }
 });
 
-// Only have one module.exports at the end of the file
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
-  getProductsByCategory,
   searchProducts,
-  createProductReview
+  createProductReview,
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import User_side_frame from '../common_comps/User_side_frame';
 import axios from 'axios';
-import Navbar_frame from '../Common frames/Navbar_frame';
+import Navbar_frame from '../Common_frames/Navbar_frame';
 import { toast } from 'react-toastify';
 
 const MAX_ADDRESSES = 5;

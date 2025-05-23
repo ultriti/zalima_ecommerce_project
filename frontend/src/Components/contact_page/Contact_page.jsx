@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar_frame from '../Common frames/Navbar_frame';
+import Navbar_frame from '../Common_frames/Navbar_frame';
 import User_side_frame from "../common_comps/User_side_frame";
 import "../Profile page/Order_page.css"
 

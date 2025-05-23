@@ -6,16 +6,17 @@ const logger = require('../utils/logger');
 // Protect routes
 const protect = asyncHandler(async (req, res, next) => {
   let token;
-  let demo = req.cookies.jwt;
-  console.log('token',demo);
-  
-  
 
-  // Check for token in headers
-  if (req.cookies.token || req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  // Log the Authorization header and cookies for debugging
+  console.log('Authorization header:', req.headers.authorization);
+  console.log('Cookies:', req.cookies);
+
+  // Check for token in headers or cookies
+  if (req.cookies.token || (req.headers.authorization && req.headers.authorization.startsWith('Bearer'))) {
     try {
-      // Get token from header
-      token =req.cookies.token || req.headers.authorization.split(' ')[1] ;
+      // Get token from header or cookies
+      token = req.cookies.token || req.headers.authorization.split(' ')[1];
+      console.log('Token used:', token); // Log the actual token being used
 
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -35,9 +36,7 @@ const protect = asyncHandler(async (req, res, next) => {
       res.status(401);
       throw new Error('Not authorized, token failed');
     }
-  }
-
-  if (!token) {
+  } else {
     logger.warn(`Auth failed: No token provided`);
     res.status(401);
     throw new Error('Not authorized, no token');
@@ -46,7 +45,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
 // Admin middleware
 const admin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {  // Changed from req.user.isAdmin to req.user.role === 'admin'
+  if (req.user && req.user.role === 'admin') {
     next();
   } else {
     logger.warn(`Admin access denied for user: ${req.user ? req.user._id : 'unknown'}`);
@@ -88,7 +87,6 @@ const verified = (req, res, next) => {
   }
 };
 
-
 /**
  * Middleware for role-based authorization
  * @param {...String} roles - Allowed roles for the route
@@ -121,7 +119,7 @@ const ownerOrAdmin = (getResourceUserId) => {
     }
     
     // Allow admins and super admins
-    if (req.user.role === 'admin' || req.user.role === 'superadmin') {  // Changed from 'superAdmin' to 'superadmin'
+    if (req.user.role === 'admin' || req.user.role === 'superadmin') {
       return next();
     }
     

@@ -7,9 +7,9 @@ import laptop4 from '../../../public/images/facebook_icon.svg'
 
 import { useParams } from "react-router-dom"
 import items from "./products.json"
-import Navbar_frame from "../Common frames/Navbar_frame";
-import Website_features from "../Common frames/Website_features";
-import Footer_frame from "../Common frames/Footer_frame";
+import Navbar_frame from "../Common_frames/Navbar_frame";
+import Website_features from "../Common_frames/Website_features";
+import Footer_frame from "../Common_frames/Footer_frame";
 import { toast } from 'react-toastify';
 
 

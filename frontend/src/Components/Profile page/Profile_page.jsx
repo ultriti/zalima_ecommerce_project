@@ -1,8 +1,8 @@
 import React from 'react';
 import User_side_frame from '../common_comps/User_side_frame';
-import User_info_display from './user_info_display';
+import User_info_display from './User_info_display';
 import '../../index.css';
-import Navbar_frame from '../Common frames/Navbar_frame';
+import Navbar_frame from '../Common_frames/Navbar_frame';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Profile_page = () => {

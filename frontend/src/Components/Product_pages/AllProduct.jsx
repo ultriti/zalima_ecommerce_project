@@ -120,10 +120,10 @@
 // -------------------------------------
 import React, { useEffect, useState } from 'react';
 import "./AllProduct.css";
-import Navbar_frame from '../Common frames/Navbar_frame';
-import Website_features from '../Common frames/Website_features';
+import Navbar_frame from '../Common_frames/Navbar_frame';
+import Website_features from '../Common_frames/Website_features';
 import items_ from "./products.json";
-import Footer_frame from '../Common frames/Footer_frame';
+import Footer_frame from '../Common_frames/Footer_frame';
 import ProductCard from './ProductCard';
 import Slider from '@mui/material/Slider';
 

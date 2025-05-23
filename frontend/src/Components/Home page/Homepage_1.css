@@ -1,41 +1,227 @@
-.home_page_1_frame{
-    height: 90vh;
-    width: 100%;
-}
-.swiper_{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+css
+/* Enhanced Homepage_1.css with styling inspiration from Navbar_frame.css */
 
-.home_p_products_card_{
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    position:relative;
-    cursor: pointer;
+.home_page_1_frame {
+  height: 90vh;
+  width: 100%;
+  position: relative;
+  background-color: #f5f7fa; /* Light background like the navbar */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+  border-radius: 2vw;
+  margin-top: 5vw; /* Add space for fixed navbar */
+  overflow: hidden;
+  transition: all 0.3s ease; /* Smooth transitions */
 }
 
-.product_hp1_overlay_div{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.679);
-    display: none;
-    justify-content: center;
-    align-items: center;
-
-    
+.swiper_ {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Add animation for swiper similar to navbar animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.swiper-slide-active {
+  animation: slideIn 0.5s ease forwards;
+}
+
+/* Add styles for navigation buttons like navbar button styles */
+.swiper-button-next,
+.swiper-button-prev {
+  background-color: #0369a1; /* Match navbar button blue */
+  color: white !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: #075985; /* Darker on hover like navbar */
+  transform: scale(1.1); /* Grow effect like navbar */
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 18px !important;
+}
+
+/* Style pagination to match navbar aesthetics */
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background-color: rgba(3, 126, 179, 0.5); /* Semi-transparent blue */
+  transition: all 0.2s ease;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #037eb3; /* Matches navbar blue */
+  transform: scale(1.2); /* Slightly larger */
+}
+
+.home_p_products_card_ {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow like navbar elements */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+.home_p_products_card_:hover {
+  transform: translateY(-5px); /* Lift effect on hover like navbar links */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+}
+
+.product_hp1_overlay_div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75); /* Slightly darker for better readability */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: opacity 0.3s ease; /* Smooth fade */
+}
+
+/* Add shine effect like navbar logo */
+@keyframes shine {
+  100% {
+    left: 125%;
+  }
+}
+
+.home_p_products_card_::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  z-index: 2;
+  display: block;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%);
+  transform: skewX(-25deg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.home_p_products_card_:hover::before {
+  animation: shine 0.7s;
+  opacity: 1;
+}
+
+/* Style product details */
+.product_details_container {
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 0 0 20px 20px;
+  transition: transform 0.3s ease;
+}
+
+/* Style buttons in product overlay */
+.product-button {
+  background-color: #0369a1; /* Match navbar button blue */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.product-button:hover {
+  background-color: #075985; /* Darker on hover */
+  transform: translateY(-2px); /* Slight lift effect like navbar */
+}
+
+/* Style product card image */
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.home_p_products_card_:hover .product-image {
+  transform: scale(1.05); /* Zoom effect on hover */
+}
+
+/* Overlay content animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.overlay-content {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Responsive design improvements */
 @media (max-width: 768px) {
-    .home_page_1_frame {
-        width: 100%;
-        height: 50vh;
-    }
+  .home_page_1_frame {
+    height: 60vh; /* Increased from 50vh for better visibility */
+    margin-top: 12vw; /* More space for navbar on mobile */
+  }
+  
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 14px !important;
+  }
+  
+  /* Better mobile card layout */
+  .product-overlay-content {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  /* Improved button placement on mobile */
+  .mobile-button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 1rem;
+  }
+}
+
+/* Medium screens */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .home_page_1_frame {
+    height: 70vh;
+  }
 }

@@ -1,8 +1,8 @@
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Navbar_frame from "../Common frames/Navbar_frame";
+import Navbar_frame from "../Common_frames/Navbar_frame";
 import gsap from "gsap";
-import Footer_frame from "../Common frames/Footer_frame";
+import Footer_frame from "../Common_frames/Footer_frame";
 
 gsap.registerPlugin(ScrollTrigger)
 

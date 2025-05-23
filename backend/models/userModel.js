@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const crypto = require("crypto");
 
 const userSchema = mongoose.Schema(
   {
@@ -10,13 +9,15 @@ const userSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
       unique: true,
+      sparse: true,
+      trim: true,
+      lowercase: true,
     },
     password: {
       type: String,
       required: function () {
-        return !this.googleLogin;  // only required if not Google login
+        return !this.googleLogin; // only required if not Google login
       }
     },
     // Add role field for role-based access
@@ -35,7 +36,7 @@ const userSchema = mongoose.Schema(
         type: String,
         default: '/images/default-user.png',
       },
-    },    
+    },
     // Add wishlist for user favorites
     googleLogin: {
       type: Boolean,
@@ -54,6 +55,32 @@ const userSchema = mongoose.Schema(
         }
       }
     ],
+    // Add cart functionality
+    cart: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Product',
+          required: true
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+          min: 1,
+          required: true
+        },
+        addedAt: {
+          type: Date,
+          default: Date.now
+        },
+        // Optional: Store selected size/color if applicable
+        selectedVariant: {
+          size: String,
+          color: String,
+          price: Number
+        }
+      }
+    ],
     // Add shipping address
     shippingAddresses: [
       {
@@ -61,9 +88,9 @@ const userSchema = mongoose.Schema(
         city: { type: String },
         postalCode: { type: String },
         country: { type: String },
+        label: { type: String, default: 'Home' },
       }
     ],
-    
     defaultShippingIndex: {
       type: Number,
       default: 0,
@@ -84,13 +111,16 @@ const userSchema = mongoose.Schema(
     // For OTP verification
     phoneNumber: {
       type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
     },
     isVerified: {
       type: Boolean,
       default: false,
     },
-    resetPasswordToken: {type:String,default: ''},
-    resetPasswordExpires: {type:Date,default: ''},
+    resetPasswordToken: { type: String, default: '' },
+    resetPasswordExpires: { type: Date, default: '' },
     otp: {
       type: String,
     },
@@ -112,7 +142,6 @@ const userSchema = mongoose.Schema(
         device: { type: String },
       }
     ],
-    
     vendorRequest: {
       status: {
         type: String,
@@ -122,6 +151,10 @@ const userSchema = mongoose.Schema(
       requestDate: {
         type: Date,
         default: Date.now
+      },
+      requestNumber: {
+        type: Number,
+        default: null
       },
       approvalDate: {
         type: Date
@@ -158,6 +191,35 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+// Method to get cart total
+userSchema.methods.getCartTotal = function() {
+  return this.cart.reduce((total, item) => {
+    const price = item.selectedVariant && item.selectedVariant.price 
+      ? item.selectedVariant.price 
+      : item.product.price || 0;
+    return total + (price * item.quantity);
+  }, 0);
+};
+
+// Method to get cart item count
+userSchema.methods.getCartItemCount = function() {
+  return this.cart.reduce((total, item) => total + item.quantity, 0);
+};
+
+// Method to clear cart
+userSchema.methods.clearCart = function() {
+  this.cart = [];
+  return this.save();
+};
+
+userSchema.pre('validate', function(next) {
+  if (!this.email && !this.phoneNumber) {
+    this.invalidate('email', 'Either email or phone number is required.');
+    this.invalidate('phoneNumber', 'Either email or phone number is required.');
+  }
+  next();
+});
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || this.googleId) {
     next();
@@ -167,25 +229,12 @@ userSchema.pre('save', async function (next) {
     next();
   }
 });
-userSchema.methods.generateResetPasswordToken = function () {
-  // Generate token
-  const resetToken = crypto.randomBytes(20).toString("hex");
 
-  // Hash token and set to user schema
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-
-  // Set expiration time (e.g., 15 min or 1 hour)
-  this.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
-
-  return resetToken;
-};
 userSchema.statics.hashPassword = async function(password) {
   const bcrypt = require("bcryptjs");
   return await bcrypt.hash(password, 10);
 };
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

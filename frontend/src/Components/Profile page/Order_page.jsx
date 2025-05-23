@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import User_side_frame from '../common_comps/User_side_frame';
 import '../../index.css';
-import Navbar_frame from '../Common frames/Navbar_frame';
+import Navbar_frame from '../Common_frames/Navbar_frame';
 
 const Order_page = () => {
   const [orders, setOrders] = useState([]);

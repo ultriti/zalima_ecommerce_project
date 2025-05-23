@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import Navbar_frame from '../Common frames/Navbar_frame';
+import Navbar_frame from '../Common_frames/Navbar_frame';
 
 const VendorDashboard = () => {
   const navigate = useNavigate();

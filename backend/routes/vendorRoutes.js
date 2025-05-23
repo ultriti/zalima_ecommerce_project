@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, admin, superadmin } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 const {
   submitVendorRequest,
   getVendorRequests,
@@ -13,11 +13,9 @@ const {
 router.post('/request', protect, submitVendorRequest);
 router.get('/my-request', protect, getMyVendorRequestStatus);
 
-// Admin routes
-router.get('/requests', protect, admin, getVendorRequests);
-router.get('/requests/:id', protect, admin, getVendorRequestDetails);
-
-// Superadmin routes
-router.put('/requests/:id', protect, superadmin, processVendorRequest);
+// Admin and Superadmin routes
+router.get('/requests', protect, authorize('admin', 'superadmin'), getVendorRequests);
+router.get('/requests/:id', protect, authorize('admin', 'superadmin'), getVendorRequestDetails);
+router.put('/requests/:id', protect, authorize('admin', 'superadmin'), processVendorRequest);
 
 module.exports = router;

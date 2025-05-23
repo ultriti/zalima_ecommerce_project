@@ -1,0 +1,563 @@
+.Navbar_frame {
+  min-height: 4vw;
+  width: 100%;
+  background-color: #037eb3; /* Sky blue */
+  position: fixed;
+  z-index: 50;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.nav-container {
+  max-width: 1280px; /* Matches max-w-screen-xl in Tailwind */
+  display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping on desktop */
+  align-items: center;
+  margin: 0 auto;
+  padding: 1rem;
+  gap: 1rem; /* Added gap between elements */
+}
+
+/* Modified logo styles to properly align left with added padding */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Matches space-x-3 in Tailwind */
+  text-decoration: none; /* Added to remove underline */
+  transition: transform 0.2s ease; /* Added for hover effect */
+  min-width: max-content; /* Prevent logo from shrinking too much */
+  flex-shrink: 0; /* Prevent logo from shrinking */
+  padding-left: 0.75rem; /* Added padding to move logo left */
+  margin-right: 0.5rem; /* Added margin to separate from address */
+}
+
+.nav-logo:hover {
+  transform: scale(1.05); /* Subtle grow effect on hover */
+}
+
+.nav-logo img {
+  height: 2rem; /* Matches h-8 in Tailwind */
+}
+
+.nav-logo span {
+  font-size: 1.5rem; /* Matches text-2xl */
+  font-weight: 600; /* Matches font-semibold */
+  color: white;
+  white-space: nowrap;
+}
+
+/* Improved address container positioning */
+.address-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  color: white;
+  text-decoration: none;
+  max-width: 250px; /* Reduce max width to prevent overflow */
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+  margin: 0 1rem; /* Add equal margin on both sides */
+}
+
+.address-container:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.address-container svg {
+  min-width: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.address-container span {
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.address-container.no-address {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+}
+
+.address-container.no-address:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.address-container.loading {
+  background-color: rgba(255, 255, 255, 0.05);
+  cursor: wait;
+}
+
+.address-loading-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+  margin: 0 0.5rem;
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem; /* Matches w-10 */
+  height: 2.5rem; /* Matches h-10 */
+  padding: 0.5rem; /* Matches p-2 */
+  color: white;
+  border-radius: 0.5rem; /* Matches rounded-lg */
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+  border: none;
+  transition: background-color 0.2s ease; /* Smooth transition */
+  margin-left: auto; /* Push toggle button to right */
+}
+
+.nav-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* Lighten on hover */
+}
+
+.nav-toggle svg {
+  width: 1.25rem; /* Matches w-5 */
+  height: 1.25rem; /* Matches h-5 */
+}
+
+/* Improved nav-links positioning with increased padding */
+.nav-links {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-grow: 1; /* Take up remaining space */
+  justify-content: space-between; /* Distribute content evenly */
+}
+
+.nav-links.open {
+  display: flex;
+}
+
+.nav-links .search-container {
+  position: relative;
+  display: flex;
+  align-items: stretch; /* Align items to stretch */
+  width: 100%;
+  max-width: 400px; /* Adjusted for better centering */
+  flex-grow: 1; /* Allow search to grow */
+  margin-right: 1.5rem; /* Added margin to create space between search and nav links */
+}
+
+/* Fixed search bar styling */
+.nav-links .search-container input {
+  width: 100%;
+  padding: 0.5rem 1rem; /* Matches px-4 py-2 */
+  border: 1px solid #d1d5db; /* Matches border-gray-300 */
+  border-radius: 0.5rem 0 0 0.5rem; /* Rounded on left side only */
+  outline: none;
+  background-color: white;
+  color: black;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transition */
+  margin: 0; /* Remove margin */
+  height: 38px; /* Fixed height to match button */
+  position: relative; /* For absolute positioning of button */
+  z-index: 10; /* Ensure input is above other elements */
+}
+
+.nav-links .search-container input:focus {
+  border-color: #0369a1; /* Focus border color */
+  box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.2); /* Focus ring */
+}
+
+/* Fixed search button styling */
+.nav-links .search-container button {
+  background-color: #0369a1; /* Darker blue for better contrast */
+  color: white;
+  padding: 0.5rem 1rem; /* Matches px-4 py-2 */
+  border-top-right-radius: 0.5rem; /* Matches rounded-r-lg */
+  border-bottom-right-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease; /* Smooth transition */
+  height: 38px; /* Fixed height to match input */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0; /* Remove margin */
+  position: relative; /* Changed from absolute */
+  right: 0;
+  white-space: nowrap; /* Prevent text wrapping */
+  flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.nav-links .search-container button:hover {
+  background-color: #075985; /* Darker on hover */
+}
+
+.display_searched_values {
+  position: absolute;
+  top: 100%; /* Position it right below the search container */
+  left: 0;
+  right: 0;
+  width: 100%;
+  margin-top: 0.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background-color: white;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 5; /* Lower z-index than the input */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.dropdown_item {
+  padding: 0.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.15s ease;
+  color: #374151; /* Dark text for better contrast */
+}
+
+.dropdown_item:hover {
+  background-color: #f3f4f6;
+}
+
+.dropdown_item:last-child {
+  border-bottom: none;
+}
+
+/* Modified right links to better align with the nav */
+.nav-links .right-links {
+  font-weight: 500; /* Matches font-medium */
+  display: flex;
+  flex-direction: row;
+  gap: 1.25rem; /* Increased from 1rem to create more space between nav items */
+  padding: 0; /* Matches md:p-0 */
+  margin-top: 0; /* Matches md:mt-0 */
+  border: none; /* Matches md:border-0 */
+  background-color: transparent; /* Matches md:bg-white */
+  align-items: center;
+  margin-left: auto; /* Push to the right side */
+  flex-shrink: 0; /* Prevent shrinking */
+  margin-left: 1rem; /* Added margin to create space after search */
+}
+
+.nav-links .right-links li {
+  display: block;
+  width: auto;
+}
+
+.nav-links .right-links a {
+  display: block;
+  padding: 0.5rem 0.75rem; /* Matches py-2 px-3 */
+  color: white;
+  font-weight: 600; /* Matches font-semibold */
+  border-radius: 0.25rem; /* Matches rounded-sm */
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.nav-links .right-links a:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Subtle background on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+}
+
+.nav-links .right-links a.active {
+  color: #0284c7; /* Sky blue */
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.nav-links .cart-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem; /* Matches space-x-1 */
+}
+
+.nav-links .cart-link div {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-links .cart-link img {
+  height: 1.25rem; /* Matches h-5 */
+  width: 1.25rem; /* Matches w-5 */
+  object-fit: contain;
+}
+
+/* Fixed profile container styling */
+.nav-links .profile-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem; /* Increased from 2rem */
+  height: 2.5rem; /* Increased from 2rem */
+  border-radius: 9999px; /* Matches rounded-full */
+  background-color: transparent; /* Changed from white to transparent */
+  border: none; /* Removed border */
+  transition: all 0.2s ease; /* Matches transition-colors duration-150 */
+  overflow: hidden; /* Keep images within circular border */
+  position: relative; /* For absolute positioning of children */
+  padding: 0; /* No padding */
+}
+.nav-links .profile-container:hover {
+  transform: scale(1.1); /* Grow on hover */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); /* Glowing effect */
+}
+
+.nav-links .profile-container img {
+  width: 100%; /* Fill the entire container */
+  height: 100%; /* Fill the entire container */
+  object-fit: cover; /* Ensure proper image aspect ratio */
+  position: absolute; /* Position absolutely within container */
+  top: 0;
+  left: 0;
+  border-radius: 50%; /* Keep image circular */
+}
+
+.nav-links .profile-container svg {
+  width: 1.25rem; /* Matches w-5 */
+  height: 1.25rem; /* Matches h-5 */
+  color: #0284c7; /* Updated to match theme */
+}
+
+.nav-links .loading-spinner {
+  width: 2rem; /* Matches h-8 w-8 */
+  height: 2rem;
+  border-radius: 9999px; /* Matches rounded-full */
+  background-color: rgba(255, 255, 255, 0.2); /* Transparent background */
+  position: relative;
+}
+
+.nav-links .loading-spinner::after {
+  content: '';
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  top: 0.25rem;
+  left: 0.25rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Improved responsive design */
+@media (max-width: 1000px) { /* Increased breakpoint */
+  .Navbar_frame {
+    min-height: 10vw;
+  }
+
+  .nav-container {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    margin-right: 0; /* Reset margin */
+    padding-left: 0; /* Reset padding on mobile */
+  }
+
+  .address-container {
+    order: 3; /* Move address below logo and toggle on mobile */
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    margin-left: 0; /* Reset margin */
+    margin-right: 0; /* Reset margin */
+  }
+
+  .nav-toggle {
+    display: flex;
+    order: 2;
+  }
+
+  .nav-links {
+    display: none;
+    margin-top: 1rem;
+    order: 4;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+  
+  /* Fix search container on mobile */
+  .nav-links .search-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-right: 0; /* Reset margin on mobile */
+  }
+  
+  .nav-links .search-container form {
+    display: flex;
+    width: 100%;
+  }
+  
+  .nav-links .right-links {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    margin-left: 0; /* Reset margin */
+  }
+  
+  .nav-links .right-links li {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (min-width: 1001px) { /* Increased breakpoint */
+  .nav-links {
+    width: auto;
+    flex-direction: row;
+  }
+
+  .nav-links .search-container {
+    margin-bottom: 0;
+  }
+  
+  /* Fix search container on desktop */
+  .nav-links .search-container form {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    z-index: 20; /* Ensure search is above other elements */
+  }
+
+  .nav-links .right-links {
+    flex-direction: row;
+    width: auto;
+  }
+
+  .nav-links .right-links a {
+    padding: 0.5rem 0.75rem; /* Updated for better visibility */
+    border-radius: 0.25rem; /* Added for consistency */
+  }
+
+  .nav-links .search-container input {
+    width: 16rem; /* Matches md:w-64 */
+  }
+}
+
+@keyframes searchPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-search input {
+  animation: searchPulse 0.5s ease;
+}
+
+/* Nav item hover effects */
+.nav-links .right-links a {
+  position: relative;
+}
+
+.nav-links .right-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: white;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-links .right-links a:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+.nav-links .right-links a.active::after {
+  width: 100%;
+  left: 0;
+  background-color: #0284c7;
+}
+
+/* Cart hover effect */
+.nav-links .cart-link div {
+  transition: transform 0.2s ease;
+}
+
+.nav-links .cart-link:hover div {
+  transform: translateY(-2px);
+}
+
+/* Logo shine effect */
+.nav-logo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  z-index: 2;
+  display: block;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%);
+  transform: skewX(-25deg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-logo:hover::before {
+  animation: shine 0.7s;
+  opacity: 1;
+}
+
+@keyframes shine {
+  100% {
+    left: 125%;
+  }
+}
+
+/* Improved button styles */
+.nav-links .search-container button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-links .search-container button svg {
+  margin-right: 4px;
+}
+
+/* Mobile menu animation */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-links.open {
+  animation: slideDown 0.3s ease forwards;
+}

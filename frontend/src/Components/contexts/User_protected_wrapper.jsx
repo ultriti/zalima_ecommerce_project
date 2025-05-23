@@ -18,7 +18,8 @@ const UserProtectedWrapper = ({children}) => {
      useEffect(() => {
         if (token) {
         // if (true) {
-
+          console.log(token);
+          
           setAuth_userBoolen(true);
           // alert('You can axcess to user page');
         } else {

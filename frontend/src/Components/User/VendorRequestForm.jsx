@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const VendorRequestForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [requestStatus, setRequestStatus] = useState(null);
+  const [vendorRequest, setVendorRequest] = useState(null);
+  const [isVendor, setIsVendor] = useState(false);
   const [formData, setFormData] = useState({
     businessName: '',
     businessDescription: '',
@@ -15,36 +18,57 @@ const VendorRequestForm = () => {
     taxId: ''
   });
 
-  useEffect(() => {
-    // Check if user already has a vendor request
-    checkExistingRequest();
-  }, []);
-
-  // Fix the API endpoint in checkExistingRequest
   const checkExistingRequest = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('No token found, redirecting to login');
+      navigate('/user/login');
+      return;
+    }
+
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URI}/api/vendors/my-request`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+      const response = await api.get('/api/vendor/my-request', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      });
+
+      const { vendorRequest: fetchedRequest, isVendor: vendorStatus } = response.data;
+
+      const isValidVendorRequest = (
+        fetchedRequest &&
+        fetchedRequest.status &&
+        fetchedRequest.businessInfo &&
+        fetchedRequest.businessInfo.businessName &&
+        fetchedRequest.businessInfo.businessDescription &&
+        fetchedRequest.businessInfo.contactPhone &&
+        fetchedRequest.businessInfo.businessAddress
       );
-      
-      if (response.data) {
-        setRequestStatus(response.data.status);
-        
-        // If there's pending or approved request, populate the form with existing data
-        if (response.data.businessInfo) {
-          setFormData(response.data.businessInfo);
-        }
+
+      if (isValidVendorRequest) {
+        setVendorRequest(fetchedRequest);
+        setRequestStatus(fetchedRequest.status);
+        setFormData(fetchedRequest.businessInfo);
+      } else {
+        setVendorRequest(null);
+        setRequestStatus(null);
       }
+      setIsVendor(vendorStatus || false);
     } catch (error) {
       console.error('Error checking vendor request status:', error);
-      // No existing request is fine, we'll just show the form
+      if (error.response?.status === 404) {
+        setVendorRequest(null);
+        setRequestStatus(null);
+        setIsVendor(false);
+      } else {
+        toast.error(error.response?.data?.message || 'Error checking vendor request status');
+      }
     }
   };
+
+  useEffect(() => {
+    checkExistingRequest();
+  }, [location.pathname]); // Re-run when the route changes
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,31 +78,32 @@ const VendorRequestForm = () => {
     });
   };
 
-  // Fix the API endpoint in handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Basic validation
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Please log in to submit a vendor request');
+      navigate('/user/login');
+      return;
+    }
+
     if (!formData.businessName || !formData.businessDescription || 
         !formData.contactPhone || !formData.businessAddress) {
       toast.error('Please fill all required fields');
       return;
     }
-    
+
     setLoading(true);
-    
+
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URI}/api/vendors/request`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+      const response = await api.post('/api/vendor/request', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
-      
+      });
       toast.success('Vendor request submitted successfully');
+      setVendorRequest({ status: 'pending', businessInfo: formData });
       setRequestStatus('pending');
     } catch (error) {
       console.error('Error submitting vendor request:', error);
@@ -88,20 +113,7 @@ const VendorRequestForm = () => {
     }
   };
 
-  // If user already has a request, show status instead of form
-  if (requestStatus === 'pending') {
-    return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center p-6 bg-yellow-50 rounded-lg">
-          <h2 className="text-2xl font-bold text-yellow-700 mb-4">Vendor Request Pending</h2>
-          <p className="mb-4">Your request to become a vendor is currently under review.</p>
-          <p className="text-sm text-gray-600">Our team will review your application and get back to you soon. This process typically takes 1-3 business days.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (requestStatus === 'approved') {
+  if (isVendor) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center p-6 bg-green-50 rounded-lg">
@@ -118,19 +130,27 @@ const VendorRequestForm = () => {
     );
   }
 
+  if (requestStatus === 'pending') {
+    return (
+      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+        <div className="text-center p-6 bg-yellow-50 rounded-lg">
+          <h2 className="text-2xl font-bold text-yellow-700 mb-4">Vendor Request Pending</h2>
+          <p className="mb-4">Your request to become a vendor is currently under review.</p>
+          <p className="text-sm text-gray-600">Our team will review your application and get back to you soon. This process typically takes 1-3 business days.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (requestStatus === 'rejected') {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center p-6 bg-red-50 rounded-lg">
           <h2 className="text-2xl font-bold text-red-700 mb-4">Vendor Request Rejected</h2>
           <p className="mb-4">Unfortunately, your request to become a vendor was not approved.</p>
-          <p className="text-sm text-gray-600 mb-4">Reason: {requestStatus.rejectionReason || 'No specific reason provided.'}</p>
-          <button
-            onClick={() => setRequestStatus(null)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Submit New Request
-          </button>
+          <p className="text-sm text-gray-600 mb-4">
+            Reason: {vendorRequest?.rejectionReason || 'No specific reason provided.'}
+          </p>
         </div>
       </div>
     );
@@ -139,13 +159,11 @@ const VendorRequestForm = () => {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6">Become a Vendor</h2>
-      
       <div className="bg-blue-50 p-4 rounded-lg mb-6">
         <p className="text-blue-800">
           Complete this form to apply for a vendor account. Our team will review your application and get back to you within 1-3 business days.
         </p>
       </div>
-      
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="businessName">
@@ -161,7 +179,6 @@ const VendorRequestForm = () => {
             required
           />
         </div>
-        
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="businessDescription">
             Business Description *
@@ -176,7 +193,6 @@ const VendorRequestForm = () => {
             required
           ></textarea>
         </div>
-        
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="contactPhone">
             Contact Phone *
@@ -191,7 +207,6 @@ const VendorRequestForm = () => {
             required
           />
         </div>
-        
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="businessAddress">
             Business Address *
@@ -206,7 +221,6 @@ const VendorRequestForm = () => {
             required
           ></textarea>
         </div>
-        
         <div className="mb-6">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="taxId">
             Tax ID / Business Registration Number (Optional)
@@ -220,7 +234,6 @@ const VendorRequestForm = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
-        
         <div className="flex items-center justify-between">
           <button
             type="submit"

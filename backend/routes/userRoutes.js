@@ -4,10 +4,19 @@ const userController = require('../controllers/userController');
 const { protect, admin, superadmin } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 const { check } = require('express-validator');
+const mongoose = require('mongoose');
+
+// Validate ObjectId
+const validateObjectId = (req, res, next) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error('Invalid user ID');
+  }
+  next();
+};
 
 // Flexible role-based middleware
 const restrictTo = (...roles) => (req, res, next) => {
-  // Convert both the required roles and user role to lowercase for case-insensitive comparison
   if (req.user && roles.map(r => r.toLowerCase()).includes(req.user.role.toLowerCase())) {
     next();
   } else {
@@ -23,15 +32,19 @@ const validateOTP = [
   check('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
 ];
 
-router.get('/', protect, superadmin, userController.getUsers);
+// Cart validation middleware
+const validateCartItem = [
+  check('productId').isMongoId().withMessage('Valid product ID is required'),
+  check('quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+];
 
-router.get('/search', protect, restrictTo('admin', 'superAdmin'), userController.searchUsers);
+router.get('/', protect, restrictTo('admin', 'superadmin'), userController.getUsers);
+router.get('/search', protect, restrictTo('admin', 'superadmin'), userController.searchUsers);
 
 router.put(
   '/upload-profile-image',
   protect,
   upload.single('profileImage'),
-  validateProfileImage,
   userController.uploadProfileImage
 );
 
@@ -61,8 +74,25 @@ router
 router.route('/wishlist/:id').delete(protect, userController.removeFromWishlist);
 router.route('/wishlist/decrement/:id').put(protect, userController.decrementWishlistItem);
 
+// Cart routes
+router
+  .route('/cart')
+  .get(protect, userController.getCart)
+  .post(protect, validateCartItem, userController.addToCart)
+  .delete(protect, userController.clearCart);
+
+router.route('/cart/:productId')
+  .put(protect, userController.updateCartItem)
+  .delete(protect, userController.removeFromCart);
+
+router.route('/cart/increment/:productId').put(protect, userController.incrementCartItem);
+router.route('/cart/decrement/:productId').put(protect, userController.decrementCartItem);
+
 // Order history
 router.route('/orders').get(protect, userController.getUserOrders);
+
+// Address route
+router.get('/:id/addresses', protect, validateObjectId, userController.getUserAddresses);
 
 router.post('/forgot-password', userController.forgotUserPassword);
 router.post('/reset-password/:token', userController.resetUserPassword);
@@ -70,22 +100,19 @@ router.post('/reset-password/:token', userController.resetUserPassword);
 // Admin routes
 router
   .route('/:id')
-  .delete(protect, restrictTo('admin', 'superAdmin'), userController.deleteUser)
-  .get(protect, restrictTo('admin', 'superAdmin'), userController.getUserById)
-  .put(protect, restrictTo('admin', 'superAdmin'), userController.updateUser);
+  .delete(protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.deleteUser)
+  .get(protect, validateObjectId, userController.getUserById)
+  .put(protect, validateObjectId, userController.updateUser);
 
-router.route('/makeadmin/:id').put(protect, superadmin, userController.makeUserAdmin);
+router.route('/makeadmin/:id').put(protect, superadmin, validateObjectId, userController.makeUserAdmin);
 
 router.post('/admin-login', userController.adminLogin);
 
-router.put('/:id/promote', protect, superadmin, userController.promoteUser);
+// Allow both admin and superadmin to promote/demote users
+router.put('/:id/promote', protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.promoteUser);
 
-router.get('/vendors/requests', protect, restrictTo('admin', 'superAdmin'), userController.getVendorRequests);
-router.get('/vendors/requests/count', protect, restrictTo('admin', 'superAdmin'), userController.getVendorRequestsCount);
-router.put('/vendors/requests/:id', protect, restrictTo('superAdmin'), userController.handleVendorRequest);
-router.get('/vendors/my-request', protect, userController.getMyVendorRequest);
-router.post('/vendors/request', protect, userController.submitVendorRequest);
-
-router.put('/:id/role', protect, restrictTo('admin', 'superadmin'), userController.changeUserRole);
+router.put('/:id/role', protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.changeUserRole);
+router.post('/reset-password-otp', userController.resetPasswordWithOtp);
+router.put('/:id/password', protect, validateObjectId, userController.changeUserPassword);
 
 module.exports = router;

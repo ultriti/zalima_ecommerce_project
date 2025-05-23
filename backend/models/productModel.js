@@ -69,13 +69,16 @@ const productSchema = mongoose.Schema(
     isOnSale: {
       type: Boolean,
       default: false,
-    }
+    },
+    featured: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
-
 
 // Indexing for optimized queries
 productSchema.index({ category: 1, price: 1 });

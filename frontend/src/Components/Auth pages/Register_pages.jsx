@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import facebookicon from "../../../public/images/facebook_icon.svg";
 import googleicon from "../../../public/images/google_icon.svg";
-import Navbar_frame from '../Common frames/Navbar_frame';
+import Navbar_frame from '../Common_frames/Navbar_frame';
 import { googleAuth, initiateGoogleAuth, facebookAuth, initiateFacebookAuth } from './app';
 
 const Register_pages = () => {
@@ -11,6 +11,9 @@ const Register_pages = () => {
   const [password_data, setpassword_data] = useState('');
   const [name_data, setname_data] = useState('');
   const [secret_data, setSecret] = useState('');
+  const [registerMethod, setRegisterMethod] = useState('email');
+  const [phone_data, setphone_data] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -22,7 +25,7 @@ const Register_pages = () => {
     const error = urlParams.get('error');
     const state = urlParams.get('state');
     const storedState = localStorage.getItem('oauth_state');
-    const authProvider = localStorage.getItem('auth_provider'); // Add this line
+    const authProvider = localStorage.getItem('auth_provider');
     
     if (error) {
       console.error(`OAuth error: ${error}`);
@@ -60,21 +63,15 @@ const Register_pages = () => {
           
           // Clear OAuth state
           localStorage.removeItem('oauth_state');
+          localStorage.removeItem('auth_provider');
           
           alert('Logged in successfully');
           
           // Clear the URL parameters
           window.history.replaceState({}, document.title, window.location.pathname);
           
-          // In the processAuth function where you handle successful authentication
-          if (user_data.role === 'superadmin') {
-            navigate('/admin/dashboard');
-          } else if (user_data.role === 'vendor') {
-            navigate('/vendor/dashboard');
-          } else {
-            // Redirect to home page instead of profile page
-            navigate('/');
-          }
+          // Redirect to user profile page after OAuth login
+          navigate(`/`);
         } catch (error) {
           console.error('Authentication error:', error);
           alert('Login failed. Try again.');
@@ -90,11 +87,14 @@ const Register_pages = () => {
     e.preventDefault();
 
     const send_register_data = {
-      email: emaildata,
       password: password_data,
       name: name_data,
-      // secret:secret_data,
     };
+    if (registerMethod === 'email') {
+      send_register_data.email = emaildata;
+    } else {
+      send_register_data.phoneNumber = countryCode + phone_data;
+    }
 
     try {
       const res = await axios.post(
@@ -103,7 +103,6 @@ const Register_pages = () => {
         { withCredentials: true }
       );
 
-      // Also update the register_data_post_fun function
       if (res.status === 201) {
         alert("User registered successfully");
 
@@ -112,8 +111,8 @@ const Register_pages = () => {
         localStorage.setItem("userId", res.data._id || '');
         localStorage.setItem("userRole", res.data.role || 'user');
         
-        // Redirect to home page instead of profile page
-        navigate("/");
+        // Redirect to user profile page after registration
+        navigate(`/`);
       }
     } catch (err) {
       alert("Registration failed. Email might already be in use.");
@@ -152,14 +151,50 @@ const Register_pages = () => {
               required
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            <input
-              type="email"
-              value={emaildata}
-              onChange={(e) => setemaildata(e.target.value)}
-              placeholder="Enter your email"
-              required
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Register With</label>
+              <select
+                value={registerMethod}
+                onChange={e => setRegisterMethod(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              >
+                <option value="email">Email</option>
+                <option value="phone">Phone Number</option>
+              </select>
+            </div>
+            {registerMethod === 'email' ? (
+              <input
+                type="email"
+                value={emaildata}
+                onChange={(e) => setemaildata(e.target.value)}
+                placeholder="Enter your email"
+                required
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+            ) : (
+              <div>
+                <div className="flex">
+                  <select
+                    value={countryCode}
+                    onChange={e => setCountryCode(e.target.value)}
+                    className="px-2 py-2 border border-gray-300 rounded-l-lg bg-gray-50"
+                  >
+                    <option value="+91">+91 (IN)</option>
+                    <option value="+1">+1 (US)</option>
+                    <option value="+44">+44 (UK)</option>
+                    {/* Add more country codes as needed */}
+                  </select>
+                  <input
+                    type="tel"
+                    value={phone_data}
+                    onChange={e => setphone_data(e.target.value)}
+                    placeholder="Enter phone number"
+                    required
+                    className="w-full px-4 py-2 border-t border-b border-r border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+            )}
             <input
               type="password"
               value={password_data}

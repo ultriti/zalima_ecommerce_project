@@ -1,3 +1,5 @@
+
+
 [
   {
     "name": "Mens Casual Shirt",
@@ -7,7 +9,8 @@
     "desc": "Comfortable and stylish casual shirt for men.",
     "brand": "Brand M1",
     "_id": 1001,
-    "offer": 10
+    "offer": 10,
+    "quantity": 11
   },
   {
     "name": "Mens Casual  t- Shirt",
@@ -17,7 +20,8 @@
     "desc": "Comfortable and stylish casual shirt for men.",
     "brand": "Brand M1",
     "_id": 1022,
-    "offer": 10
+    "offer": 10,
+    "quantity": 24
   },
   {
     "name": "Mens Formal Suit",
@@ -27,7 +31,8 @@
     "desc": "Elegant and sharp formal suit for business occasions.",
     "brand": "Brand M2",
     "_id": 1002,
-    "offer": 15
+    "offer": 15,
+    "quantity": 18
   },
   {
     "name": "Mens Sports shirt",
@@ -37,7 +42,8 @@
     "desc": "Durable and lightweight sports shoes.",
     "brand": "Brand M3",
     "_id": 1003,
-    "offer": 20
+    "offer": 20,
+    "quantity": 44
   },
   {
     "name": "Mens Watch",
@@ -47,7 +53,8 @@
     "desc": "Stylish wristwatch for men.",
     "brand": "Brand M4",
     "_id": 1004,
-    "offer": 5
+    "offer": 5,
+    "quantity": 32
   },
   {
     "name": "Mens Leather belt",
@@ -57,7 +64,8 @@
     "desc": "Premium leather wallet with multiple compartments.",
     "brand": "Brand M5",
     "_id": 1005,
-    "offer": 25
+    "offer": 25,
+    "quantity": 22
   },
   {
     "name": "Womens Party Dress",
@@ -67,7 +75,8 @@
     "desc": "Elegant and stylish party dress.",
     "brand": "Brand W1",
     "_id": 2001,
-    "offer": 20
+    "offer": 20,
+    "quantity": 10
   },
   {
     "name": "Womens Handbag",
@@ -77,7 +86,8 @@
     "desc": "Trendy and spacious handbag.",
     "brand": "Brand W2",
     "_id": 2002,
-    "offer": 10
+    "offer": 10,
+    "quantity": 43
   },
   {
     "name": "Womens Sandals",
@@ -87,7 +97,8 @@
     "desc": "Comfortable and stylish sandals.",
     "brand": "Brand W3",
     "_id": 2033,
-    "offer": 5
+    "offer": 5,
+    "quantity": 22
   },
   {
     "name": "Womens kurta",
@@ -97,7 +108,8 @@
     "desc": "Beautiful handcrafted necklace.",
     "brand": "Brand W4",
     "_id": 2032,
-    "offer": 25
+    "offer": 25,
+    "quantity": 190
   },
   {
     "name": "Womens crop top",
@@ -107,7 +119,8 @@
     "desc": "Trendy sunglasses for outdoor style.",
     "brand": "Brand W5",
     "_id": 2012,
-    "offer": 15
+    "offer": 15,
+    "quantity": 45
   },
   {
     "name": "Womens pants",
@@ -117,7 +130,8 @@
     "desc": "Trendy sunglasses for outdoor style.",
     "brand": "Brand W5",
     "_id": 2015,
-    "offer": 15
+    "offer": 15,
+    "quantity": 55
   },
   {
     "name": "girl dress",
@@ -127,7 +141,8 @@
     "desc": "Fun and colorful toy car for kids.",
     "brand": "Brand C1",
     "_id": 3001,
-    "offer": 30
+    "offer": 30,
+    "quantity": 23
   },
   {
     "name": "gitlss shirt",
@@ -137,7 +152,8 @@
     "desc": "Durable and lightweight bicycle for children.",
     "brand": "Brand C2",
     "_id": 3002,
-    "offer": 10
+    "offer": 10,
+    "quantity": 1789
   },
   {
     "name": "girls jacket",
@@ -147,7 +163,8 @@
     "desc": "Spacious school bag with multiple compartments.",
     "brand": "Brand C3",
     "_id": 3003,
-    "offer": 15
+    "offer": 15,
+    "quantity": 33
   },
   {
     "name": "girls pink bag",
@@ -157,7 +174,8 @@
     "desc": "Illustrated storybook with engaging tales.",
     "brand": "Brand C4",
     "_id": 3004,
-    "offer": 20
+    "offer": 20,
+    "quantity": 32
   },
   {
     "name": "girlss T-Shirt",
@@ -167,7 +185,8 @@
     "desc": "Comfortable and colorful t-shirt for kids.",
     "brand": "Brand C5",
     "_id": 3005,
-    "offer": 25
+    "offer": 25,
+    "quantity": 165
   },
   {
     "name": "girls jeans",
@@ -177,7 +196,8 @@
     "desc": "Comfortable and colorful t-shirt for kids.",
     "brand": "Brand C5",
     "_id": 3006,
-    "offer": 25
+    "offer": 25,
+    "quantity": 143
   },
   {
     "name": "girls frok",
@@ -187,7 +207,8 @@
     "desc": "Comfortable and colorful t-shirt for kids.",
     "brand": "Brand C5",
     "_id": 3007,
-    "offer": 25
+    "offer": 25,
+    "quantity": 32
   },
   {
     "name": "boys shirt",
@@ -197,7 +218,8 @@
     "desc": "Elegant gold ring for special occasions.",
     "brand": "Brand G1",
     "_id": 4001,
-    "offer": 5
+    "offer": 5,
+    "quantity": 133
   },
   {
     "name": "boys pant",
@@ -207,7 +229,8 @@
     "desc": "Elegant gold ring for special occasions.",
     "brand": "Brand G1",
     "_id": 4002,
-    "offer": 5
+    "offer": 5,
+    "quantity": 32
   },
   {
     "name": "boys jacket",
@@ -217,7 +240,8 @@
     "desc": "Elegant gold ring for special occasions.",
     "brand": "Brand G1",
     "_id": 4003,
-    "offer": 5
+    "offer": 5,
+    "quantity": 43
   },
   {
     "name": "boys sleavless ",
@@ -227,7 +251,8 @@
     "desc": "Elegant gold ring for special occasions.",
     "brand": "Brand G1",
     "_id": 4004,
-    "offer": 5
+    "offer": 5,
+    "quantity": 133
   },
   {
     "name": "boys shorts ",
@@ -237,7 +262,8 @@
     "desc": "Elegant gold ring for special occasions.",
     "brand": "Brand G1",
     "_id": 4005,
-    "offer": 5
+    "offer": 5,
+    "quantity": 1789
   },
   {
     "name": "boys t-shirt ",
@@ -247,7 +273,8 @@
     "desc": "Elegant gold ring for special occasions.",
     "brand": "Brand G4",
     "_id": 4006,
-    "offer": 5
+    "offer": 5,
+    "quantity": 45
   },
   {
     "name": "Wedding Saree",
@@ -257,7 +284,8 @@
     "desc": "Beautifully crafted wedding saree.",
     "brand": "Brand G2",
     "_id": 4007,
-    "offer": 20
+    "offer": 20,
+    "quantity": 189
   },
   {
     "name": "Wedding flowers Kit",
@@ -267,7 +295,8 @@
     "desc": "Complete decoration kit for weddings.",
     "brand": "Brand G3",
     "_id": 4012,
-    "offer": 10
+    "offer": 10,
+    "quantity": 33
   },
   {
     "name": "Wedding coat men",
@@ -277,7 +306,8 @@
     "desc": "Deliciously crafted custom wedding cake.",
     "brand": "Brand G4",
     "_id": 4023,
-    "offer": 15
+    "offer": 15,
+    "quantity": 134
   },
   {
     "name": "Wedding Invitation Cards",
@@ -287,7 +317,8 @@
     "desc": "Premium-quality personalized wedding invitations.",
     "brand": "Brand G5",
     "_id": 4038,
-    "offer": 25
+    "offer": 25,
+    "quantity": 234
   },
   {
     "name": "mens kurta",
@@ -297,7 +328,8 @@
     "desc": "Premium-quality personalized wedding invitations.",
     "brand": "Brand G5",
     "_id": 4031,
-    "offer": 25
+    "offer": 25,
+    "quantity": 1324
   },
   {
     "name": "women dresses",
@@ -307,22 +339,26 @@
     "desc": "Premium-quality personalized wedding invitations.",
     "brand": "Brand G5",
     "_id": 4044,
-    "offer": 25
+    "offer": 25,
+    "quantity": 54
   },
   {
       "name": "blue T-shirt ",
       "image": "https://th.bing.com/th/id/OIP.5Fose9g5iUFPLbwVPalD3wHaEJ?rs=1&pid=ImgDetMain",
       "price": "₹ 1000",
-      "desc": ""
+      "desc": "",
+      "quantity": 44
   },
   {
       "name": "weddings special dress",
       "image": "https://th.bing.com/th/id/OIP.KJxwImPedoIF1PoXvqx-cwHaFj?w=216&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-      "price": "₹ 3000"
+      "price": "₹ 3000",
+      "quantity": 10
   },
   {
       "name": "mens formal suit",
       "image": "https://th.bing.com/th/id/OIP.NDRyQoc5tsUZvjS8KaylfAHaEK?w=208&h=117&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-      "price": "₹ 3000"
+      "price": "₹ 3000",
+      "quantity": 23
   }
 ]
