@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Social Login Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    button { padding: 10px 15px; margin: 10px 0; cursor: pointer; color: white; border: none; border-radius: 4px; }
+    .google-btn { background-color: #4285F4; }
+    .facebook-btn { background-color: #3b5998; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow: auto; }
+    .debug { background: #ffe0e0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Social Login Test</h1>
+  
+  <h2>Google Login</h2>
+  <button id="googleLogin" class="google-btn">Login with Google</button>
+  
+  <h2>Facebook Login</h2>
+  <button id="facebookLogin" class="facebook-btn">Login with Facebook</button>
+  
+  <h2>Response</h2>
+  <pre id="response">No response yet</pre>
+  
+  <h2>Debug Info</h2>
+  <div class="debug" id="debugInfo">No debug info yet</div>
+  
+  <script src="social-login.js"></script>
+</body>
+</html>

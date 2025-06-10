@@ -41,7 +41,11 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));// Parse URL-encoded bodies
+
+app.use('/uploads', express.static('uploads'));
+
 app.use(cookieParser()); // Add cookie parser for handling cookies
 
 // Add logging middleware
@@ -107,6 +111,21 @@ app.use('/api/payment', paymentRoutes);
 // Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
+
+app.post('/webhook/paypal', async (req, res) => {
+    const event = req.body;
+
+    if (event.event_type === "PAYMENT.CAPTURE.COMPLETED") {
+        const orderId = event.resource.id;
+        console.log("Payment successful for order:", orderId);
+
+        // Update order status in your database
+        await updateOrderStatus(orderId, "COMPLETED");
+    }
+
+    res.status(200).json({msg:"payment successfull"});
+});
+
 
 const PORT = process.env.PORT || 5000;
 

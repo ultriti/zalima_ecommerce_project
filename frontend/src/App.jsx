@@ -3,7 +3,7 @@ import "./App.css";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Register_pages from './Components/Auth pages/Register_pages';
 import Home_page from './Components/Home page/Home_page';
-import PageNotFound from './Components/Common_frames/PageNotFound';
+import PageNotFound from './Components/Common frames/PageNotFound';
 import AllProduct from './Components/Product_pages/AllProduct';
 import Product_details_template from './Components/Product_pages/Product_details_template';
 import About from './Components/About page/About_page';
@@ -21,16 +21,16 @@ import Logout_page from './Components/Auth pages/Logout_page';
 import Login_page from './Components/Auth pages/LoginPage';
 import VendorDashboard from './Components/Vendor/VendorDashboard';
 import AddProduct from './Components/Vendor/AddProduct';
+import EditProduct from './Components/Vendor/EditProduct';
 import VendorRequestForm from './Components/User/VendorRequestForm';
-import ManageVendorRequests from './Components/admin pages/ManageVendorRequests';
-import ManageUsers from './Components/admin pages/ManageUsers';
-import ManageAdmins from './Components/admin pages/ManageAdmins';
-import ManageVendors from './Components/admin pages/ManageVendors';
-import AdminDashboard from './Components/admin pages/AdminDashboard';
-import AdminProfile from './Components/admin pages/AdminProfile';
+import ManageVendorRequests from './Components/Admin/admin pages/ManageVendorRequests';
+import ManageUsers from './Components/Admin/admin pages/ManageUsers';
+import ManageAdmins from './Components/Admin/admin pages/ManageAdmins';
+import ManageVendors from './Components/Admin/admin pages/ManageVendors';
+import AdminDashboard from './Components/Admin/admin pages/AdminDashboard';
+import AdminProfile from './Components/Admin/admin pages/AdminProfile';
 import Contact_page from './Components/contact_page/Contact_page';
 import CartPage from './Components/Product_pages/CartPage';
-import PaymentListPage from './Components/Payment Page/PaymentListPage';
 import SuperAdminDashboard from './Components/superadmin pages/Dashboard_page';
 import ManageSuperAdminUsers from './Components/superadmin pages/ManageUsers';
 import ManageSuperAdminVendors from './Components/superadmin pages/ManageVendors';
@@ -38,9 +38,12 @@ import ManageSuperAdminAdmins from './Components/superadmin pages/ManageAdmins';
 import ManageSuperAdminProducts from './Components/superadmin pages/ManageProducts';
 import ManageSuperAdminVendorRequests from './Components/superadmin pages/ManageVendorRequests';
 import SuperAdminProfile from './Components/superadmin pages/SuperAdminProfile';
-import AdminDashboardLayout from './Components/admin pages/AdminDashboardLayout';
-import ManageAdminProducts from './Components/admin pages/ManageProducts';
+import AdminDashboardLayout from './Components/Admin/admin pages/AdminDashboardLayout';
+import ManageAdminProducts from './Components/Admin/admin pages/ManageProducts';
+import ManageProductRequests from './Components/Admin/admin pages/ManageProductRequests';
+import ManageSuperAdminProductRequests from './Components/superadmin pages/ManageSuperAdminProductRequests';
 import UserProfile from './Components/User/UserProfile';
+import PurchaseConformation from "./Components/Product_pages/PurchaseConformation"
 
 // Role-based route protection
 const RoleProtectedRoute = ({ children, allowedRoles }) => {
@@ -97,9 +100,9 @@ const App = () => {
         <Route path="/user/orders" element={<UserProtectedWrapper><Order_page /></UserProtectedWrapper>} />
         <Route path="/user/address" element={<UserProtectedWrapper><Address_page /></UserProtectedWrapper>} />
         <Route path="/user/cart" element={<UserProtectedWrapper><CartPage /></UserProtectedWrapper>} />
-        <Route path="/user/payment" element={<UserProtectedWrapper><PaymentListPage /></UserProtectedWrapper>} />
         <Route path="/user/become-vendor" element={<UserProtectedWrapper><VendorRequestForm /></UserProtectedWrapper>} />
         <Route path="/user/:id" element={<UserProtectedWrapper><UserProfile /></UserProtectedWrapper>} />
+        <Route path="/user/purchase-confirmation" element={<UserProtectedWrapper><PurchaseConformation /></UserProtectedWrapper>} />
 
         {/* Vendor Routes */}
         <Route path="/vendor/dashboard" element={
@@ -110,6 +113,11 @@ const App = () => {
         <Route path="/vendor/add-product" element={
           <RoleProtectedRoute allowedRoles={['vendor']}>
             <AddProduct />
+          </RoleProtectedRoute>
+        } />
+        <Route path="/vendor/edit-product/:id" element={
+          <RoleProtectedRoute allowedRoles={['vendor']}>
+            <EditProduct />
           </RoleProtectedRoute>
         } />
 
@@ -134,6 +142,11 @@ const App = () => {
             <ManageAdminProducts />
           </RoleProtectedRoute>
         } />
+        <Route path="/admin/product-requests" element={
+          <RoleProtectedRoute allowedRoles={['admin']}>
+            <ManageProductRequests />
+          </RoleProtectedRoute>
+        } />
         <Route path="/admin/profile" element={
           <RoleProtectedRoute allowedRoles={['admin']}>
             <AdminProfile />
@@ -144,8 +157,13 @@ const App = () => {
             <ManageVendorRequests />
           </RoleProtectedRoute>
         } />
+        <Route path="/admin/admins" element={
+          <RoleProtectedRoute allowedRoles={['admin']}>
+            <ManageAdmins />
+          </RoleProtectedRoute>
+        } />
 
-        {/* Super Admin Routes */}
+        {/* SuperAdmin Routes */}
         <Route path="/superadmin/dashboard" element={
           <RoleProtectedRoute allowedRoles={['superadmin']}>
             <SuperAdminDashboard />
@@ -171,9 +189,9 @@ const App = () => {
             <ManageSuperAdminProducts />
           </RoleProtectedRoute>
         } />
-        <Route path="/superadmin/managevendorrequests" element={
+        <Route path="/superadmin/product-requests" element={
           <RoleProtectedRoute allowedRoles={['superadmin']}>
-            <ManageSuperAdminVendorRequests />
+            <ManageSuperAdminProductRequests />
           </RoleProtectedRoute>
         } />
         <Route path="/superadmin/profile" element={
@@ -181,14 +199,13 @@ const App = () => {
             <SuperAdminProfile />
           </RoleProtectedRoute>
         } />
+        <Route path="/superadmin/managevendorrequests" element={
+          <RoleProtectedRoute allowedRoles={['superadmin']}>
+            <ManageSuperAdminVendorRequests />
+          </RoleProtectedRoute>
+        } />
 
-        {/* Redirects */}
-        <Route path="/user" element={<Navigate to="/user/profile" replace />} />
-        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="/vendor" element={<Navigate to="/vendor/dashboard" replace />} />
-        <Route path="/superadmin" element={<Navigate to="/superadmin/dashboard" replace />} />
-
-        {/* 404 Route */}
+        {/* Catch-all Route */}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </GoogleOAuthProvider>

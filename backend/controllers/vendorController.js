@@ -151,7 +151,10 @@ const submitVendorRequest = asyncHandler(async (req, res) => {
  */
 const getVendorRequests = asyncHandler(async (req, res) => {
   const { status } = req.query;
-
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'superadmin')) {
+    res.status(403);
+    throw new Error('Not authorized as an admin');
+  }
   // Validate status query parameter
   const validStatuses = ['pending', 'approved', 'rejected'];
   if (status && !validStatuses.includes(status)) {

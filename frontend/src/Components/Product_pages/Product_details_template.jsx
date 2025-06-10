@@ -7,9 +7,8 @@ import laptop4 from '../../../public/images/facebook_icon.svg'
 
 import { useParams } from "react-router-dom"
 import items from "./products.json"
-import Navbar_frame from "../Common_frames/Navbar_frame";
-import Website_features from "../Common_frames/Website_features";
-import Footer_frame from "../Common_frames/Footer_frame";
+import Navbar_frame from "../Common frames/Navbar_frame";
+import Footer_frame from "../Common frames/Footer_frame";
 import { toast } from 'react-toastify';
 
 
@@ -113,10 +112,7 @@ const Product_details_template = (props) => {
       <div className="Navbar_frame">
         <Navbar_frame />
       </div>
-      {/* website features fraem */}
-      <div className="website_features_div">
-        <Website_features />
-      </div>
+   
 
       <div className="bg-gray-50 min-h-screen mt-[37vw] py-[10vw] md:py-[17px] md:mt-[130px]">
 

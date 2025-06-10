@@ -26,27 +26,27 @@ const connectDB = async () => {
 
       // Attempt to connect
       const conn = await mongoose.connect(process.env.MONGO_URI, mongooseOptions);
-      
+
       isConnected = true;
       console.log(`MongoDB Connected: ${conn.connection.host} (${conn.connection.name})`);
-      
+
       // Set up connection event listeners
       mongoose.connection.on('error', (err) => {
         console.error(`MongoDB connection error: ${err}`);
         isConnected = false;
       });
-      
+
       mongoose.connection.on('disconnected', () => {
         console.warn('MongoDB disconnected, attempting to reconnect...');
         isConnected = false;
         setTimeout(connectWithRetry, 5000); // Try to reconnect after 5 seconds
       });
-      
+
       mongoose.connection.on('reconnected', () => {
         console.log('MongoDB reconnected');
         isConnected = true;
       });
-      
+
       // Handle application termination
       process.on('SIGINT', async () => {
         try {
@@ -58,11 +58,11 @@ const connectDB = async () => {
           process.exit(1);
         }
       });
-      
+
     } catch (error) {
       isConnected = false;
       console.error(`MongoDB connection error: ${error.message}`);
-      
+
       // Implement retry logic with exponential backoff
       if (retries < maxRetries) {
         retries++;

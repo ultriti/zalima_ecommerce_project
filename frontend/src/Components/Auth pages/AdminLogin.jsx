@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Navbar_frame from '../Common_frames/Navbar_frame';
+import Navbar_frame from '../Common frames/Navbar_frame';
 
 const AdminLogin = () => {
   const navigate = useNavigate();

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import api from '../../api/axios'; // Updated import path
+import api from '../../api/axios';
 import googleicon from "../../../public/images/google_icon.svg";
 import facebookicon from "../../../public/images/facebook_icon.svg";
 import '../../index.css';
 import { googleAuth, initiateGoogleAuth, facebookAuth, initiateFacebookAuth } from './app';
-import Navbar_frame from '../Common_frames/Navbar_frame';
+import Navbar_frame from '../Common frames/Navbar_frame';
 import { toast } from 'react-toastify';
 
 const Login_page = () => {
@@ -17,6 +17,7 @@ const Login_page = () => {
   const [phone_data, setphone_data] = useState('');
   const [countryCode, setCountryCode] = useState('+91');
   const [password_data, setpassword_data] = useState('');
+  const isProcessing= useRef(false);
 
   const redirectUri = 'http://localhost:5173/user/signin';
 
@@ -42,7 +43,7 @@ const Login_page = () => {
 
     if (code) {
       console.log(`Code found in URL: ${code.substring(0, 10)}...`);
-
+      isProcessing.current = true;
       const processAuth = async () => {
         try {
           let res;
@@ -73,6 +74,8 @@ const Login_page = () => {
         } catch (error) {
           console.error('Authentication error:', error);
           toast.error('Login failed. Try again.');
+        }finally{
+          isProcessing.current = false;
         }
       };
 

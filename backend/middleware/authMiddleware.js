@@ -6,46 +6,50 @@ const logger = require('../utils/logger');
 // Protect routes
 const protect = asyncHandler(async (req, res, next) => {
   let token;
+  console.log('cookies', req.cookies);
+  console.log("Authorization header:", req.headers.authorization);
+  
+  
 
-  // Log the Authorization header and cookies for debugging
-  console.log('Authorization header:', req.headers.authorization);
-  console.log('Cookies:', req.cookies);
+  if (req.cookies.token) {
+    token = req.cookies.token;
+    console.log('Token found in cookies:', token);
+  } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+    console.log('Token found in Authorization header:', token);
+  }
 
-  // Check for token in headers or cookies
-  if (req.cookies.token || (req.headers.authorization && req.headers.authorization.startsWith('Bearer'))) {
-    try {
-      // Get token from header or cookies
-      token = req.cookies.token || req.headers.authorization.split(' ')[1];
-      console.log('Token used:', token); // Log the actual token being used
-
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password -refreshToken');
-
-      if (!req.user) {
-        logger.warn(`Auth failed: User not found for token`);
-        res.status(401);
-        throw new Error('Not authorized, user not found');
-      }
-
-      next();
-    } catch (error) {
-      logger.warn(`Auth failed: ${error.message}`);
-      res.status(401);
-      throw new Error('Not authorized, token failed');
-    }
-  } else {
-    logger.warn(`Auth failed: No token provided`);
+  if (!token) {
+    logger.warn('Auth failed: No token provided in cookies or headers');
     res.status(401);
     throw new Error('Not authorized, no token');
+  }
+
+  try {
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Token decoded:', decoded);
+
+    // Get user from the token
+    req.user = await User.findById(decoded.id).select('-password -refreshToken');
+
+    if (!req.user) {
+      logger.warn(`Auth failed: User not found for token`);
+      res.status(401);
+      throw new Error('Not authorized, user not found');
+    }
+
+    next();
+  } catch (error) {
+    logger.warn(`Auth failed: ${error.message}`);
+    res.status(401);
+    throw new Error('Not authorized, token failed');
   }
 });
 
 // Admin middleware
 const admin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'superadmin')) {
     next();
   } else {
     logger.warn(`Admin access denied for user: ${req.user ? req.user._id : 'unknown'}`);
@@ -87,6 +91,7 @@ const verified = (req, res, next) => {
   }
 };
 
+
 /**
  * Middleware for role-based authorization
  * @param {...String} roles - Allowed roles for the route
@@ -119,7 +124,7 @@ const ownerOrAdmin = (getResourceUserId) => {
     }
     
     // Allow admins and super admins
-    if (req.user.role === 'admin' || req.user.role === 'superadmin') {
+    if (req.user.role === 'admin' || req.user.role === 'superadmin') {  // Changed from 'superAdmin' to 'superadmin'
       return next();
     }
     

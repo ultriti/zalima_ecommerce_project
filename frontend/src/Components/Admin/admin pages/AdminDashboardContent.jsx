@@ -35,6 +35,10 @@ const AdminDashboardContent = ({ stats }) => (
         <h3 className="text-lg font-semibold mb-2">Manage Products</h3>
         <p>View and manage products</p>
       </Link>
+      <Link to="/admin/product-requests" className="bg-white p-6 rounded-lg shadow-md hover:bg-purple-50 transition">
+        <h3 className="text-lg font-semibold mb-2">Product Requests</h3>
+        <p>Review product approval requests</p>
+      </Link>
     </div>
   </div>
 );

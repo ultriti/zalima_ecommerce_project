@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const productController = require('../controllers/productController'); // Added for product approval
 const { protect, admin, superadmin } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 const { check } = require('express-validator');
@@ -38,15 +39,13 @@ const validateCartItem = [
   check('quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
 ];
 
-router.get('/', protect, restrictTo('admin', 'superadmin'), userController.getUsers);
-router.get('/search', protect, restrictTo('admin', 'superadmin'), userController.searchUsers);
-
-router.put(
-  '/upload-profile-image',
-  protect,
-  upload.single('profileImage'),
-  userController.uploadProfileImage
-);
+// Validate product approval
+const validateProductApproval = [
+  check('vendorApproved').isBoolean().withMessage('vendorApproved must be a boolean'),
+  check('status')
+    .isIn(['active', 'rejected'])
+    .withMessage('Status must be either active or rejected')
+];
 
 // Public routes
 router.post('/register', userController.registerUser);
@@ -65,6 +64,13 @@ router
   .route('/profile')
   .get(protect, userController.getUserProfile)
   .put(protect, userController.updateUserProfile);
+
+router.put(
+  '/upload-profile-image',
+  protect,
+  upload.single('profileImage'),
+  userController.uploadProfileImage
+);
 
 // Wishlist routes
 router
@@ -96,23 +102,35 @@ router.get('/:id/addresses', protect, validateObjectId, userController.getUserAd
 
 router.post('/forgot-password', userController.forgotUserPassword);
 router.post('/reset-password/:token', userController.resetUserPassword);
+router.post('/reset-password-otp', userController.resetPasswordWithOtp);
 
 // Admin routes
+router.get('/', protect, restrictTo('admin', 'superadmin'), userController.getUsers);
+router.get('/search', protect, restrictTo('admin', 'superadmin'), userController.searchUsers);
+
 router
   .route('/:id')
   .delete(protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.deleteUser)
   .get(protect, validateObjectId, userController.getUserById)
-  .put(protect, validateObjectId, userController.updateUser);
+  .put(protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.updateUser);
 
 router.route('/makeadmin/:id').put(protect, superadmin, validateObjectId, userController.makeUserAdmin);
 
+router.put('/:id/promote', protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.promoteUser);
+router.put('/:id/role', protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.changeUserRole);
+router.put('/:id/password', protect, validateObjectId, userController.changeUserPassword);
+
 router.post('/admin-login', userController.adminLogin);
 
-// Allow both admin and superadmin to promote/demote users
-router.put('/:id/promote', protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.promoteUser);
+router.get('/products/pending', protect, restrictTo('admin', 'superadmin'), productController.getPendingProducts);
 
-router.put('/:id/role', protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.changeUserRole);
-router.post('/reset-password-otp', userController.resetPasswordWithOtp);
-router.put('/:id/password', protect, validateObjectId, userController.changeUserPassword);
+router.put(
+  '/products/:productId/approve',
+  protect,
+  restrictTo('admin', 'superadmin'),
+  validateObjectId,
+  validateProductApproval,
+  productController.updateProduct
+);
 
 module.exports = router;

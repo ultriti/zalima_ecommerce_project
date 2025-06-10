@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../api/axios'; // Updated import path
+import api from '../../api/axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 

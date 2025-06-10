@@ -176,18 +176,21 @@ const authUser = asyncHandler(async (req, res) => {
 
     const token = generateToken(user._id);
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    console.log('Cookies set:', { jwt: token, token });
 
     res.json({
       _id: user._id,
@@ -253,7 +256,7 @@ const registerUser = asyncHandler(async (req, res) => {
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id)
     .populate('wishlist.product')
-    .populate('cart.product');
+    // .populate('cart.product');
 
   if (user) {
     res.json({
@@ -266,8 +269,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
       isVerified: user.isVerified,
       wishlist: user.wishlist,
       cart: user.cart,
-      cartTotal: user.getCartTotal(),
-      cartItemCount: user.getCartItemCount(),
+      // cartTotal: user.getCartTotal(),
+      // cartItemCount: user.getCartItemCount(),
       shippingAddresses: user.shippingAddresses || [],
       defaultShippingIndex: user.defaultShippingIndex ?? 0,
     });
@@ -407,80 +410,75 @@ const googleAuth = asyncHandler(async (req, res) => {
 
     const oauth2client = createOAuth2Client(redirectUri);
 
-    try {
-      console.log('Exchanging code for tokens...');
-      const googleRes = await oauth2client.getToken(code);
-      console.log('Token exchange successful');
+    console.log('Exchanging code for tokens...');
+    const googleRes = await oauth2client.getToken(code);
+    console.log('Token exchange successful');
 
-      oauth2client.setCredentials(googleRes.tokens);
-      const accessToken = googleRes.tokens.access_token;
+    oauth2client.setCredentials(googleRes.tokens);
+    const accessToken = googleRes.tokens.access_token;
 
-      console.log('Fetching user info from Google...');
-      const userRes = await axios.get(
-        `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${encodeURIComponent(accessToken)}`
-      );
+    console.log('Fetching user info from Google...');
+    const userRes = await axios.get(
+      `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${encodeURIComponent(accessToken)}`
+    );
 
-      const { email, name, picture } = userRes.data;
-      console.log('Google user data:', email, name);
+    const { email, name, picture } = userRes.data;
+    console.log('Google user data:', email, name);
 
-      let user = await User.findOne({ email });
+    let user = await User.findOne({ email });
 
-      if (!user) {
-        console.log('Creating new user...');
-        const randomPassword = Math.random().toString(36).slice(-8);
-        const hashedPassword = await bcrypt.hash(randomPassword, 10);
-        user = await User.create({
-          name,
-          email,
-          profileImage: {
-            url: picture,
-            public_id: 'google_profile',
-          },
-          googleLogin: true,
-          password: hashedPassword,
-          role: 'user',
-        });
-        console.log('✅ New Google user created.');
-      } else {
-        console.log('✅ Existing user found, logging in.');
-      }
-
-      const token = generateToken(user._id);
-
-      res.cookie('jwt', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+    if (!user) {
+      console.log('Creating new user...');
+      const randomPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+      user = await User.create({
+        name,
+        email,
+        profileImage: {
+          url: picture,
+          public_id: 'google_profile',
+        },
+        googleLogin: true,
+        password: hashedPassword,
+        role: 'user',
       });
+      console.log('✅ New Google user created.');
+    } else {
+      console.log('✅ Existing user found, logging in.');
+    }
 
-      res.status(200).json({
+    const token = generateToken(user._id);
+
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    console.log('Cookies set:', { jwt: token, token });
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      profileImage: user.profileImage,
+      token: token,
+      user_data: {
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-        profileImage: user.profileImage,
-        token: token,
-        user_data: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-      });
-    } catch (tokenError) {
-      console.error('Token exchange error:', tokenError);
-      if (tokenError.response?.data?.error === 'redirect_uri_mismatch') {
-        return res.status(400).json({
-          error: 'Redirect URI mismatch. Please check the authorized redirect URIs in Google Cloud Console.',
-          details: tokenError.message,
-        });
-      }
-      return res.status(401).json({
-        error: 'Failed to exchange authorization code for tokens',
-        details: tokenError.message,
-      });
-    }
+      },
+    });
   } catch (error) {
     console.error('Google Auth Error Details:', {
       message: error.message,
@@ -565,6 +563,15 @@ const facebookAuth = asyncHandler(async (req, res) => {
       sameSite: 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    console.log('Cookies set:', { jwt: token, token });
 
     res.status(200).json({
       _id: user._id,

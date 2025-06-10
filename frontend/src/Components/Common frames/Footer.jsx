@@ -28,6 +28,15 @@ const Footer = () => {
             <li><Link to="/shipping">Shipping Policy</Link></li>
           </ul>
         </div>
+        
+        <div className="footer-section">
+          <h4>My Account</h4>
+          <ul>
+            <li><Link to="/user/profile">Profile</Link></li>
+            <li><Link to="/user/orders">Orders</Link></li>
+            <li><Link to="/user/wishlist">Wishlist</Link></li>
+          </ul>
+        </div>
       </div>
       
       <div className="footer-bottom">

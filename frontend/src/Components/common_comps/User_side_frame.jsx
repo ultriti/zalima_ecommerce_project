@@ -27,7 +27,7 @@ const User_side_frame = () => {
   const links = [
     { to: '/user/profile', label: 'Profile' },
     { to: '/user/manage_profile', label: 'Manage Profile' },
-    { to: '/user/address_', label: 'My Address' },
+    { to: '/user/address', label: 'My Address' },
     { to: '/user/orders', label: 'Orders' },
     { to: '/user/contact', label: 'Contact Us' },
     { to: '/user/logout', label: 'Logout', icon: logout_svg, isLogout: true },
@@ -38,13 +38,10 @@ const User_side_frame = () => {
       <ul className="space-y-2 mt-6">
         {
           role == 'admin' ? (
-            <li key={index}>
+            <li>
               <Link to={"/admin/dashboard"}>
                 <div
-                  className={`user-navigate-link flex items-center gap-2 px-4 py-3 rounded-md transition-colors duration-200
-                    ${isActive ? 'bg-[#132b63]' : 'hover:bg-[#132b63]'} 
-              
-                    `}
+                  className={`user-navigate-link flex items-center gap-2 px-4 py-3 rounded-md transition-colors duration-200`}
                 >
                   {/* {link.icon && (
                     <img src={link.icon} alt="icon" className="w-5 h-5" />

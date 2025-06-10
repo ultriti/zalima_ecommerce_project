@@ -1,7 +1,6 @@
 // import React, { useEffect, useState } from 'react'
 // import "./AllProduct.css"
 // import Navbar_frame from '../Common frames/Navbar_frame'
-// import Website_features from '../Common frames/Website_features'
 // import items_ from "./products.json"
 // import Footer_frame from '../Common frames/Footer_frame'
 // import ProductCard from './ProductCard'
@@ -54,10 +53,6 @@
 //         </div>
 
 
-//         {/* --------------------> basic features div */}
-//         <div className="website_features_div">
-//           <Website_features />
-//         </div>
 
 //         {/* -----------------------> display all avalable prodyct div */}
 //         <div className="displayAllProduct_frame min-h-full  bg-gray-100 py-45 px-0 md:py-10 md:px-10 rounded-1xl">
@@ -120,10 +115,9 @@
 // -------------------------------------
 import React, { useEffect, useState } from 'react';
 import "./AllProduct.css";
-import Navbar_frame from '../Common_frames/Navbar_frame';
-import Website_features from '../Common_frames/Website_features';
+import Navbar_frame from '../Common frames/Navbar_frame';
 import items_ from "./products.json";
-import Footer_frame from '../Common_frames/Footer_frame';
+import Footer_frame from '../Common frames/Footer_frame';
 import ProductCard from './ProductCard';
 import Slider from '@mui/material/Slider';
 
@@ -171,6 +165,23 @@ function AllProduct() {
     setfilteredItems(tempItems);
   };
 
+  // add to cart
+   const add_to_cart_handle = (newItem) => {
+  
+      let items_ = JSON.parse(localStorage.getItem("myItems")) || [];
+      console.log(items_.map(item => item.name));
+      if (items_.map(item => item.name).includes(newItem.name) === true) {
+        alert('item already in cart')
+        return;
+      } else {
+        items_.push(newItem);
+        // Save back to local storage
+        localStorage.setItem("myItems", JSON.stringify(items_));
+        toast.success('added to cart successfully');
+      }
+  
+    }
+
   return (
     <div className='getAllProducts_frame'>
 
@@ -180,11 +191,7 @@ function AllProduct() {
           <Navbar_frame />
         </div>
 
-        {/* --------------------> basic features div */}
-        <div className="website_features_div">
-          <Website_features />
-        </div>
-
+ 
         {/* -----------------------> display all available product div */}
         <div className="displayAllProduct_frame min-h-full  bg-gray-100 py-45 px-0 md:py-10 md:px-10 rounded-1xl">
           <div className="display_products_cont min-h-full w-[100%]  bg-white rounded-[20px] md:px-5">
@@ -225,11 +232,13 @@ function AllProduct() {
               {
                 filteredItems.length > 0 ? (
                   filteredItems.map((item, index) => (
-                    <a href={`/product/productsTemp/${item._id}`} key={index}>
-                      <div className="productTemplate_frame flex bg-blue-200 items-center justify-center overflow-hidden">
-                        <ProductCard name={item.name} product_img={item.image} price={item.price} offer={item.offer} />
+                    
+                      <div className="productTemplate_frame flex bg-blue-200 items-center justify-center overflow-hidden" key={index}>
+                        <ProductCard item_={item} filId={item._id} name={item.name} product_img={item.image} price={item.price} offer={item.offer} />
                       </div>
-                    </a>
+                    
+
+
                   ))
                 ) : (
                   <h1>No products found</h1>

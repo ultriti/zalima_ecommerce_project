@@ -13,7 +13,7 @@ const { protect, admin } = require('../middleware/authMiddleware');
 router.route('/')
   .post(protect, addOrderItems);
 
-router.route('/myorders')
+router.route('/my-orders')
   .get(protect, getMyOrders);
 
 router.route('/:id')

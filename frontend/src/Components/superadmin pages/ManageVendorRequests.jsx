@@ -39,7 +39,6 @@ const ManageVendorRequests = () => {
         { action, rejectionReason },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      // Refresh the list after processing
       fetchRequests();
     } catch (err) {
       const errorMessage = err.response?.data?.message || `Failed to ${action} vendor request. Please try again.`;

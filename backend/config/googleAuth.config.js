@@ -20,7 +20,7 @@ const createOAuth2Client = (redirectUri) => {
 
   const normalizedUri = redirectUri.replace(/\/$/, ''); // Remove trailing slash
   console.log('Creating OAuth2 client with redirect URI:', normalizedUri);
-  
+
   return new OAuth2Client(
     GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET,

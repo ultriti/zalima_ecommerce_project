@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import User_side_frame from '../common_comps/User_side_frame';
 import '../../index.css';
-import Navbar_frame from '../Common_frames/Navbar_frame';
+import Navbar_frame from '../Common frames/Navbar_frame';
 
 const Order_page = () => {
   const [orders, setOrders] = useState([]);
@@ -29,7 +29,7 @@ const Order_page = () => {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Navbar */}
-      <div className="Navbar_div bg-white shadow-md sticky top-0 z-50">
+      <div className="Navbar_div bg-white shadow-md fixed left-0 top-0 z-50">
         <Navbar_frame />
       </div>
 
@@ -42,7 +42,7 @@ const Order_page = () => {
         </aside>
 
         {/* Orders Section */}
-        <main className="ml-64 flex-1 overflow-y-auto pb-8 pl-8 pr-8 pt-4 bg-gray-900 ">
+        <main className="ml-64 flex-1 overflow-y-auto pb-8 pl-8 pr-8 mt-15 pt-4 bg-gray-900 ">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md transform transition duration-500 ease-in-out hover:scale-[1.01] hover:shadow-lg">
             <h2 className="text-2xl font-bold mb-6 mt-6 text-center text-gray-800 dark:text-white">
               Your Orders

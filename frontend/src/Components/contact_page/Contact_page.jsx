@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar_frame from '../Common_frames/Navbar_frame';
+import Navbar_frame from '../Common frames/Navbar_frame';
 import User_side_frame from "../common_comps/User_side_frame";
 import "../Profile page/Order_page.css"
 
@@ -7,7 +7,7 @@ const Contact_page = () => {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Navbar */}
-      <div className="Navbar_div bg-white  shadow-md sticky top-0 z-50">
+      <div className="Navbar_div bg-white  shadow-md fixed top-0 z-50">
         <Navbar_frame />
       </div>
 
@@ -20,7 +20,7 @@ const Contact_page = () => {
         </aside>
 
         {/* Main Content */}
-        <div className="ml-64 flex-1 pb-8 pl-8 pr-8 pt-4 bg-gray-900 overflow-y-auto">
+        <div className="ml-64 flex-1 pb-8 pl-8 pr-8 pt-4 bg-gray-900 overflow-y-auto mt-15">
           <div className="container h-[80vh] mx-auto flex flex-wrap md:flex-nowrap bg-gray-800 shadow-lg rounded-[20px] transform transition duration-500 ease-in-out hover:scale-[1.01] hover:shadow-lg">
 
             {/* Left Section */}

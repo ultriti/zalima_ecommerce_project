@@ -18,6 +18,10 @@ const orderSchema = mongoose.Schema(
           required: true,
           ref: 'Product',
         },
+        vendor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
       },
     ],
     

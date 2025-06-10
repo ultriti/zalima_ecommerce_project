@@ -2,74 +2,102 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import Navbar_frame from '../Common_frames/Navbar_frame';
+import Navbar_frame from '../Common frames/Navbar_frame';
 
 const VendorDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('all');
   const [vendorData, setVendorData] = useState({
     products: [],
     orders: [],
+    vendorInfo: { businessName: '' },
     stats: {
       totalProducts: 0,
       totalSales: 0,
-      pendingOrders: 0
-    }
+      pendingOrders: 0,
+    },
   });
 
   useEffect(() => {
-    // Check if user is logged in and is a vendor
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('userRole');
-    
+
     if (!token) {
       toast.error('Please log in to access vendor dashboard');
       navigate('/user/signin');
       return;
     }
-    
+
     if (userRole !== 'vendor') {
       toast.error('You do not have vendor privileges');
-      navigate('/');
+      navigate('/unauthorized');
       return;
     }
 
-    // Fetch vendor data
     fetchVendorData();
-  }, [navigate]);
+  }, [navigate, statusFilter]);
 
   const fetchVendorData = async () => {
     setLoading(true);
     try {
-      // In a real implementation, you would fetch actual vendor data
-      // This is a placeholder for demonstration
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock data
+      const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
+
+      // Fetch vendor's products with optional status filter
+      const productResponse = await axios.get(
+        `/api/products/vendor/my-products${statusFilter !== 'all' ? `?status=${statusFilter}` : ''}`,
+        config
+      );
+
+      // Fetch vendor's orders
+      const orderResponse = await axios.get('/api/orders/my-orders', config);
+
+      // Fetch vendor profile for business info
+      const userResponse = await axios.get('/api/users/profile', config);
+
+      const products = productResponse.data;
+      const orders = orderResponse.data;
+      const totalSales = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+      const pendingOrders = orders.filter(order => order.status === 'processing').length;
+
       setVendorData({
-        products: [
-          { id: 1, name: 'Product 1', price: 19.99, stock: 10, status: 'active' },
-          { id: 2, name: 'Product 2', price: 29.99, stock: 5, status: 'active' },
-          { id: 3, name: 'Product 3', price: 39.99, stock: 0, status: 'out_of_stock' }
-        ],
-        orders: [
-          { id: 101, date: '2023-10-15', customer: 'John Doe', total: 59.98, status: 'delivered' },
-          { id: 102, date: '2023-10-16', customer: 'Jane Smith', total: 39.99, status: 'processing' }
-        ],
+        products,
+        orders,
+        vendorInfo: userResponse.data.vendorRequest?.businessInfo || { businessName: userResponse.data.name },
         stats: {
-          totalProducts: 3,
-          totalSales: 99.97,
-          pendingOrders: 1
-        }
+          totalProducts: products.length,
+          totalSales,
+          pendingOrders,
+        },
       });
     } catch (error) {
       console.error('Error fetching vendor data:', error);
-      toast.error('Failed to load vendor dashboard');
+      toast.error(error.response?.data?.message || 'Failed to load vendor dashboard');
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        navigate('/user/signin');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+
+    try {
+      await axios.delete(`/api/products/vendor/my-products/${productId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      toast.success('Product deleted successfully');
+      fetchVendorData();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete product');
+    }
+  };
+
+  const handleEditProduct = (productId) => {
+    navigate(`/vendor/edit-product/${productId}`);
   };
 
   if (loading) {
@@ -89,33 +117,51 @@ const VendorDashboard = () => {
     <div className="min-h-screen bg-gray-100">
       <Navbar_frame />
       <div className="max-w-7xl mx-auto p-6 mt-8">
-        <h1 className="text-3xl font-bold mb-8">Vendor Dashboard</h1>
-        
+        <h1 className="text-3xl font-bold mb-4">Vendor Dashboard</h1>
+        <p className="text-gray-600 mb-8">Business: {vendorData.vendorInfo.businessName}</p>
+
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6.mb-8">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold text-gray-700">Total Products</h2>
             <p className="text-3xl font-bold mt-2">{vendorData.stats.totalProducts}</p>
           </div>
-          
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold text-gray-700">Total Sales</h2>
             <p className="text-3xl font-bold mt-2">${vendorData.stats.totalSales.toFixed(2)}</p>
           </div>
-          
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold text-gray-700">Pending Orders</h2>
             <p className="text-3xl font-bold mt-2">{vendorData.stats.pendingOrders}</p>
           </div>
         </div>
-        
+
+        {/* Product Status Filter */}
+        <div className="mb-6">
+          <label className="text-sm font-medium text-gray-700 mr-2">Filter by Status:</label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="pending-approval">Pending Approval</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+
         {/* Recent Orders */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Recent Orders</h2>
-            <button className="text-blue-600 hover:text-blue-800">View All</button>
+            <button
+              onClick={() => navigate('/vendor/orders')}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              View All
+            </button>
           </div>
-          
           {vendorData.orders.length === 0 ? (
             <p className="text-gray-500">No orders yet</p>
           ) : (
@@ -133,22 +179,33 @@ const VendorDashboard = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {vendorData.orders.map(order => (
-                    <tr key={order.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">{order.id}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{order.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{order.customer}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">${order.total.toFixed(2)}</td>
+                    <tr key={order._id}>
+                      <td className="px-6 py-4 whitespace-nowrap">{order._id}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                          order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{order.customer?.name || 'N/A'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">${order.total?.toFixed(2) || '0.00'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            order.status === 'delivered'
+                              ? 'bg-green-100 text-green-800'
+                              : order.status === 'processing'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
                           {order.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <button className="text-blue-600 hover:text-blue-900">View</button>
+                        <button
+                          onClick={() => navigate(`/vendor/order/${order._id}`)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          View
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -157,16 +214,18 @@ const VendorDashboard = () => {
             </div>
           )}
         </div>
-        
+
         {/* Products */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Your Products</h2>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            <button
+              onClick={() => navigate('/vendor/add-product')}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
               Add New Product
             </button>
           </div>
-          
           {vendorData.products.length === 0 ? (
             <p className="text-gray-500">No products yet</p>
           ) : (
@@ -183,24 +242,37 @@ const VendorDashboard = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {vendorData.products.map(product => (
-                    <tr key={product.id}>
+                    <tr key={product._id}>
                       <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">${product.price.toFixed(2)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{product.stock}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{product.totalStock}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          product.status === 'active' ? 'bg-green-100 text-green-800' :
-                          product.status === 'out_of_stock' ? 'bg-red-100 text-red-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {product.status === 'active' ? 'Active' : 
-                           product.status === 'out_of_stock' ? 'Out of Stock' : 
-                           'Draft'}
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            product.status === 'active'
+                              ? 'bg-green-100 text-green-800'
+                              : product.status === 'pending-approval'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          {product.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <button className="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
-                        <button className="text-red-600 hover:text-red-900">Delete</button>
+                        <button
+                          onClick={() => handleEditProduct(product._id)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                          disabled={product.status === 'pending-approval'}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(product._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -209,32 +281,29 @@ const VendorDashboard = () => {
             </div>
           )}
         </div>
-        
-        {/* Add Product Form Button */}
-        <div className="mt-8 text-center">
-          <button 
-            onClick={() => navigate('/vendor/add-product')}
-            className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition"
-          >
-            Add New Product
-          </button>
-        </div>
-        
+
         {/* Quick Actions */}
         <div className="mt-12">
           <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer">
+            <div
+              onClick={() => navigate('/vendor/inventory')}
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer"
+            >
               <h3 className="font-semibold text-lg mb-2">Update Inventory</h3>
               <p className="text-gray-600">Update stock levels for your products</p>
             </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer">
+            <div
+              onClick={() => navigate('/vendor/analytics')}
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer"
+            >
               <h3 className="font-semibold text-lg mb-2">View Analytics</h3>
               <p className="text-gray-600">See detailed sales and performance metrics</p>
             </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer">
+            <div
+              onClick={() => navigate('/vendor/promotions')}
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer"
+            >
               <h3 className="font-semibold text-lg mb-2">Manage Promotions</h3>
               <p className="text-gray-600">Create and manage special offers</p>
             </div>

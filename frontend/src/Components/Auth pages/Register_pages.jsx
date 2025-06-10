@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import facebookicon from "../../../public/images/facebook_icon.svg";
 import googleicon from "../../../public/images/google_icon.svg";
-import Navbar_frame from '../Common_frames/Navbar_frame';
+import Navbar_frame from '../Common frames/Navbar_frame';
 import { googleAuth, initiateGoogleAuth, facebookAuth, initiateFacebookAuth } from './app';
 
 const Register_pages = () => {

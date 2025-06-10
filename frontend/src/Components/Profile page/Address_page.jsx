@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import User_side_frame from '../common_comps/User_side_frame';
 import axios from 'axios';
-import Navbar_frame from '../Common_frames/Navbar_frame';
+import Navbar_frame from '../Common frames/Navbar_frame';
 import { toast } from 'react-toastify';
 
 const MAX_ADDRESSES = 5;
@@ -15,6 +15,7 @@ const Address_page = () => {
     city: '',
     postalCode: '',
     country: '',
+
   });
 
   useEffect(() => {
@@ -23,10 +24,10 @@ const Address_page = () => {
         const res = await axios.get(`${import.meta.env.VITE_BASE_URI}/api/users/profile`, {
           withCredentials: true,
         });
-  
+
         const savedAddresses = res.data.shippingAddresses || [];
         const defaultIndex = res.data.defaultShippingIndex ?? savedAddresses.length - 1;
-  
+
         setAddresses(savedAddresses);
         setCurrentIndex(defaultIndex);
         setFormData(savedAddresses[defaultIndex] || {
@@ -35,16 +36,18 @@ const Address_page = () => {
           postalCode: '',
           country: '',
         });
-  
+        localStorage.setItem('selectedOrder', JSON.stringify(res.data));
+
+
         setUser(res.data);
       } catch (error) {
         console.error('Error fetching user:', error);
       }
     };
-  
+
     fetchUser();
   }, []);
-  
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,7 +73,7 @@ const Address_page = () => {
       postalCode: '',
       country: '',
     });
-  
+
     try {
       // Save selected index to backend
       const res = await axios.put(
@@ -78,7 +81,7 @@ const Address_page = () => {
         { defaultShippingIndex: index },
         { withCredentials: true }
       );
-  
+
       if (res.status === 200) {
         setUser((prev) => ({
           ...prev,
@@ -89,7 +92,7 @@ const Address_page = () => {
       console.error("Failed to update default shipping index:", error);
     }
   };
-  
+
   const isDuplicate = (newAddress) => {
     return addresses.some(addr =>
       addr.address === newAddress.address &&
@@ -101,15 +104,15 @@ const Address_page = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (isDuplicate(formData)) {
       toast.warning('This address already exists!');
       return;
     }
-  
+
     const updatedAddresses = [...addresses];
     updatedAddresses[currentIndex] = formData;
-  
+
     try {
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URI}/api/users/profile`,
@@ -119,7 +122,7 @@ const Address_page = () => {
         },
         { withCredentials: true }
       );
-  
+
       if (res.status === 200) {
         toast.success('Address saved successfully!');
         setAddresses(updatedAddresses);
@@ -134,7 +137,7 @@ const Address_page = () => {
       toast.error('Failed to save address.');
     }
   };
-  
+
   const handleAddNewAddress = () => {
     if (addresses.length >= MAX_ADDRESSES) {
       alert(`You can only save up to ${MAX_ADDRESSES} addresses.`);
@@ -200,7 +203,7 @@ const Address_page = () => {
           </div>
         </aside>
 
-        <main className="ml-64 flex-1 overflow-y-auto pb-8 pl-8 pr-8 pt-4">
+        <main className="ml-64 flex-1 mt-25 overflow-y-auto pb-8 pl-8 pr-8 pt-4">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
               Manage Shipping Addresses
@@ -230,11 +233,10 @@ const Address_page = () => {
               {addresses.map((addr, idx) => (
                 <div
                   key={idx}
-                  className={`p-4 rounded-md shadow-md transition ${
-                    idx === currentIndex
-                      ? 'bg-green-100 dark:bg-green-700'
-                      : 'bg-gray-200 dark:bg-gray-700'
-                  }`}
+                  className={`p-4 rounded-md shadow-md transition ${idx === currentIndex
+                    ? 'bg-green-100 dark:bg-green-700'
+                    : 'bg-gray-200 dark:bg-gray-700'
+                    }`}
                 >
                   <div className="flex justify-between items-center">
                     <p className="font-semibold text-gray-800 dark:text-white">Address {idx + 1}</p>
