@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 const Counter = require('../models/counterModel');
 const { sendEmail } = require('../utils/sendEmail');
 const logger = require('../utils/logger');
+// const Activity = require('../models/activityModel'); // You need to have this model
 
 /**
  * @desc    Submit a vendor request
@@ -385,10 +386,19 @@ const getMyVendorRequestStatus = asyncHandler(async (req, res) => {
   });
 });
 
+const getMyVendorActivities = asyncHandler(async (req, res) => {
+  const activities = await Activity.find({ vendor: req.user._id })
+    .sort({ createdAt: -1 })
+    .limit(20);
+
+  res.json(activities);
+});
+
 module.exports = {
   submitVendorRequest,
   getVendorRequests,
   getVendorRequestDetails,
   processVendorRequest,
-  getMyVendorRequestStatus
+  getMyVendorRequestStatus,
+  getMyVendorActivities,
 };

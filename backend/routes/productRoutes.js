@@ -8,11 +8,11 @@ const {
   deleteProduct,
   searchProducts,
   createProductReview,
-  // New vendor-specific functions
   createVendorProduct,
   getVendorProducts,
   updateVendorProduct,
   deleteVendorProduct,
+  getVendorProductById
 } = require('../controllers/productController');
 const { protect, admin, vendor, authorize } = require('../middleware/authMiddleware');
 const { check } = require('express-validator');
@@ -72,5 +72,10 @@ router
   .get(getProductById)
   .put(protect, authorize('admin', 'vendor'), validateProduct, updateProduct) // Allow vendors to update their own products
   .delete(protect, authorize('admin', 'vendor'), deleteProduct); // Allow vendors to delete their own products
+
+  router.route('/vendor/my-products/:id')
+  .get(protect, vendor, getVendorProductById) // <-- Add this line
+  .put(protect, vendor, validateProduct, updateVendorProduct)
+  .delete(protect, vendor, deleteVendorProduct);
 
 module.exports = router;

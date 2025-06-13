@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../api/axios';
 import toast from 'react-hot-toast';
 import Navbar_frame from '../Common frames/Navbar_frame';
 
@@ -28,13 +28,13 @@ const AddProduct = () => {
     images: [],
     discount: 0,
   });
+  const [tagsInput, setTagsInput] = useState('');
 
   const categories = [
     'men-shirts', 'men-pants', 'men-jackets', 'men-t-shirts', 'men-jeans', 'men-formal',
     'women-dresses', 'women-tops', 'women-pants', 'women-skirts', 'women-jackets', 'women-jeans', 'women-formal',
     'kids-boys', 'kids-girls', 'accessories', 'shoes', 'bags'
   ];
-
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '28', '30', '32', '34', '36', '38', '40', '42', '44', '46'];
   const fits = ['slim', 'regular', 'loose', 'oversized', 'tailored'];
   const seasons = ['spring', 'summer', 'autumn', 'winter', 'all-season'];
@@ -63,13 +63,17 @@ const AddProduct = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleTagsChange = (e) => {
+    setTagsInput(e.target.value);
+  };
+
   const handleImageUpload = (e, colorIndex = null) => {
     const files = Array.from(e.target.files);
     const imagePromises = files.map(file => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target.result);
-        reader.onerror = reject;
+        reader.onerror = (err) => reject(new Error(`Failed to read file: ${err}`));
         reader.readAsDataURL(file);
       });
     });
@@ -85,7 +89,7 @@ const AddProduct = () => {
         }
       })
       .catch(error => {
-        console.error('Error processing images:', error);
+        console.error('Error processing images:', error.message);
         toast.error('Failed to process images');
       });
   };
@@ -111,7 +115,7 @@ const AddProduct = () => {
 
   const updateSize = (index, field, value) => {
     const updatedSizes = [...formData.sizes];
-    updatedSizes[index][field] = value;
+    updatedSizes[index][field] = field === 'stock' ? Number(value) : value;
     setFormData({ ...formData, sizes: updatedSizes });
   };
 
@@ -130,7 +134,7 @@ const AddProduct = () => {
 
   const updateColor = (index, field, value) => {
     const updatedColors = [...formData.colors];
-    updatedColors[index][field] = value;
+    updatedColors[index][field] = field === 'stock' ? Number(value) : value;
     setFormData({ ...formData, colors: updatedColors });
   };
 
@@ -145,26 +149,23 @@ const AddProduct = () => {
     setLoading(true);
 
     try {
-      // Validate required fields
       if (!formData.name || !formData.description || !formData.price || !formData.category || !formData.brand || !formData.gender) {
         toast.error('Please fill all required fields');
         setLoading(false);
         return;
       }
 
-      // Validate sizes and colors
-      if (formData.sizes.some(s => !s.size || s.stock < 0)) {
+      if (formData.sizes.some(s => !s.size || s.stock < 0 || isNaN(s.stock))) {
         toast.error('Invalid size or stock values');
         setLoading(false);
         return;
       }
-      if (formData.colors.some(c => !c.color || c.stock < 0)) {
+      if (formData.colors.some(c => !c.color || c.stock < 0 || isNaN(c.stock))) {
         toast.error('Invalid color or stock values');
         setLoading(false);
         return;
       }
 
-      // Validate at least one image is uploaded
       const hasImages = formData.images.length > 0 || formData.colors.some(c => c.images.length > 0);
       if (!hasImages) {
         toast.error('Please upload at least one product image');
@@ -174,12 +175,13 @@ const AddProduct = () => {
 
       const data = {
         ...formData,
+        tags: tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [],
         countInStock: formData.sizes.reduce((sum, s) => sum + Number(s.stock), 0) +
                       formData.colors.reduce((sum, c) => sum + Number(c.stock), 0),
         image: formData.images[0] || formData.colors[0]?.images[0] || '',
       };
 
-      await axios.post('http://localhost:5000/api/products/vendor/my-products', data, {
+      await axios.post('/api/products/vendor/my-products', data, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -311,6 +313,17 @@ const AddProduct = () => {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+            <input
+              type="text"
+              value={tagsInput}
+              onChange={handleTagsChange}
+              placeholder="e.g., casual, trendy, summer"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -505,7 +518,7 @@ const AddProduct = () => {
                           onClick={() => removeImage(imgIndex, index)}
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
                         >
-                          ×
+                          &times;
                         </button>
                       </div>
                     ))}
@@ -527,14 +540,14 @@ const AddProduct = () => {
             {formData.images.length > 0 && (
               <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
                 {formData.images.map((image, index) => (
-                  <div key={index} encoding="utf-8" className="relative">
+                  <div key={index} className="relative">
                     <img src={image} alt={`Product ${index + 1}`} className="w-full h-24 object-cover rounded-lg" />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
                       className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
                     >
-                      ×
+                      &times;
                     </button>
                   </div>
                 ))}

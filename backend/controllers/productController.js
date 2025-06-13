@@ -156,18 +156,29 @@ const createVendorProduct = asyncHandler(async (req, res) => {
 // @route   GET /api/products/vendor/my-products
 // @access  Private/Vendor
 const getVendorProducts = asyncHandler(async (req, res) => {
-  const { status } = req.query;
+  const { status, page = 1, limit = 5 } = req.query;
   const query = { vendor: req.user._id };
-  
+
   if (status) {
     query.status = status;
   }
 
+  const skip = (parseInt(page) - 1) * parseInt(limit);
+
+  const totalProducts = await Product.countDocuments(query);
+  const totalPages = Math.ceil(totalProducts / limit);
+
   const products = await Product.find(query)
     .populate('vendor', 'name vendorRequest.businessInfo.businessName')
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(parseInt(limit));
 
-  res.json(products);
+  res.json({
+    products,
+    totalPages,
+    totalProducts,
+  });
 });
 
 // @desc    Update vendor's product
@@ -431,6 +442,24 @@ const getPendingProducts = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get a single vendor's product
+// @route   GET /api/products/vendor/my-products/:id
+// @access  Private/Vendor
+const getVendorProductById = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id)
+    .populate('vendor', 'name vendorRequest.businessInfo.businessName');
+  if (!product) {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+  const vendorId = product.vendor._id ? product.vendor._id.toString() : product.vendor.toString();
+  if (vendorId !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error('Not authorized to view this product');
+  }
+  res.json(product);
+});
+
 module.exports = {
   getProducts,
   getProductById,
@@ -443,5 +472,6 @@ module.exports = {
   getVendorProducts,
   updateVendorProduct,
   deleteVendorProduct,
-  getPendingProducts
+  getPendingProducts,
+  getVendorProductById
 };

@@ -1,3 +1,5 @@
+const { getVendorOrders } = require('../controllers/orderController');
+const { vendor } = require('../middleware/authMiddleware');
 const express = require('express');
 const router = express.Router();
 const { 
@@ -15,6 +17,8 @@ router.route('/')
 
 router.route('/my-orders')
   .get(protect, getMyOrders);
+
+router.route('/vendor/my-orders').get(protect, vendor, getVendorOrders);
 
 router.route('/:id')
   .get(protect, getOrderById);

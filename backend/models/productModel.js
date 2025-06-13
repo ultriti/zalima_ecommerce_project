@@ -24,15 +24,12 @@ const productSchema = mongoose.Schema(
     vendor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: function() {
-        // Require vendor field if the user creating the product is a vendor
-        return this.user && this.populate('user').role === 'vendor';
-      }
+      required: false // Simplified: Handled by controller logic
     },
     vendorInfo: {
-      name: { type: String }, // Vendor business name for display
-      businessName: { type: String }, // Vendor business name
-      contactPhone: { type: String }, // Vendor contact
+      name: { type: String },
+      businessName: { type: String },
+      contactPhone: { type: String },
     },
     name: {
       type: String,
@@ -41,10 +38,10 @@ const productSchema = mongoose.Schema(
     images: [{
       type: String,
       required: true,
-    }], // Changed to array for multiple images
+    }],
     image: {
       type: String,
-      required: true, // Keep for backward compatibility
+      required: true,
     },
     brand: {
       type: String,
@@ -75,13 +72,12 @@ const productSchema = mongoose.Schema(
       ]
     },
     subcategory: {
-      type: String, // For more specific categorization
+      type: String,
     },
     description: {
       type: String,
       required: true,
     },
-    // Clothing-specific fields
     sizes: [{
       size: {
         type: String,
@@ -100,9 +96,9 @@ const productSchema = mongoose.Schema(
         required: true
       },
       colorCode: {
-        type: String, // Hex color code
+        type: String,
       },
-      images: [String], // Color-specific images
+      images: [String],
       stock: {
         type: Number,
         default: 0,
@@ -110,10 +106,10 @@ const productSchema = mongoose.Schema(
       }
     }],
     material: {
-      type: String, // e.g., Cotton, Polyester, Silk, etc.
+      type: String,
     },
     careInstructions: {
-      type: String, // Washing and care instructions
+      type: String,
     },
     fit: {
       type: String,
@@ -132,35 +128,34 @@ const productSchema = mongoose.Schema(
       type: String,
       enum: ['adult', 'teen', 'kids', 'toddler', 'infant']
     },
-    // Existing fields
     reviews: [reviewSchema],
     rating: {
       type: Number,
       required: true,
-      default: 0,
+      default: 0
     },
     numReviews: {
       type: Number,
       required: true,
-      default: 0,
+      default: 0
     },
     price: {
       type: Number,
       required: true,
-      default: 0,
+      default: 0
     },
     originalPrice: {
-      type: Number, // For showing discounts
+      type: Number,
     },
     countInStock: {
       type: Number,
       required: true,
-      default: 0,
+      default: 0
     },
     discount: {
       type: Number,
       default: 0,
-      max: 100 // Percentage
+      max: 100
     },
     isOnSale: {
       type: Boolean,
@@ -170,11 +165,10 @@ const productSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    tags: [String], // For better searchability
-    // Vendor-specific fields
+    tags: [String],
     vendorApproved: {
       type: Boolean,
-      default: false, // Admin approval for vendor products
+      default: false,
     },
     approvedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -217,12 +211,10 @@ productSchema.pre('save', async function(next) {
 productSchema.virtual('totalStock').get(function() {
   let total = this.countInStock;
   
-  // Add stock from sizes
   if (this.sizes && this.sizes.length > 0) {
     total += this.sizes.reduce((sum, size) => sum + size.stock, 0);
   }
   
-  // Add stock from colors
   if (this.colors && this.colors.length > 0) {
     total += this.colors.reduce((sum, color) => sum + color.stock, 0);
   }

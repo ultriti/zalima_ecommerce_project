@@ -1,4 +1,6 @@
 const express = require('express');
+const { getMyVendorActivities } = require('../controllers/vendorController');
+
 const router = express.Router();
 const { protect, admin, superadmin } = require('../middleware/authMiddleware');
 const {
@@ -19,5 +21,7 @@ router.get('/requests/:id', protect, admin, getVendorRequestDetails);
 
 // Superadmin routes
 router.put('/requests/:id', protect, superadmin, processVendorRequest);
+
+// router.get('/my-activities', protect, getMyVendorActivities);
 
 module.exports = router;

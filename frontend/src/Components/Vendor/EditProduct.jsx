@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../api/axios';
 import toast from 'react-hot-toast';
 import Navbar_frame from '../Common frames/Navbar_frame';
 
@@ -8,6 +8,7 @@ const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [tagsInput, setTagsInput] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -35,7 +36,6 @@ const EditProduct = () => {
     'women-dresses', 'women-tops', 'women-pants', 'women-skirts', 'women-jackets', 'women-jeans', 'women-formal',
     'kids-boys', 'kids-girls', 'accessories', 'shoes', 'bags'
   ];
-
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '28', '30', '32', '34', '36', '38', '40', '42', '44', '46'];
   const fits = ['slim', 'regular', 'loose', 'oversized', 'tailored'];
   const seasons = ['spring', 'summer', 'autumn', 'winter', 'all-season'];
@@ -88,6 +88,7 @@ const EditProduct = () => {
         images: product.images || [],
         discount: product.discount || 0,
       });
+      setTagsInput(product.tags ? product.tags.join(', ') : '');
     } catch (error) {
       console.error('Error fetching product:', error);
       toast.error(error.response?.data?.message || 'Failed to load product');
@@ -100,13 +101,17 @@ const EditProduct = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleTagsChange = (e) => {
+    setTagsInput(e.target.value);
+  };
+
   const handleImageUpload = (e, colorIndex = null) => {
     const files = Array.from(e.target.files);
     const imagePromises = files.map(file => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target.result);
-        reader.onerror = reject;
+        reader.onerror = (err) => reject(new Error(`Failed to read file: ${err}`));
         reader.readAsDataURL(file);
       });
     });
@@ -122,7 +127,7 @@ const EditProduct = () => {
         }
       })
       .catch(error => {
-        console.error('Error processing images:', error);
+        console.error('Error processing images:', error.message);
         toast.error('Failed to process images');
       });
   };
@@ -148,7 +153,7 @@ const EditProduct = () => {
 
   const updateSize = (index, field, value) => {
     const updatedSizes = [...formData.sizes];
-    updatedSizes[index][field] = value;
+    updatedSizes[index][field] = field === 'stock' ? Number(value) : value;
     setFormData({ ...formData, sizes: updatedSizes });
   };
 
@@ -167,7 +172,7 @@ const EditProduct = () => {
 
   const updateColor = (index, field, value) => {
     const updatedColors = [...formData.colors];
-    updatedColors[index][field] = value;
+    updatedColors[index][field] = field === 'stock' ? Number(value) : value;
     setFormData({ ...formData, colors: updatedColors });
   };
 
@@ -188,18 +193,17 @@ const EditProduct = () => {
         return;
       }
 
-      if (formData.sizes.some(s => !s.size || s.stock < 0)) {
+      if (formData.sizes.some(s => !s.size || s.stock < 0 || isNaN(s.stock))) {
         toast.error('Invalid size or stock values');
         setLoading(false);
         return;
       }
-      if (formData.colors.some(c => !c.color || c.stock < 0)) {
+      if (formData.colors.some(c => !c.color || c.stock < 0 || isNaN(c.stock))) {
         toast.error('Invalid color or stock values');
         setLoading(false);
         return;
       }
 
-      // Validate at least one image is uploaded
       const hasImages = formData.images.length > 0 || formData.colors.some(c => c.images.length > 0);
       if (!hasImages) {
         toast.error('Please upload at least one product image');
@@ -209,6 +213,7 @@ const EditProduct = () => {
 
       const data = {
         ...formData,
+        tags: tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [],
         countInStock: formData.sizes.reduce((sum, s) => sum + Number(s.stock), 0) +
                       formData.colors.reduce((sum, c) => sum + Number(c.stock), 0),
         image: formData.images[0] || formData.colors[0]?.images[0] || '',
@@ -227,6 +232,8 @@ const EditProduct = () => {
       setLoading(false);
     }
   };
+
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -346,6 +353,17 @@ const EditProduct = () => {
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+            <input
+              type="text"
+              value={tagsInput}
+              onChange={handleTagsChange}
+              placeholder="e.g., casual, trendy, summer"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -540,7 +558,7 @@ const EditProduct = () => {
                           onClick={() => removeImage(imgIndex, index)}
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
                         >
-                          ×
+                          &times;
                         </button>
                       </div>
                     ))}
@@ -569,7 +587,7 @@ const EditProduct = () => {
                       onClick={() => removeImage(index)}
                       className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
                     >
-                      ×
+                      &times;
                     </button>
                   </div>
                 ))}

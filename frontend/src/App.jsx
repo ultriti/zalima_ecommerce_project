@@ -44,6 +44,7 @@ import ManageProductRequests from './Components/Admin/admin pages/ManageProductR
 import ManageSuperAdminProductRequests from './Components/superadmin pages/ManageSuperAdminProductRequests';
 import UserProfile from './Components/User/UserProfile';
 import PurchaseConformation from "./Components/Product_pages/PurchaseConformation"
+import VendorAllProducts from './Components/Vendor/VendorAllProducts';
 
 // Role-based route protection
 const RoleProtectedRoute = ({ children, allowedRoles }) => {
@@ -123,42 +124,42 @@ const App = () => {
 
         {/* Admin Routes */}
         <Route path="/admin/dashboard" element={
-          <RoleProtectedRoute allowedRoles={['admin']}>
+          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <AdminDashboardLayout />
           </RoleProtectedRoute>
         } />
         <Route path="/admin/users" element={
-          <RoleProtectedRoute allowedRoles={['admin']}>
+          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <ManageUsers />
           </RoleProtectedRoute>
         } />
         <Route path="/admin/vendors" element={
-          <RoleProtectedRoute allowedRoles={['admin']}>
+          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <ManageVendors />
           </RoleProtectedRoute>
         } />
         <Route path="/admin/products" element={
-          <RoleProtectedRoute allowedRoles={['admin']}>
+          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <ManageAdminProducts />
           </RoleProtectedRoute>
         } />
         <Route path="/admin/product-requests" element={
-          <RoleProtectedRoute allowedRoles={['admin']}>
+          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <ManageProductRequests />
           </RoleProtectedRoute>
         } />
         <Route path="/admin/profile" element={
-          <RoleProtectedRoute allowedRoles={['admin']}>
+          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <AdminProfile />
           </RoleProtectedRoute>
         } />
         <Route path="/admin/managevendorrequests" element={
-          <RoleProtectedRoute allowedRoles={['admin']}>
+          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <ManageVendorRequests />
           </RoleProtectedRoute>
         } />
         <Route path="/admin/admins" element={
-          <RoleProtectedRoute allowedRoles={['admin']}>
+          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <ManageAdmins />
           </RoleProtectedRoute>
         } />
@@ -202,6 +203,11 @@ const App = () => {
         <Route path="/superadmin/managevendorrequests" element={
           <RoleProtectedRoute allowedRoles={['superadmin']}>
             <ManageSuperAdminVendorRequests />
+          </RoleProtectedRoute>
+        } />
+        <Route path="/vendor/products" element={
+          <RoleProtectedRoute allowedRoles={['vendor']}>
+            <VendorAllProducts />
           </RoleProtectedRoute>
         } />
 

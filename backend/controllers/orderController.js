@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
-
+const Product = require('../models/productModel');
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
@@ -131,11 +131,23 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   }
 });
 
+const getVendorOrders = asyncHandler(async (req, res) => {
+  const vendorProducts = await Product.find({ vendor: req.user._id }).select('_id');
+  const productIds = vendorProducts.map(p => p._id);
+
+  const orders = await Order.find({ 'orderItems.product': { $in: productIds } })
+    .populate('user', 'name email')
+    .sort({ createdAt: -1 });
+
+  res.json(orders);
+});
+
 module.exports = {
   addOrderItems,
   getOrderById,
   updateOrderToPaid,
   updateOrderToDelivered,
   getMyOrders,
-  updateOrderStatus
+  updateOrderStatus,
+  getVendorOrders,
 };
