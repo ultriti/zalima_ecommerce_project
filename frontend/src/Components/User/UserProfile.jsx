@@ -653,6 +653,20 @@ const UserProfile = () => {
               >
                 Vendor Dashboard
               </button>
+            ) : user.role === 'admin' ? (
+              <button
+                onClick={() => navigate('/admin/dashboard')}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 hover:border-gray-500 hover:text-gray-900 transition-all duration-200"
+              >
+                Admin Dashboard
+              </button>
+            ) : user.role === 'superadmin' ? (
+              <button
+                onClick={() => navigate('/superadmin/dashboard')}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 hover:border-gray-500 hover:text-gray-900 transition-all duration-200"
+              >
+                Superadmin Dashboard
+              </button>
             ) : (
               <button
                 onClick={() => navigate('/user/become-vendor')}
