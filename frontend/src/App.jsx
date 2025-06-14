@@ -35,16 +35,15 @@ import SuperAdminDashboard from './Components/superadmin pages/Dashboard_page';
 import ManageSuperAdminUsers from './Components/superadmin pages/ManageUsers';
 import ManageSuperAdminVendors from './Components/superadmin pages/ManageVendors';
 import ManageSuperAdminAdmins from './Components/superadmin pages/ManageAdmins';
-import ManageSuperAdminProducts from './Components/superadmin pages/ManageProducts';
 import ManageSuperAdminVendorRequests from './Components/superadmin pages/ManageVendorRequests';
 import SuperAdminProfile from './Components/superadmin pages/SuperAdminProfile';
 import AdminDashboardLayout from './Components/Admin/admin pages/AdminDashboardLayout';
-import ManageAdminProducts from './Components/Admin/admin pages/ManageProducts';
 import ManageProductRequests from './Components/Admin/admin pages/ManageProductRequests';
 import ManageSuperAdminProductRequests from './Components/superadmin pages/ManageSuperAdminProductRequests';
 import UserProfile from './Components/User/UserProfile';
 import PurchaseConformation from "./Components/Product_pages/PurchaseConformation"
 import VendorAllProducts from './Components/Vendor/VendorAllProducts';
+// import EditProduct from './Components/Vendor/EditProduct';
 
 // Role-based route protection
 const RoleProtectedRoute = ({ children, allowedRoles }) => {
@@ -138,11 +137,6 @@ const App = () => {
             <ManageVendors />
           </RoleProtectedRoute>
         } />
-        <Route path="/admin/products" element={
-          <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
-            <ManageAdminProducts />
-          </RoleProtectedRoute>
-        } />
         <Route path="/admin/product-requests" element={
           <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
             <ManageProductRequests />
@@ -185,11 +179,6 @@ const App = () => {
             <ManageSuperAdminAdmins />
           </RoleProtectedRoute>
         } />
-        <Route path="/superadmin/products" element={
-          <RoleProtectedRoute allowedRoles={['superadmin']}>
-            <ManageSuperAdminProducts />
-          </RoleProtectedRoute>
-        } />
         <Route path="/superadmin/product-requests" element={
           <RoleProtectedRoute allowedRoles={['superadmin']}>
             <ManageSuperAdminProductRequests />
@@ -208,6 +197,19 @@ const App = () => {
         <Route path="/vendor/products" element={
           <RoleProtectedRoute allowedRoles={['vendor']}>
             <VendorAllProducts />
+          </RoleProtectedRoute>
+        } />
+        <Route
+          path="/admin/product-requests/:id/view"
+          element={
+            <RoleProtectedRoute allowedRoles={['admin', 'superadmin']}>
+              <EditProduct readOnly />
+            </RoleProtectedRoute>
+          }
+        />
+        <Route path="/superadmin/product-requests" element={
+          <RoleProtectedRoute allowedRoles={['superadmin']}>
+            <ManageSuperAdminProductRequests />
           </RoleProtectedRoute>
         } />
 

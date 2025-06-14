@@ -4,7 +4,6 @@ const navItems = [
   { label: 'Dashboard', icon: '📊', path: '/admin/dashboard' },
   { label: 'Manage Users', icon: '👥', path: '/admin/users' },
   { label: 'Manage Vendors', icon: '🧑‍💼', path: '/admin/vendors' },
-  { label: 'Manage Products', icon: '📦', path: '/admin/products' },
   { label: 'Product Requests', icon: '📝', path: '/admin/product-requests' },
   { label: 'My Profile', icon: '🙍‍♂️', path: '/admin/profile' },
   { label: 'Logout', icon: '🚪', path: '/logout' },

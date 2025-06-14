@@ -5,7 +5,7 @@ const navItems = [
   { label: 'Manage Users', icon: '👥', path: '/superadmin/users' },
   { label: 'Manage Vendors', icon: '🧑‍💼', path: '/superadmin/vendors' },
   { label: 'Manage Admins', icon: '🔐', path: '/superadmin/admins' },
-  { label: 'Manage Products', icon: '📦', path: '/superadmin/products' },
+  { label: 'Product Requests', icon: '📝', path: '/superadmin/product-requests' },
   { label: 'My Profile', icon: '🙍‍♂️', path: '/superadmin/profile' },
   { label: 'Logout', icon: '🚪', path: '/logout' },
 ];

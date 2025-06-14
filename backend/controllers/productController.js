@@ -5,40 +5,58 @@ const User = require('../models/userModel');
 // @desc    Fetch all products with optional filters
 // @route   GET /api/products?category=<category>&featured=<true/false>&limit=<number>&vendor=<vendorId>
 // @access  Public
-const getProducts = asyncHandler(async (req, res) => {
-  const { category, featured, limit, vendor, gender, minPrice, maxPrice, brand, size, color } = req.query;
-  const query = { status: 'active' };
+const getProducts = asyncHandler(async (req, res) => {  // Only allow admin/superadmin to use this endpoint for all products
+  if (!req.user || !['admin', 'superadmin'].includes(req.user.role)) {
+    res.status(403);
+    throw new Error('Not authorized');
+  }
 
+  const {
+    status,
+    page = 1,
+    limit = 10,
+    category,
+    vendor,
+    brand,
+    minPrice,
+    maxPrice,
+    gender,
+    size,
+    color,
+  } = req.query;
+
+  const query = {};
+
+  if (status && status !== 'all') query.status = status;
   if (category) query.category = category;
-  if (featured === 'true') query.featured = true;
   if (vendor) query.vendor = vendor;
-  if (gender) query.gender = gender;
   if (brand) query.brand = new RegExp(brand, 'i');
-  
+  if (gender) query.gender = gender;
+
   if (minPrice || maxPrice) {
     query.price = {};
     if (minPrice) query.price.$gte = parseFloat(minPrice);
     if (maxPrice) query.price.$lte = parseFloat(maxPrice);
   }
+  if (size) query['sizes.size'] = size;
+  if (color) query['colors.color'] = new RegExp(color, 'i');
 
-  if (size) {
-    query['sizes.size'] = size;
-  }
+  const skip = (parseInt(page) - 1) * parseInt(limit);
 
-  if (color) {
-    query['colors.color'] = new RegExp(color, 'i');
-  }
+  const totalProducts = await Product.countDocuments(query);
+  const totalPages = Math.ceil(totalProducts / limit);
 
-  let productsQuery = Product.find(query)
-    .populate('vendor', 'name vendorRequest.businessInfo.businessName')
-    .sort({ createdAt: -1 });
+  const products = await Product.find(query)
+    .populate('vendor', 'email vendorRequest.businessInfo.businessName vendorRequest.businessInfo.contactPhone')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(parseInt(limit));
 
-  if (limit) {
-    productsQuery = productsQuery.limit(parseInt(limit));
-  }
-
-  const products = await productsQuery;
-  res.json(products);
+  res.json({
+    products,
+    totalPages,
+    totalProducts,
+  });
 });
 
 // @desc    Fetch single product
@@ -46,7 +64,7 @@ const getProducts = asyncHandler(async (req, res) => {
 // @access  Public
 const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id)
-    .populate('vendor', 'name vendorRequest.businessInfo.businessName vendorRequest.businessInfo.contactPhone')
+    .populate('vendor', 'name email vendorRequest.businessInfo.businessName vendorRequest.businessInfo.contactPhone')
     .populate('reviews.user', 'name');
   
   if (product) {

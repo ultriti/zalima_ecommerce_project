@@ -64,7 +64,7 @@ router.route('/:id/reviews').post(protect, restrictToUser, validateReview, creat
 // GENERAL PRODUCT ROUTES
 router
   .route('/')
-  .get(getProducts)
+  .get(protect, admin, getProducts)
   .post(protect, admin, validateProduct, createProduct); // Only admins can create general products
 
 router

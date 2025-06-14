@@ -3,8 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../../api/axios';
 import toast from 'react-hot-toast';
 import Navbar_frame from '../Common frames/Navbar_frame';
+import AdminSidebar from '../Admin/admin pages/AdminSidebar';
+import AdminTopbar from '../Admin/admin pages/AdminTopbar';
 
-const EditProduct = () => {
+const EditProduct = ({ readOnly = false }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -30,6 +32,7 @@ const EditProduct = () => {
     images: [],
     discount: 0,
   });
+  const [vendorInfo, setVendorInfo] = useState({});
 
   const categories = [
     'men-shirts', 'men-pants', 'men-jackets', 'men-t-shirts', 'men-jeans', 'men-formal',
@@ -47,25 +50,40 @@ const EditProduct = () => {
     const userRole = localStorage.getItem('userRole');
 
     if (!token) {
-      toast.error('Please log in to edit products');
+      toast.error('Please log in to edit/view products');
       navigate('/user/signin');
       return;
     }
 
-    if (userRole !== 'vendor') {
+    if (!readOnly && userRole !== 'vendor') {
       toast.error('You do not have vendor privileges');
+      navigate('/unauthorized');
+      return;
+    }
+    if (readOnly && !['admin', 'superadmin'].includes(userRole)) {
+      toast.error('You do not have permission');
       navigate('/unauthorized');
       return;
     }
 
     fetchProduct();
-  }, [navigate, id]);
+    // eslint-disable-next-line
+  }, [navigate, id, readOnly]);
 
   const fetchProduct = async () => {
     try {
-      const response = await axios.get(`/api/products/vendor/my-products/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      let response;
+      if (readOnly) {
+        // Admin/superadmin: fetch by public product endpoint (populates vendor)
+        response = await axios.get(`/api/products/${id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+      } else {
+        // Vendor: fetch own product
+        response = await axios.get(`/api/products/vendor/my-products/${id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+      }
       const product = response.data;
       setFormData({
         name: product.name,
@@ -83,29 +101,36 @@ const EditProduct = () => {
         gender: product.gender,
         ageGroup: product.ageGroup || '',
         tags: product.tags || [],
-        sizes: product.sizes.length > 0 ? product.sizes : [{ size: '', stock: 0 }],
-        colors: product.colors.length > 0 ? product.colors : [{ color: '', colorCode: '', stock: 0, images: [] }],
+        sizes: product.sizes?.length > 0 ? product.sizes : [{ size: '', stock: 0 }],
+        colors: product.colors?.length > 0 ? product.colors : [{ color: '', colorCode: '', stock: 0, images: [] }],
         images: product.images || [],
         discount: product.discount || 0,
       });
       setTagsInput(product.tags ? product.tags.join(', ') : '');
+      // Save vendor info for admin view
+      if (readOnly) setVendorInfo(product.vendor || {});
     } catch (error) {
       console.error('Error fetching product:', error);
       toast.error(error.response?.data?.message || 'Failed to load product');
-      navigate('/vendor/dashboard');
+      if (readOnly) navigate('/admin/product-requests');
+      else navigate('/vendor/dashboard');
     }
   };
 
+  // All handlers below: disable actions if readOnly
   const handleChange = (e) => {
+    if (readOnly) return;
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleTagsChange = (e) => {
+    if (readOnly) return;
     setTagsInput(e.target.value);
   };
 
   const handleImageUpload = (e, colorIndex = null) => {
+    if (readOnly) return;
     const files = Array.from(e.target.files);
     const imagePromises = files.map(file => {
       return new Promise((resolve, reject) => {
@@ -133,6 +158,7 @@ const EditProduct = () => {
   };
 
   const removeImage = (index, colorIndex = null) => {
+    if (readOnly) return;
     if (colorIndex !== null) {
       const updatedColors = [...formData.colors];
       updatedColors[colorIndex].images.splice(index, 1);
@@ -145,6 +171,7 @@ const EditProduct = () => {
   };
 
   const addSize = () => {
+    if (readOnly) return;
     setFormData({
       ...formData,
       sizes: [...formData.sizes, { size: '', stock: 0 }],
@@ -152,18 +179,21 @@ const EditProduct = () => {
   };
 
   const updateSize = (index, field, value) => {
+    if (readOnly) return;
     const updatedSizes = [...formData.sizes];
     updatedSizes[index][field] = field === 'stock' ? Number(value) : value;
     setFormData({ ...formData, sizes: updatedSizes });
   };
 
   const removeSize = (index) => {
+    if (readOnly) return;
     const updatedSizes = [...formData.sizes];
     updatedSizes.splice(index, 1);
     setFormData({ ...formData, sizes: updatedSizes });
   };
 
   const addColor = () => {
+    if (readOnly) return;
     setFormData({
       ...formData,
       colors: [...formData.colors, { color: '', colorCode: '', stock: 0, images: [] }],
@@ -171,12 +201,14 @@ const EditProduct = () => {
   };
 
   const updateColor = (index, field, value) => {
+    if (readOnly) return;
     const updatedColors = [...formData.colors];
     updatedColors[index][field] = field === 'stock' ? Number(value) : value;
     setFormData({ ...formData, colors: updatedColors });
   };
 
   const removeColor = (index) => {
+    if (readOnly) return;
     const updatedColors = [...formData.colors];
     updatedColors.splice(index, 1);
     setFormData({ ...formData, colors: updatedColors });
@@ -184,6 +216,7 @@ const EditProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (readOnly) return;
     setLoading(true);
 
     try {
@@ -233,388 +266,516 @@ const EditProduct = () => {
     }
   };
 
-  
-
+  // Layout: Admin view uses admin sidebar/topbar, vendor uses vendor navbar
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar_frame />
-      <div className="max-w-4xl mx-auto p-6 mt-8">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Edit Product</h1>
-          <button
-            onClick={() => navigate('/vendor/dashboard')}
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
-          >
-            Back to Dashboard
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Brand *</label>
-              <input
-                type="text"
-                name="brand"
-                value={formData.brand}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Select Category</option>
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
-              <input
-                type="text"
-                name="subcategory"
-                value={formData.subcategory}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows="4"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-              required
-            ></textarea>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price ($) *</label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                step="0.01"
-                min="0"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Original Price ($)</label>
-              <input
-                type="number"
-                name="originalPrice"
-                value={formData.originalPrice}
-                onChange={handleChange}
-                step="0.01"
-                min="0"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
-              <input
-                type="number"
-                name="discount"
-                value={formData.discount}
-                onChange={handleChange}
-                min="0"
-                max="100"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
-            <input
-              type="text"
-              value={tagsInput}
-              onChange={handleTagsChange}
-              placeholder="e.g., casual, trendy, summer"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Select Gender</option>
-                {genders.map(g => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
-              <select
-                name="ageGroup"
-                value={formData.ageGroup}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Age Group</option>
-                {ageGroups.map(ag => (
-                  <option key={ag} value={ag}>{ag}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fit</label>
-              <select
-                name="fit"
-                value={formData.fit}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Fit</option>
-                {fits.map(f => (
-                  <option key={f} value={f}>{f}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Season</label>
-              <select
-                name="season"
-                value={formData.season}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Season</option>
-                {seasons.map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
-            <input
-              type="text"
-              name="material"
-              value={formData.material}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Care Instructions</label>
-            <textarea
-              name="careInstructions"
-              value={formData.careInstructions}
-              onChange={handleChange}
-              rows="3"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            ></textarea>
-          </div>
-
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">Sizes</label>
-              <button
-                type="button"
-                onClick={addSize}
-                className="text-sm text-blue-600 hover:text-blue-800"
-              >
-                + Add Size
-              </button>
-            </div>
-            {formData.sizes.map((size, index) => (
-              <div key={index} className="flex items-center mb-2">
-                <select
-                  value={size.size}
-                  onChange={(e) => updateSize(index, 'size', e.target.value)}
-                  className="w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+      {readOnly ? (
+        <>
+          <AdminSidebar />
+          <div className="flex-1 min-h-screen bg-gray-50 ml-64">
+            <AdminTopbar username="Admin" />
+            <div className="max-w-4xl mx-auto p-6 pt-24">
+              <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-bold text-gray-800">Product Request Details</h1>
+                <button
+                  onClick={() => navigate(-1)}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
                 >
-                  <option value="">Select Size</option>
-                  {sizes.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  value={size.stock}
-                  onChange={(e) => updateSize(index, 'stock', e.target.value)}
-                  placeholder="Stock"
-                  min="0"
-                  className="w-2/3 ml-2 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                />
-                {formData.sizes.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeSize(index)}
-                    className="ml-2 text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
-                )}
+                  Back
+                </button>
               </div>
-            ))}
+              {/* Vendor Info */}
+              <div className="mb-6 bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <h2 className="text-lg font-semibold mb-4 text-gray-800 border-b border-gray-200 pb-2">Vendor Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <span className="font-medium text-gray-700">Business Name:</span>
+                    <span className="ml-2 text-gray-600">{vendorInfo?.vendorRequest?.businessInfo?.businessName || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Email:</span>
+                    <span className="ml-2 text-gray-600">{vendorInfo?.email || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Business Contact:</span>
+                    <span className="ml-2 text-gray-600">{vendorInfo?.vendorRequest?.businessInfo?.contactPhone || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+              {/* Product Form (read-only) */}
+              <div className="bg-white rounded-lg shadow-md border border-gray-200">
+                <ProductForm
+                  formData={formData}
+                  tagsInput={tagsInput}
+                  categories={categories}
+                  sizesList={sizes}
+                  fits={fits}
+                  seasons={seasons}
+                  genders={genders}
+                  ageGroups={ageGroups}
+                  readOnly={true}
+                />
+              </div>
+            </div>
           </div>
-
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">Colors</label>
+        </>
+      ) : (
+        <>
+          <Navbar_frame />
+          <div className="max-w-4xl mx-auto p-6 mt-8">
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold">Edit Product</h1>
               <button
-                type="button"
-                onClick={addColor}
-                className="text-sm text-blue-600 hover:text-blue-800"
+                onClick={() => navigate('/vendor/dashboard')}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
               >
-                + Add Color
+                Back to Dashboard
               </button>
             </div>
-            {formData.colors.map((color, index) => (
-              <div key={index} className="mb-4 p-4 border rounded-lg">
-                <div className="flex items-center mb-2">
-                  <input
-                    type="text"
-                    value={color.color}
-                    onChange={(e) => updateColor(index, 'color', e.target.value)}
-                    placeholder="Color name"
-                    className="w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                  />
-                  <input
-                    type="text"
-                    value={color.colorCode}
-                    onChange={(e) => updateColor(index, 'colorCode', e.target.value)}
-                    placeholder="Hex code (e.g., #FFFFFF)"
-                    className="w-1/3 ml-2 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                  />
-                  <input
-                    type="number"
-                    value={color.stock}
-                    onChange={(e) => updateColor(index, 'stock', e.target.value)}
-                    placeholder="Stock"
-                    min="0"
-                    className="w-1/3 ml-2 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-                  />
-                  {formData.colors.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeColor(index)}
-                      className="ml-2 text-red-600 hover:text-red-800"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => handleImageUpload(e, index)}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                />
-                {color.images.length > 0 && (
-                  <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {color.images.map((img, imgIndex) => (
-                      <div key={imgIndex} className="relative">
-                        <img src={img} alt={`Color ${index + 1} Image ${imgIndex + 1}`} className="w-full h-24 object-cover rounded-lg" />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(imgIndex, index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                        >
-                          &times;
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+            <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+              <ProductForm
+                formData={formData}
+                setFormData={setFormData}
+                tagsInput={tagsInput}
+                setTagsInput={setTagsInput}
+                categories={categories}
+                sizesList={sizes}
+                fits={fits}
+                seasons={seasons}
+                genders={genders}
+                ageGroups={ageGroups}
+                readOnly={false}
+                addSize={addSize}
+                updateSize={updateSize}
+                removeSize={removeSize}
+                addColor={addColor}
+                updateColor={updateColor}
+                removeColor={removeColor}
+                handleImageUpload={handleImageUpload}
+                removeImage={removeImage}
+                handleChange={handleChange}
+                handleTagsChange={handleTagsChange}
+              />
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => navigate('/vendor/dashboard')}
+                  className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-blue-400"
+                >
+                  {loading ? 'Submitting...' : 'Update Product'}
+                </button>
               </div>
-            ))}
+            </form>
           </div>
+        </>
+      )}
+    </div>
+  );
+};
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Product Images</label>
+// Helper component to render the form fields, disables all fields if readOnly
+const ProductForm = ({
+  formData,
+  setFormData,
+  tagsInput,
+  setTagsInput,
+  categories,
+  sizesList,
+  fits,
+  seasons,
+  genders,
+  ageGroups,
+  readOnly,
+  addSize,
+  updateSize,
+  removeSize,
+  addColor,
+  updateColor,
+  removeColor,
+  handleImageUpload,
+  removeImage,
+  handleChange,
+  handleTagsChange,
+}) => (
+  <div className="p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          required
+          disabled={readOnly}
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Brand *</label>
+        <input
+          type="text"
+          name="brand"
+          value={formData.brand}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          required
+          disabled={readOnly}
+        />
+      </div>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          required
+          disabled={readOnly}
+        >
+          <option value="">Select Category</option>
+          {categories.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
+        <input
+          type="text"
+          name="subcategory"
+          value={formData.subcategory}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
+        />
+      </div>
+    </div>
+    <div className="mb-6">
+      <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+      <textarea
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+        rows="4"
+        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+        required
+        disabled={readOnly}
+      ></textarea>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Price ($) *</label>
+        <input
+          type="number"
+          name="price"
+          value={formData.price}
+          onChange={handleChange}
+          step="0.01"
+          min="0"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          required
+          disabled={readOnly}
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Original Price ($)</label>
+        <input
+          type="number"
+          name="originalPrice"
+          value={formData.originalPrice}
+          onChange={handleChange}
+          step="0.01"
+          min="0"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
+        <input
+          type="number"
+          name="discount"
+          value={formData.discount}
+          onChange={handleChange}
+          min="0"
+          max="100"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
+        />
+      </div>
+    </div>
+    <div className="mb-6">
+      <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+      <input
+        type="text"
+        value={tagsInput}
+        onChange={handleTagsChange}
+        placeholder="e.g., casual, trendy, summer"
+        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+        disabled={readOnly}
+      />
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
+        <select
+          name="gender"
+          value={formData.gender}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          required
+          disabled={readOnly}
+        >
+          <option value="">Select Gender</option>
+          {genders.map(g => (
+            <option key={g} value={g}>{g}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
+        <select
+          name="ageGroup"
+          value={formData.ageGroup}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
+        >
+          <option value="">Select Age Group</option>
+          {ageGroups.map(ag => (
+            <option key={ag} value={ag}>{ag}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Fit</label>
+        <select
+          name="fit"
+          value={formData.fit}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
+        >
+          <option value="">Select Fit</option>
+          {fits.map(f => (
+            <option key={f} value={f}>{f}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Season</label>
+        <select
+          name="season"
+          value={formData.season}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          disabled={readOnly}
+        >
+          <option value="">Select Season</option>
+          {seasons.map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+    <div className="mb-6">
+      <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+      <input
+        type="text"
+        name="material"
+        value={formData.material}
+        onChange={handleChange}
+        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+        disabled={readOnly}
+      />
+    </div>
+    <div className="mb-6">
+      <label className="block text-sm font-medium text-gray-700 mb-1">Care Instructions</label>
+      <textarea
+        name="careInstructions"
+        value={formData.careInstructions}
+        onChange={handleChange}
+        rows="3"
+        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+        disabled={readOnly}
+      ></textarea>
+    </div>
+    {/* Sizes */}
+    <div className="mb-6">
+      <div className="flex justify-between items-center mb-2">
+        <label className="block text-sm font-medium text-gray-700">Sizes</label>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={addSize}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            + Add Size
+          </button>
+        )}
+      </div>
+      {formData.sizes.map((size, index) => (
+        <div key={index} className="flex items-center mb-2">
+          <select
+            value={size.size}
+            onChange={(e) => updateSize(index, 'size', e.target.value)}
+            className="w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            disabled={readOnly}
+          >
+            <option value="">Select Size</option>
+            {sizesList.map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+          <input
+            type="number"
+            value={size.stock}
+            onChange={(e) => updateSize(index, 'stock', e.target.value)}
+            placeholder="Stock"
+            min="0"
+            className="w-2/3 ml-2 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+            disabled={readOnly}
+          />
+          {!readOnly && formData.sizes.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeSize(index)}
+              className="ml-2 text-red-600 hover:text-red-800"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+    {/* Colors */}
+    <div className="mb-6">
+      <div className="flex justify-between items-center mb-2">
+        <label className="block text-sm font-medium text-gray-700">Colors</label>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={addColor}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            + Add Color
+          </button>
+        )}
+      </div>
+      {formData.colors.map((color, index) => (
+        <div key={index} className="mb-4 p-4 border border-gray-200 rounded-lg">
+          <div className="flex items-center mb-2">
+            <input
+              type="text"
+              value={color.color}
+              onChange={(e) => updateColor(index, 'color', e.target.value)}
+              placeholder="Color name"
+              className="w-1/3 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              disabled={readOnly}
+            />
+            <input
+              type="text"
+              value={color.colorCode}
+              onChange={(e) => updateColor(index, 'colorCode', e.target.value)}
+              placeholder="Hex code (e.g., #FFFFFF)"
+              className="w-1/3 ml-2 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              disabled={readOnly}
+            />
+            <input
+              type="number"
+              value={color.stock}
+              onChange={(e) => updateColor(index, 'stock', e.target.value)}
+              placeholder="Stock"
+              min="0"
+              className="w-1/3 ml-2 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              disabled={readOnly}
+            />
+            {!readOnly && formData.colors.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeColor(index)}
+                className="ml-2 text-red-600 hover:text-red-800"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          {!readOnly && (
             <input
               type="file"
               accept="image/*"
               multiple
-              onChange={handleImageUpload}
+              onChange={(e) => handleImageUpload(e, index)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2"
             />
-            {formData.images.length > 0 && (
-              <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
-                {formData.images.map((image, index) => (
-                  <div key={index} className="relative">
-                    <img src={image} alt={`Product ${index + 1}`} className="w-full h-24 object-cover rounded-lg" />
+          )}
+          {color.images.length > 0 && (
+            <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
+              {color.images.map((img, imgIndex) => (
+                <div key={imgIndex} className="relative">
+                  <img src={img} alt={`Color ${index + 1} Image ${imgIndex + 1}`} className="w-full h-24 object-cover rounded-lg" />
+                  {!readOnly && (
                     <button
                       type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      onClick={() => removeImage(imgIndex, index)}
+                      className="absolute top-1 right-1 bg-white rounded-full p-1 shadow hover:bg-red-100"
+                      title="Remove image"
                     >
-                      &times;
+                      <span className="text-red-600 font-bold">&times;</span>
                     </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => navigate('/vendor/dashboard')}
-              className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-blue-400"
-            >
-              {loading ? 'Submitting...' : 'Update Product'}
-            </button>
-          </div>
-        </form>
-      </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
-  );
-};
+    {/* Main Images */}
+    <div className="mb-6">
+      <label className="block text-sm font-medium text-gray-700 mb-1">Product Images</label>
+      {!readOnly && (
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={(e) => handleImageUpload(e, null)}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2"
+        />
+      )}
+      {formData.images.length > 0 && (
+        <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
+          {formData.images.map((img, imgIndex) => (
+            <div key={imgIndex} className="relative">
+              <img src={img} alt={`Product Image ${imgIndex + 1}`} className="w-full h-24 object-cover rounded-lg" />
+              {!readOnly && (
+                <button
+                  type="button"
+                  onClick={() => removeImage(imgIndex, null)}
+                  className="absolute top-1 right-1 bg-white rounded-full p-1 shadow hover:bg-red-100"
+                  title="Remove image"
+                >
+                  <span className="text-red-600 font-bold">&times;</span>
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+);
 
 export default EditProduct;

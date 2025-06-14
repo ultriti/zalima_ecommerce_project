@@ -152,13 +152,6 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold mb-2">Vendor Requests</h3>
               <p className="text-blue-500 hover:underline">Review Requests</p>
             </Link>
-            <Link to="/admin/products" className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center hover:shadow-lg transition">
-              <div className="bg-yellow-100 p-4 rounded-full mb-3">
-                <span className="text-3xl">📦</span>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Manage Products</h3>
-              <p className="text-blue-500 hover:underline">View Products</p>
-            </Link>
             <Link to="/admin/product-requests" className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center hover:shadow-lg transition">
               <div className="bg-purple-100 p-4 rounded-full mb-3">
                 <span className="text-3xl">📝</span>
