@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Navbar_frame from '../Common frames/Navbar_frame';
+import User_side_frame from '../common_comps/User_side_frame';
 
 const addressLabels = ['Home', 'Office', 'Friend', 'Other'];
 const departments = ['Men', 'Women', 'Kids', 'Unisex'];
@@ -35,10 +37,10 @@ const UserProfile = () => {
 
   // Profile edit states
   const [editMode, setEditMode] = useState(false);
-  const [profileData, setProfileData] = useState({ 
-    name: '', 
-    email: '', 
-    phoneNumber: '', 
+  const [profileData, setProfileData] = useState({
+    name: '',
+    email: '',
+    phoneNumber: '',
     profileImage: '',
     countryCode: '+1' // Default country code
   });
@@ -192,12 +194,12 @@ const UserProfile = () => {
       return;
     }
     let updatedProfileImageUrl = previewImg;
-  
+
     try {
       if (profileImageFile) {
         const formData = new FormData();
         formData.append('profileImage', profileImageFile);
-      
+
         const imgRes = await axios.put(
           `${import.meta.env.VITE_BASE_URI}/api/users/upload-profile-image`,
           formData,
@@ -210,10 +212,10 @@ const UserProfile = () => {
         );
         updatedProfileImageUrl = imgRes.data.profileImage.url;
       }
-    
+
       // Combine country code with phone number
       const fullPhoneNumber = `${profileData.countryCode}${profileData.phoneNumber}`;
-    
+
       await axios.put(
         `${import.meta.env.VITE_BASE_URI}/api/users/${id}`,
         {
@@ -223,7 +225,7 @@ const UserProfile = () => {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-    
+
       setUser({
         ...user,
         name: profileData.name,
@@ -315,24 +317,36 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-8 px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-900 py-8 px-4">
+      {/* Navbar */}
+      <div className="Navbar_div bg-white shadow-md fixed left-0 top-0 z-50">
+        <Navbar_frame />
+      </div>
+
+       <aside className="w-64 bg-blue-800 text-white fixed top-16 bottom-0 left-0 overflow-y-auto">
+          <div className="p-4">
+            <User_side_frame />
+          </div>
+        </aside>
+
+
+      <div className="max-w-3xl mx-auto mt-20 rounded-2xl shadow-xl p-6 bg-gray-800">
         {/* Header Section */}
         <div className="relative flex items-center justify-between mb-8 flex-wrap gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            className="flex items-center text-gray-200 hover:text-gray-400 transition-colors duration-200"
           >
             <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
             Back
           </button>
-          <h2 className="absolute left-1/2 transform -translate-x-1/2 text-3xl font-bold text-gray-800 text-center">My Profile</h2>
+          <h2 className="absolute left-1/2 transform -translate-x-1/2 text-3xl font-bold text-gray-300 text-center">My Profile</h2>
           <div className="flex items-center space-x-3">
             <button
               onClick={() => toggleSection('editProfile')}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 hover:border-gray-500 hover:text-gray-900 transition-all duration-200"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-300 font-medium hover:bg-gray-100 hover:border-gray-500 hover:text-gray-900 transition-all duration-200"
             >
               {openSection === 'editProfile' ? 'Cancel' : 'Edit Profile'}
             </button>
@@ -361,7 +375,7 @@ const UserProfile = () => {
               </label>
             )}
           </div>
-          <h3 className="mt-4 text-2xl font-semibold text-gray-800 text-center">{user.name}</h3>
+          <h3 className="mt-4 text-2xl font-semibold text-gray-300 text-center">{user.name}</h3>
           <p className="text-gray-600 text-center">{user.email}</p>
           <p className="text-gray-600 text-center">{user.phoneNumber}</p>
         </div>
@@ -369,7 +383,7 @@ const UserProfile = () => {
         {/* Edit Profile Section */}
         {openSection === 'editProfile' && (
           <div className="mb-6 bg-gray-50 p-4 rounded-lg shadow-inner animate-fade-in">
-            <h3 className="text-lg font-semibold text-gray-700 mb-4">Edit Profile</h3>
+            <h3 className="text-lg font-semibold text-gray-300 mb-4">Edit Profile</h3>
             <div className="space-y-4">
               <input
                 type="text"
@@ -377,7 +391,7 @@ const UserProfile = () => {
                 value={profileData.name}
                 onChange={handleProfileChange}
                 placeholder="Name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                className="w-full px-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               />
               <input
                 type="email"
@@ -423,9 +437,9 @@ const UserProfile = () => {
         <div className="mb-4">
           <button
             onClick={() => toggleSection('password')}
-            className="w-full flex justify-between items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+            className="w-full flex justify-between items-center p-4 bg-gray-400 rounded-lg hover:bg-gray-300 transition-colors duration-200"
           >
-            <h3 className="text-lg font-semibold text-gray-700">Change Password</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Change Password</h3>
             <svg
               className={`w-5 h-5 transform transition-transform duration-200 ${openSection === 'password' ? 'rotate-180' : ''}`}
               fill="none"
@@ -435,8 +449,10 @@ const UserProfile = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
+
+
           {openSection === 'password' && (
-            <div className="mt-2 p-4 bg-gray-50 rounded-lg shadow-inner animate-fade-in">
+            <div className="mt-2 p-4 bg-gray-500  rounded-lg shadow-inner animate-fade-in">
               <div className="space-y-4">
                 <input
                   type="password"
@@ -444,7 +460,7 @@ const UserProfile = () => {
                   value={passwordData.currentPassword}
                   onChange={handlePasswordChange}
                   placeholder="Current Password"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <input
                   type="password"
@@ -452,7 +468,7 @@ const UserProfile = () => {
                   value={passwordData.newPassword}
                   onChange={handlePasswordChange}
                   placeholder="New Password"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <input
                   type="password"
@@ -460,7 +476,7 @@ const UserProfile = () => {
                   value={passwordData.confirmPassword}
                   onChange={handlePasswordChange}
                   placeholder="Confirm New Password"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <button
                   onClick={handlePasswordSave}
@@ -477,9 +493,9 @@ const UserProfile = () => {
         <div className="mb-4">
           <button
             onClick={() => toggleSection('addresses')}
-            className="w-full flex justify-between items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+            className="w-full flex justify-between items-center p-4 bg-gray-400 rounded-lg hover:bg-gray-200 transition-colors duration-200"
           >
-            <h3 className="text-lg font-semibold text-gray-700">Shipping Addresses</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Shipping Addresses</h3>
             <svg
               className={`w-5 h-5 transform transition-transform duration-200 ${openSection === 'addresses' ? 'rotate-180' : ''}`}
               fill="none"
@@ -489,10 +505,12 @@ const UserProfile = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
+
+
           {openSection === 'addresses' && (
-            <div className="mt-2 p-4 bg-gray-50 rounded-lg shadow-inner animate-fade-in">
+            <div className="mt-2 p-4 bg-gray-500 rounded-lg shadow-inner animate-fade-in">
               {addresses.map((addr, idx) => (
-                <div key={idx} className="border p-4 mb-2 rounded-lg bg-white shadow-sm">
+                <div key={idx} className="border p-4 mb-2 rounded-lg bg-gray-400 shadow-sm">
                   <p className="font-semibold">{addr.label}</p>
                   <p className="text-gray-600">{addr.address}, {addr.city}, {addr.postalCode}, {addr.country}</p>
                   <div className="mt-2 flex space-x-3">
@@ -515,7 +533,7 @@ const UserProfile = () => {
                 <select
                   value={newAddress.label}
                   onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 >
                   {addressLabels.map((label) => (
                     <option key={label} value={label}>{label}</option>
@@ -526,28 +544,28 @@ const UserProfile = () => {
                   value={newAddress.address}
                   onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
                   placeholder="Address"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <input
                   type="text"
                   value={newAddress.city}
                   onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
                   placeholder="City"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <input
                   type="text"
                   value={newAddress.postalCode}
                   onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
                   placeholder="Postal Code"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <input
                   type="text"
                   value={newAddress.country}
                   onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })}
                   placeholder="Country"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <button
                   type="submit"
@@ -564,9 +582,9 @@ const UserProfile = () => {
         <div className="mb-4">
           <button
             onClick={() => toggleSection('preferences')}
-            className="w-full flex justify-between items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+            className="w-full flex justify-between items-center p-4 bg-gray-400 rounded-lg hover:bg-gray-200 transition-colors duration-200"
           >
-            <h3 className="text-lg font-semibold text-gray-700">Preferences</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Preferences</h3>
             <svg
               className={`w-5 h-5 transform transition-transform duration-200 ${openSection === 'preferences' ? 'rotate-180' : ''}`}
               fill="none"
@@ -576,8 +594,10 @@ const UserProfile = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
+
+
           {openSection === 'preferences' && (
-            <div className="mt-2 p-4 bg-gray-50 rounded-lg shadow-inner animate-fade-in">
+            <div className="mt-2 p-4 bg-gray-500 rounded-lg shadow-inner animate-fade-in">
               <div className="space-y-4">
                 <select
                   value={preferredDept}
@@ -594,12 +614,12 @@ const UserProfile = () => {
                   value={size}
                   onChange={(e) => setSize(e.target.value)}
                   placeholder="Size (e.g., M, L, XL)"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <select
                   value={fit}
                   onChange={(e) => setFit(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 >
                   <option value="">Select Fit</option>
                   {fitAttributes.map((fitOption) => (
@@ -611,20 +631,19 @@ const UserProfile = () => {
                   value={ageGroup}
                   onChange={(e) => setAgeGroup(e.target.value)}
                   placeholder="Age Group (e.g., 20-30)"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Interests</h4>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Interests</h4>
                   <div className="flex flex-wrap gap-2">
                     {interestsList.map((interest) => (
                       <button
                         key={interest}
                         onClick={() => toggleInterest(interest)}
-                        className={`px-4 py-2 rounded-full border transition-all duration-200 ${
-                          selectedInterests.includes(interest)
+                        className={`px-4 py-2 rounded-full border transition-all duration-200 ${selectedInterests.includes(interest)
                             ? 'bg-blue-600 text-white border-blue-600'
                             : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100'
-                        }`}
+                          }`}
                       >
                         {interest}
                       </button>
@@ -643,20 +662,20 @@ const UserProfile = () => {
         </div>
 
         {/* Actions Section (Vendor Action, Log Out) */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg shadow-inner">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Actions</h3>
+        <div className="mt-6 p-4 bg-gray-400 rounded-lg shadow-inner hover:bg-gray-300">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
           <div className="flex flex-wrap gap-3">
             {user.role === 'vendor' ? (
               <button
                 onClick={() => navigate('/vendor/dashboard')}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 hover:border-gray-500 hover:text-gray-900 transition-all duration-200"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-300 font-medium hover:bg-gray-200 hover:border-gray-500 hover:text-gray-900 transition-all duration-200"
               >
                 Vendor Dashboard
               </button>
             ) : user.role === 'admin' ? (
               <button
                 onClick={() => navigate('/admin/dashboard')}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 hover:border-gray-500 hover:text-gray-900 transition-all duration-200"
+                className="px-4 py-2 border bg-gray-400 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 hover:border-gray-500 hover:text-gray-900 transition-all duration-200"
               >
                 Admin Dashboard
               </button>

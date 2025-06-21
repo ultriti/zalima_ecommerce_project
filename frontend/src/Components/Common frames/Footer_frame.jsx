@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Footer_frame = () => {
+
+  const [cookieBool, setcookieBool] = useState(true);
+  const cookieboolFun = () =>{
+    setcookieBool(false)
+  }
   return (
     <footer className="bg-white h-[100vh] w-[100%] text-black py-18 px-10 md:py-8 ms:px-2">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 shadow-[ 0 0 10px grey]">
@@ -47,33 +52,25 @@ const Footer_frame = () => {
         </div>
       </div>
 
-      {/* Newsletter Section */}
-      <div className="container mx-auto px-4 mt-8">
-        <h3 className="font-bold text-lg mb-4 text-center">Join Our Newsletter, Get 10% Off</h3>
-        <form className="flex justify-center">
-          <input
-            type="email"
-            placeholder="Your email address"
-            className="p-2 border border-gray-300 rounded-l-md w-full max-w-xs"
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white p-2 rounded-r-md"
-          >
-            Subscribe
-          </button>
-        </form>
-      </div>
 
-      {/* Bottom Cookie Notice */}
-      <div className="bg-white text-red-400 text-center py-4 mt-8">
+
+     {
+      cookieBool?(
+        <div className="bg-white text-red-400 text-center py-4 mt-8">
+              Bottom Cookie Notice
+
         <p>
           This is a standard cookie notice. Click <span className="text-blue-400">Accept</span> to continue using the site.
         </p>
-        <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+        <button onClick={()=>{cookieboolFun()}} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
           Accept
         </button>
       </div>
+
+      ) :(
+        <></>
+      )
+     }
     </footer>
   );
 };

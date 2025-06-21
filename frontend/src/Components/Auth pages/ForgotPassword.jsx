@@ -24,7 +24,7 @@ const ForgotPassword = () => {
     try {
       const res = await axios.post(`${import.meta.env.VITE_BASE_URI}/api/users/forgot-password`, { email });
       toast.success(res.data.message || "Reset email sent!");
-      console.log("✅ Success:", res.data);
+      alert(`✅ Success:${res.data}`);
       // Redirect to login page after 2 seconds to allow the user to see the success message
       setTimeout(() => navigate('/user/signin'), 2000);
     } catch (err) {

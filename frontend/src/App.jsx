@@ -103,6 +103,7 @@ const App = () => {
         <Route path="/user/become-vendor" element={<UserProtectedWrapper><VendorRequestForm /></UserProtectedWrapper>} />
         <Route path="/user/:id" element={<UserProtectedWrapper><UserProfile /></UserProtectedWrapper>} />
         <Route path="/user/purchase-confirmation" element={<UserProtectedWrapper><PurchaseConformation /></UserProtectedWrapper>} />
+        <Route path="/user/purchase-confirmation" element={<PurchaseConformation />} />
 
         {/* Vendor Routes */}
         <Route path="/vendor/dashboard" element={
@@ -210,6 +211,11 @@ const App = () => {
         <Route path="/superadmin/product-requests" element={
           <RoleProtectedRoute allowedRoles={['superadmin']}>
             <ManageSuperAdminProductRequests />
+          </RoleProtectedRoute>
+        } />
+        <Route path="/user/payment_conform" element={
+          <RoleProtectedRoute allowedRoles={['user']}>
+            <PurchaseConformation />
           </RoleProtectedRoute>
         } />
 

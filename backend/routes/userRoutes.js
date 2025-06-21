@@ -112,7 +112,7 @@ router
   .route('/:id')
   .delete(protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.deleteUser)
   .get(protect, validateObjectId, userController.getUserById)
-  .put(protect, restrictTo('admin', 'superadmin'), validateObjectId, userController.updateUser);
+  .put(protect, restrictTo('admin', 'superadmin','user'), validateObjectId, userController.updateUser);
 
 router.route('/makeadmin/:id').put(protect, superadmin, validateObjectId, userController.makeUserAdmin);
 

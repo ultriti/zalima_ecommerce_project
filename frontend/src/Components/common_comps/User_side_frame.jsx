@@ -25,7 +25,7 @@ const User_side_frame = () => {
   }, [location.pathname]);
 
   const links = [
-    { to: '/user/profile', label: 'Profile' },
+    { to: `/user/${userId}`, label: 'Profile' },
     { to: '/user/manage_profile', label: 'Manage Profile' },
     { to: '/user/address', label: 'My Address' },
     { to: '/user/orders', label: 'Orders' },

@@ -5,6 +5,9 @@ const Product = require('../models/productModel');
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
+
+  
+
   const {
     orderItems,
     shippingAddress,
@@ -15,24 +18,51 @@ const addOrderItems = asyncHandler(async (req, res) => {
     totalPrice,
   } = req.body;
 
+  console.log('--->',
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice
+  );
+
+
   if (orderItems && orderItems.length === 0) {
     res.status(400);
     throw new Error('No order items');
   } else {
-    const order = new Order({
-      orderItems,
-      user: req.user._id,
-      shippingAddress,
-      paymentMethod,
-      itemsPrice,
-      taxPrice,
-      shippingPrice,
-      totalPrice,
-    });
 
-    const createdOrder = await order.save();
 
-    res.status(201).json(createdOrder);
+    try {
+      const order = new Order({
+        orderItems,
+        user: req.user._id,
+        shippingAddress,
+        paymentMethod,
+        itemsPrice,
+        taxPrice,
+        shippingPrice,
+        totalPrice,
+
+      });
+
+
+
+      const createdOrder = await order.save();
+      console.log('------------------------------------------------------------------------', order);
+
+
+      return res.status(201).json({ createdOrder:createdOrder, message: "order created", success: true });
+
+    } catch (error) {
+      console.log('------------------------------------------------------------------------ error', error);
+
+      return res.status(400).json({ message: "error createing order" })
+
+    }
+
   }
 });
 
@@ -111,18 +141,18 @@ const getMyOrders = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
-  
+
   const order = await Order.findById(req.params.id);
-  
+
   if (order) {
     order.status = status;
-    
+
     // If status is delivered, update isDelivered
     if (status === 'Delivered') {
       order.isDelivered = true;
       order.deliveredAt = Date.now();
     }
-    
+
     const updatedOrder = await order.save();
     res.json(updatedOrder);
   } else {
@@ -141,6 +171,26 @@ const getVendorOrders = asyncHandler(async (req, res) => {
 
   res.json(orders);
 });
+
+const cashOnDelivery = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    order.isDelivered = false;
+    order.status = 'Processing';
+
+
+
+    const updatedOrder = await order.save();
+
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+
+
+
+})
 
 module.exports = {
   addOrderItems,

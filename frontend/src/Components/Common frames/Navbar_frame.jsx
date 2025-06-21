@@ -20,7 +20,13 @@ const Navbar_frame = () => {
   
   // Get cart items from localStorage
   const cartItems = JSON.parse(localStorage.getItem("myItems")) || [];
-  const itemsLength = cartItems.length;
+  const [itemsLength, setitemsLength] = useState(cartItems.length)
+
+
+  useEffect(() => {
+    setitemsLength(cartItems.length)
+  }, [cartItems])
+  
   
   // Use both items from localStorage and the imported products
   // This ensures we have products for search even if localStorage is empty

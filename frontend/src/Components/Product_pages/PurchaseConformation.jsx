@@ -15,14 +15,21 @@ const PurchaseConformation = () => {
   const [selectPaymentMethodbol, setselectPaymentMethodbol] = useState(false)
   const [selectPayment, setselectPayment] = useState({})
 
-  // const [paymentCharges, setpaymentCharges] = useState({
-  //   shippingCharges: 0,
-  //   handlingCharges: 13,
-  //   productAmmount: subtotal,
-  //   deliveryCharges: 0,
-  //   taxCharges: 0,
-  //   totalAmmount: 120
-  // })
+  const [OrderedProducts, setOrderedProducts] = useState([])
+  const [totalOrderDetails, settotalOrderDetails] = useState([])
+
+  const getOrderedItems = () => {
+    const OrderedItem = localStorage.getItem("orderedItems");
+    console.log('--> ordered items', JSON.parse(OrderedItem));
+
+    setOrderedProducts(JSON.parse(OrderedItem))
+
+
+  }
+  useEffect(() => {
+    getOrderedItems()
+  }, [])
+
 
   const payment_method = [
     {
@@ -87,6 +94,7 @@ const PurchaseConformation = () => {
   const handlePaymentMethodSelect = (paymentMethodId) => {
     setselectPayment(paymentMethodId);
   };
+  console.log('=>getselectedAddress', getselectedOrder);
 
   const paymentFuntion = async () => {
 
@@ -96,12 +104,62 @@ const PurchaseConformation = () => {
       amount: ammount_
     }
 
-
     if (selectPayment.method_name === 'UPI') {
       nav(`/user/paypal?amount=${ammount_}`)
     }
     else if (selectPayment.method_name === 'cash on delivery') {
-      // call cash on delivery function
+
+      console.log('=>OrderedProducts :', OrderedProducts);
+      const orderD = []
+
+      {
+        OrderedProducts.items.map(async (order, i) => {
+          console.log('-> maping', order);
+
+          const orderItem = {
+            name: order.name,
+            qty: order.qty,
+            image: order.image,
+            price: order.price,
+            product: '68553b37d849545a4b3c4ca0'
+          }
+
+          orderD.push(orderItem)
+
+
+        })
+      }
+
+      const orderDetails = {
+
+        orderItems: orderD,
+        shippingAddress: getselectedOrder,
+        paymentMethod: selectPayment.method_name,
+        itemsPrice: OrderedProducts.summary.productAmount,
+        taxPrice: OrderedProducts.summary.taxCharges,
+        shippingPrice: OrderedProducts.summary.shippingCharges,
+        totalPrice: OrderedProducts.summary.totalAmount,
+      }
+
+      console.log("----------------------------------------------------------\n", orderDetails)
+      settotalOrderDetails(prevArray => [...prevArray, orderDetails])
+
+      const createOrderAxios = await axios.post(`${import.meta.env.VITE_BASE_URI}/api/orders/`, orderDetails, { withCredentials: true });
+      console.log('--> status : ', createOrderAxios);
+
+
+
+      if (createOrderAxios.status === 201) {
+        alert(createOrderAxios.data.message)
+        localStorage.removeItem("orderedItems")
+        localStorage.removeItem("myItems")
+        localStorage.removeItem("selectedOrder")
+
+        nav("/user/orders");
+
+      } else {
+        alert(createOrderAxios.data.message)
+      }
     } else if (selectPayment.method_name === 'EMI') {
 
     } else {
@@ -114,11 +172,11 @@ const PurchaseConformation = () => {
     <div className='min-h-[100vh] w-full flex flex-row'>
 
       <div className="Navbar_frame fixed top-0 left-0 z-50">
-        <Navbar_frame/>
+        <Navbar_frame />
       </div>
 
       <div className="h-full w-full flex flex-row md:flex-row justify-between p-4 gap-2 mt-[6vw]">
-        <div className="h-[100vh] w-[60%] shadow-2xl rounded-2xl border border-gray-600 p-10">
+        <div className="h-[100vh] w-[60%] shadow-2xl rounded-2xl flex flex-col border border-gray-600 p-10 gap-15">
 
           {
             select_address.map((address, index) => (

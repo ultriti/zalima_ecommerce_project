@@ -14,7 +14,8 @@ const orderSchema = mongoose.Schema(
         image: { type: String, required: true },
         price: { type: Number, required: true },
         product: {
-          type: mongoose.Schema.Types.ObjectId,
+          // type: mongoose.Schema.Types.ObjectId,
+          type: String,
           required: true,
           ref: 'Product',
         },

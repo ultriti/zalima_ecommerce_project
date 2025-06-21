@@ -1,62 +1,105 @@
 import React, { useState } from 'react';
 import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from 'react-icons/ai';
-
-import CartProductTemp from './CartProductTemp';
-import Navbar_frame from '../Common frames/Navbar_frame';
 import { useNavigate } from 'react-router-dom';
+import Navbar_frame from '../Common frames/Navbar_frame';
 
 const CartPage = () => {
     const nav = useNavigate();
 
-
-    // Retrieve items and set initial quantity to 1
-    const cart_items = JSON.parse(localStorage.getItem("myItems")) || [];
+    const initialItems = JSON.parse(localStorage.getItem("myItems")) || [];
     const [cartItems, setCartItems] = useState(
-        cart_items.map(item => ({ ...item, quantity: 1 }))
+        initialItems.map(item => ({ ...item, quantity: 1 }))
     );
 
-    // Function to increase quantity
-    const incrementQty = (id) => {
-        setCartItems(cartItems.map(item =>
-            item._id === id ? { ...item, quantity: item.quantity + 1 } : item
-        ));
-    };
+    const [subtotal, setSubtotal] = useState(
+        initialItems.reduce((acc, item) => acc + item.price * 1, 0)
+    );
 
-    // Function to decrease quantity
-    const decrementQty = (id) => {
-        setCartItems(cartItems.map(item =>
-            item._id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
-        ));
-    };
 
-    // Remove items from local storage and state
-    const remove_from_cart_handle = (delItem) => {
-        let updatedItems = cartItems.filter(item => item._id !== delItem);
-        localStorage.setItem("myItems", JSON.stringify(updatedItems));
-        setCartItems(updatedItems);
-    };
-
-    // Calculate subtotal
-    const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
-    const [paymentCharges, setpaymentCharges] = useState({
+    const [paymentCharges, setPaymentCharges] = useState({
         shippingCharges: 0,
         handlingCharges: 13,
-        productAmmount: subtotal,
+        productAmount: subtotal,
         deliveryCharges: 0,
         taxCharges: 0,
-        totalAmmount: 120
-    })
+    });
+
+
+    console.log('totla ammount ->');
+
+
+
+
+    const updateSummary = (updatedCart) => {
+        const newSubtotal = updatedCart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        setSubtotal(newSubtotal);
+        setPaymentCharges(prev => ({
+            ...prev,
+            productAmount: newSubtotal
+        }));
+    };
+
+    const incrementQty = (id) => {
+        const updated = cartItems.map(item =>
+            item._id === id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+        setCartItems(updated);
+        updateSummary(updated);
+    };
+
+    const decrementQty = (id) => {
+        const updated = cartItems.map(item =>
+            item._id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
+        );
+        setCartItems(updated);
+        updateSummary(updated);
+    };
+
+    const removeFromCart = (id) => {
+        const updated = cartItems.filter(item => item._id !== id);
+        localStorage.setItem("myItems", JSON.stringify(updated));
+        setCartItems(updated);
+        updateSummary(updated);
+    };
+
+    // 🔥 Save order with correct schema
+    const handlePlaceOrder = () => {
+        if (cartItems.length === 0) return;
+
+        const total = paymentCharges.shippingCharges + paymentCharges.handlingCharges + subtotal + paymentCharges.deliveryCharges + paymentCharges.taxCharges
+        console.log('totla ammount ->', total);
+
+
+        const orderDetails = {
+            items: cartItems.map(item => ({
+                name: item.name,
+                qty: item.quantity,
+                image: item.image,
+                price: item.price,
+                product: item._id,
+                vendor: item.vendor
+            })),
+            summary: {
+                productAmount: paymentCharges.productAmount,
+                shippingCharges: paymentCharges.shippingCharges,
+                handlingCharges: paymentCharges.handlingCharges,
+                deliveryCharges: paymentCharges.deliveryCharges,
+                taxCharges: paymentCharges.taxCharges,
+                totalAmount: total
+            },
+            orderedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem("orderedItems", JSON.stringify(orderDetails));
+        nav(`/user/payment_conform?amount=${paymentCharges.productAmount}`);
+    };
 
     return (
         <div className="cart_page_frame min-h-[100vh] w-full bg-gray-100 flex flex-col">
-            {/* Navbar */}
             <div className="Navbar_frame fixed top-0 left-0 z-50">
                 <Navbar_frame />
             </div>
 
-    
-            {/* Cart Items */}
             <div className="flex flex-col md:flex-row justify-between p-4 gap-2 mt-[10vw]">
                 <div className="w-full md:w-2/3">
                     {cartItems.length === 0 ? (
@@ -78,7 +121,7 @@ const CartPage = () => {
                                             <AiOutlinePlus />
                                         </button>
                                     </div>
-                                    <button onClick={() => remove_from_cart_handle(item._id)} className="p-2 bg-blue-500 text-white rounded">
+                                    <button onClick={() => removeFromCart(item._id)} className="p-2 bg-blue-500 text-white rounded">
                                         <AiOutlineDelete />
                                     </button>
                                 </div>
@@ -88,16 +131,17 @@ const CartPage = () => {
                     )}
                 </div>
 
-                {/* Summary */}
                 <div className="w-full md:w-1/3 bg-gray-100 p-4 shadow-2xl rounded-2xl border-1">
                     <h2 className="text-xl font-bold">SUMMARY</h2>
                     <div className="mt-4 flex justify-between">
                         <span>Subtotal</span>
-                        <span>₹{paymentCharges.productAmmount}</span>
+                        <span>₹{paymentCharges.productAmount}</span>
                     </div>
-
-                    <button onClick={() => nav(`/user/payment_conform?amount=${paymentCharges.productAmmount}`)} className="bg-orange-500 cursor-pointer text-white w-full py-2 mt-4">
-                        select your address
+                    <button
+                        onClick={handlePlaceOrder}
+                        className="bg-orange-500 cursor-pointer text-white w-full py-2 mt-4"
+                    >
+                        Select your address
                     </button>
                 </div>
             </div>

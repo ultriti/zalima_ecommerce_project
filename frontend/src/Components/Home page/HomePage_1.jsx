@@ -45,24 +45,58 @@ const HomePage_1 = (props) => {
     ];
 
     const items = [{
-        name: "blue T-shirt ",
-        image: "https://th.bing.com/th/id/OIP.5Fose9g5iUFPLbwVPalD3wHaEJ?rs=1&pid=ImgDetMain",
-        price: "₹ 1000",
-        desc:""
+        "name": "blue T-shirt ",
+        "image": "https://th.bing.com/th/id/OIP.5Fose9g5iUFPLbwVPalD3wHaEJ?rs=1&pid=ImgDetMain",
+        "price": 1000,
+        "desc": "Premium-quality personalized mens t-shirt",
+        "quantity": 44,
+        "category": "Mens",
+        "_id": 5555,
+        "offer": 22,
+        "brand": "Brand G5"
     },
     {
-        name: "weddings special dress",
-        image: "https://th.bing.com/th/id/OIP.KJxwImPedoIF1PoXvqx-cwHaFj?w=216&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-        price: "₹ 3000"
+        "name": "weddings special dress",
+        "image": "https://th.bing.com/th/id/OIP.KJxwImPedoIF1PoXvqx-cwHaFj?w=216&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        "price": 3000,
+        "quantity": 10,
+        "category": "Wedding",
+        "_id": 5055,
+        "offer": 20,
+        "brand": "Brand G5"
     },
     {
-        name: "mens formal suit",
-        image: "https://th.bing.com/th/id/OIP.NDRyQoc5tsUZvjS8KaylfAHaEK?w=208&h=117&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-        price: "₹ 3000"
+        "name": "mens formal suit",
+        "image": "https://th.bing.com/th/id/OIP.NDRyQoc5tsUZvjS8KaylfAHaEK?w=208&h=117&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+        "price": 3000,
+        "quantity": 23,
+        "category": "Mens",
+        "_id": 5500,
+        "offer": 18,
+        "brand": "Brand G5"
 
     },
 
     ]
+
+    const add_to_cart_handle = (newItem) => {
+        console.log('--> new item', newItem);
+
+
+        let items_ = JSON.parse(localStorage.getItem("myItems")) || [];
+        console.log(items_.map(item => item.name));
+        if (items_.map(item => item.name).includes(newItem.name) === true) {
+            alert('item already in cart')
+            return;
+        } else {
+            items_.push(newItem);
+            // Save back to local storage
+            localStorage.setItem("myItems", JSON.stringify(items_));
+            alert('added to cart successfully')
+            // toast.success('added to cart successfully');
+        }
+
+    }
 
 
     return (
@@ -95,7 +129,7 @@ const HomePage_1 = (props) => {
                                             {/* Product Image Section */}
                                             <div className="md:w-1/2 flex items-center justify-center p-4 rounded-lg">
                                                 <img
-                                                    src="https://via.placeholder.com/400"
+                                                    src={item.image}
                                                     alt="Product Image"
                                                     className="w-full h-auto object-cover rounded-md"
                                                 />
@@ -110,10 +144,10 @@ const HomePage_1 = (props) => {
                                                     necessitatibus.
                                                 </p>
 
-                                               
+
 
                                                 <div className="mt-4 flex space-x-2">
-                                                    <button className="bg-blue-600 text-white px-4 py-2 rounded">
+                                                    <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={() => { add_to_cart_handle(item) }}>
                                                         Add to Cart
                                                     </button>
                                                 </div>

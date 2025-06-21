@@ -31,5 +31,6 @@ router.route('/:id/deliver')
 
 // Add this route
 router.route('/:id/status').put(protect, admin, updateOrderStatus);
+router.route('/:id/CashOndelivery').put(protect, updateOrderStatus);
 
 module.exports = router;

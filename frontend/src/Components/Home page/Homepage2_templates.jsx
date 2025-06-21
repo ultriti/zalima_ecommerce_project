@@ -43,7 +43,6 @@ const Homepage2_templates = (props) => {
                         .filter((item) => item.category === `${props.category}`) // Filter items by category "men"
                         .map((filteredItem, index) => (
                             <SwiperSlide className='swiper_slider_cln' key={index}>
-                                {/* <a href={`/product/productsTemp/${filteredItem._id}`} className='relative h-full w-full'> */}
                                     <div className="home_p_products_card_ bg-red-400 rounded-[20px]">
                                         <ProductCard
                                             filId = {filteredItem._id}
@@ -55,7 +54,6 @@ const Homepage2_templates = (props) => {
                                             quantity={filteredItem.countInStock}
                                         />
                                     </div>
-                                {/* </a> */}
                             </SwiperSlide>
                         ))
                     }
